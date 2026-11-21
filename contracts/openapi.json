@@ -1,0 +1,561 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "PRITHVI AI API",
+  "description": "Experimental neighbourhood risk digital-twin API. Outputs are indicative scenario indices, not forecasts.",
+  "version": "0.1.0"
+ },
+ "paths": {
+  "/health": {
+   "get": {
+    "summary": "Health",
+    "operationId": "health_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/areas": {
+   "get": {
+    "summary": "Areas",
+    "operationId": "areas_api_v1_areas_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/areas/{area_id}/layers": {
+   "get": {
+    "summary": "Layers",
+    "operationId": "layers_api_v1_areas__area_id__layers_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/areas/{area_id}/baseline": {
+   "get": {
+    "summary": "Baseline",
+    "operationId": "baseline_api_v1_areas__area_id__baseline_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/areas/{area_id}/facilities": {
+   "get": {
+    "summary": "Facilities",
+    "operationId": "facilities_api_v1_areas__area_id__facilities_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/scenarios": {
+   "post": {
+    "summary": "Create Scenario",
+    "operationId": "create_scenario_api_v1_scenarios_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ScenarioRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "201": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/scenarios/{sid}": {
+   "get": {
+    "summary": "Get Scenario",
+    "operationId": "get_scenario_api_v1_scenarios__sid__get",
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/scenarios/{sid}/geojson": {
+   "get": {
+    "summary": "Scenario Geojson",
+    "operationId": "scenario_geojson_api_v1_scenarios__sid__geojson_get",
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/scenarios/{sid}/compare": {
+   "get": {
+    "summary": "Compare",
+    "operationId": "compare_api_v1_scenarios__sid__compare_get",
+    "parameters": [
+     {
+      "name": "sid",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Sid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/zones/{zone_id}/explanation": {
+   "get": {
+    "summary": "Explanation",
+    "operationId": "explanation_api_v1_zones__zone_id__explanation_get",
+    "parameters": [
+     {
+      "name": "zone_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Zone Id"
+      }
+     },
+     {
+      "name": "scenario_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Scenario Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/assistant/query": {
+   "post": {
+    "summary": "Assistant Query",
+    "operationId": "assistant_query_api_v1_assistant_query_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AssistantRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "AssistantRequest": {
+    "properties": {
+     "query": {
+      "type": "string",
+      "maxLength": 500,
+      "minLength": 2,
+      "title": "Query"
+     },
+     "live_context": {
+      "anyOf": [
+       {
+        "type": "string",
+        "maxLength": 700
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Live Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "query"
+    ],
+    "title": "AssistantRequest"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "RainfallScenario": {
+    "properties": {
+     "kind": {
+      "type": "string",
+      "const": "user_defined",
+      "title": "Kind",
+      "default": "user_defined"
+     },
+     "value": {
+      "type": "number",
+      "maximum": 600.0,
+      "minimum": 1.0,
+      "title": "Value",
+      "description": "total depth"
+     },
+     "unit": {
+      "type": "string",
+      "const": "mm",
+      "title": "Unit",
+      "default": "mm"
+     },
+     "duration_hours": {
+      "type": "number",
+      "maximum": 72.0,
+      "minimum": 0.25,
+      "title": "Duration Hours"
+     }
+    },
+    "type": "object",
+    "required": [
+     "value",
+     "duration_hours"
+    ],
+    "title": "RainfallScenario"
+   },
+   "ScenarioRequest": {
+    "properties": {
+     "area_id": {
+      "type": "string",
+      "title": "Area Id",
+      "default": "pilot_kakinada_01"
+     },
+     "name": {
+      "type": "string",
+      "maxLength": 120,
+      "title": "Name",
+      "default": ""
+     },
+     "rainfall_scenario": {
+      "$ref": "#/components/schemas/RainfallScenario"
+     },
+     "drainage_blockage_fraction": {
+      "type": "number",
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "Drainage Blockage Fraction",
+      "default": 0.0
+     },
+     "overrides": {
+      "additionalProperties": {
+       "type": "string",
+       "enum": [
+        "blocked",
+        "cleared"
+       ]
+      },
+      "type": "object",
+      "maxProperties": 200,
+      "title": "Overrides"
+     },
+     "pumps": {
+      "type": "boolean",
+      "title": "Pumps",
+      "default": false
+     },
+     "simulate": {
+      "type": "boolean",
+      "title": "Simulate",
+      "description": "also run the reference flood solver (slow, <= 12 h)",
+      "default": false
+     }
+    },
+    "type": "object",
+    "required": [
+     "rainfall_scenario"
+    ],
+    "title": "ScenarioRequest"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   }
+  }
+ }
+}

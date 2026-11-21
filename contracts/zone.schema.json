@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ZoneExplanation",
+  "type": "object",
+  "required": ["zone_id", "risk_index", "band", "factors", "explanation", "status"],
+  "properties": {
+    "zone_id": { "type": "string", "pattern": "^zone_[0-9]{3}$" },
+    "risk_index": { "type": "number", "minimum": 0, "maximum": 100, "description": "relative index - not a probability" },
+    "band": { "enum": ["lower", "moderate", "higher", "highest"] },
+    "factors": { "type": "object", "required": ["terrain", "rainfall", "drainage", "exposure"], "additionalProperties": { "type": "number", "minimum": 0, "maximum": 1 } },
+    "contributions": { "type": "object", "description": "weighted points; they sum to risk_index" },
+    "explanation": { "type": "array", "items": { "type": "string" } },
+    "status": { "const": "indicative scenario; not a validated flood probability" }
+  }
+}

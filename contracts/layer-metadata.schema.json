@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "LayerMetadata",
+  "type": "object",
+  "required": ["id", "source_name", "source_url", "retrieved_at", "licence_or_terms", "native_resolution_or_scale", "processing_method", "data_status", "known_limitations"],
+  "properties": {
+    "id": { "type": "string" }, "title": { "type": "string" }, "source_name": { "type": "string" }, "source_url": { "type": "string" },
+    "retrieved_at": { "type": "string" }, "licence_or_terms": { "type": "string" }, "native_resolution_or_scale": { "type": "string" },
+    "processing_method": { "type": "string" }, "data_status": { "enum": ["observed", "derived", "proxy", "simulated"] }, "known_limitations": { "type": "string" }
+  }
+}

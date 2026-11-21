@@ -1,0 +1,24 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ScenarioRequest",
+  "description": "Inputs are demo/scenario values, not a weather forecast.",
+  "type": "object",
+  "required": ["rainfall_scenario"],
+  "properties": {
+    "area_id": { "type": "string", "default": "pilot_kakinada_01" },
+    "name": { "type": "string", "maxLength": 120 },
+    "rainfall_scenario": {
+      "type": "object", "required": ["value", "duration_hours"],
+      "properties": {
+        "kind": { "const": "user_defined" },
+        "value": { "type": "number", "minimum": 1, "maximum": 600 },
+        "unit": { "const": "mm" },
+        "duration_hours": { "type": "number", "minimum": 0.25, "maximum": 72 }
+      }
+    },
+    "drainage_blockage_fraction": { "type": "number", "minimum": 0, "maximum": 1, "default": 0 },
+    "overrides": { "type": "object", "additionalProperties": { "enum": ["blocked", "cleared"] }, "description": "per proxy-inlet manual state" },
+    "pumps": { "type": "boolean", "default": false },
+    "simulate": { "type": "boolean", "default": false }
+  }
+}
