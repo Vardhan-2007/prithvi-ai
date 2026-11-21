@@ -1,0 +1,9 @@
+* text=auto eol=lf
+# keep generated data and screenshots out of GitHub's language statistics
+data/processed/*.json linguist-generated=true
+frontend/public/data/*.json linguist-generated=true
+docs/contracts/openapi.json linguist-generated=true
+frontend/package-lock.json linguist-generated=true
+docs/images/* linguist-documentation=true
+*.jpg binary
+*.png binary

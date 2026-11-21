@@ -1,8 +1,12 @@
-node_modules/
-dist/
-__pycache__/
+*.log
+*.pyc
+.DS_Store
+.env
+.idea/
 .pytest_cache/
 .venv/
-.env
+.vscode/
+__pycache__/
 data/raw/
-*.log
+dist/
+node_modules/

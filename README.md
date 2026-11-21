@@ -1,123 +1,244 @@
-# PRITHVI AI — Neighbourhood Risk Digital Twin
+<div align="center">
 
-> **Experimental planning and visualisation prototype.** Scores are indicative indices based on the selected data and assumptions.
-> They are not official forecasts, flood-depth estimates, evacuation instructions or a substitute for local authorities.
+# PRITHVI AI
 
-A real-time **3D digital twin** of a pilot neighbourhood (central Kakinada, ~1.6 × 1.7 km). Change rainfall and drainage assumptions
-and watch the simulated water, the buildings/roads it reaches, and a transparent risk index respond — then compare against a baseline,
-see *why* each zone scores the way it does, and read the data sources and limitations.
-Built for HackWithAditya 2026 · theme **Smart Infrastructure & Water** (pack: `PRITHVI_AI_HackWithAditya_Complete_Project_Pack.zip`).
+### Neighbourhood Risk Digital Twin
 
-## Run it
+A real-time **3D flood-scenario twin** of a city neighbourhood: change the rain and the drains, watch the water move through real streets, and see *why* each area scores the way it does.
+
+![Status](https://img.shields.io/badge/status-experimental%20prototype-orange)
+![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178c6?logo=typescript&logoColor=white)
+![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000?logo=threedotjs&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white)
+![Tests](https://img.shields.io/badge/tests-30%20Python%20%2B%204%20web-brightgreen)
+
+![PRITHVI AI — 3D flood twin of central Kakinada](docs/images/01-overview-3d.jpg)
+
+</div>
+
+> [!IMPORTANT]
+> **PRITHVI AI is an experimental planning and visualisation prototype.** Its scores are *indicative indices* based on the selected data and assumptions.
+> They are **not** official forecasts, flood-depth estimates, evacuation instructions, or a substitute for local authorities.
+> For real warnings use the [India Meteorological Department](https://mausam.imd.gov.in/), [NDMA](https://ndma.gov.in/) and your district administration.
+
+Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
+
+---
+
+## Contents
+[Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [What is real and what is assumed](#what-is-real-and-what-is-assumed) · [Controls](#controls) · [API](#api) · [Repository structure](#repository-structure) · [Development](#development) · [Roadmap](#roadmap) · [Contributing](#contributing) · [Data and attribution](#data-and-attribution) · [License](#license)
+
+---
+
+## Features
+
+| | |
+|---|---|
+| **Real-time 3D simulation** | Rain falls, water flows downhill around real building footprints, pools in low ground and drains through (proxy) storm-drain inlets. Play, pause and scrub the timeline; buildings and roads turn amber/red as water reaches them. |
+| **Scenario what-ifs** | Set rainfall depth, duration and drainage blockage, add temporary pumps, or **click a single drain inlet** to block or clear it and watch nearby zones change. 4 presets plus a 16-scenario grid. |
+| **Explainable risk index** | `RiskIndex = 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)` per 100 m zone. Click any zone to see each factor's weighted contribution, the baseline marker and plain-language reasons (English / Telugu). |
+| **Baseline vs scenario** | 3-panel **Compare** view (baseline · scenario · change), band counts, zones that moved up, and a live exposure overlay of roads and critical facilities. |
+| **Decision support** | Inspection **priority ranking**, graph-based **road-route analysis** (hospital → fire station, dry vs flooded network), CSV / JSON export. |
+| **Evidence assistant** | Answers only from cited documents and says so when it cannot — no invented advice. |
+| **Provenance first** | Every layer shows its source, licence, resolution, processing and a status tag: *observed · derived · proxy · simulated*. A limitations panel is one click away. |
+| **Easy navigation** | Compass, zoom / rotate / tilt pad, keyboard and double-click-to-fly in 3D; rotate and tilt in the 2D map too. |
+
+<table>
+<tr>
+<td width="50%"><img src="docs/images/02-street-level-flood.jpg" alt="Street-level view of flood water around buildings"><br><sub><b>Street level</b> — shaded, flowing water, rain, textured buildings and lane-marked roads.</sub></td>
+<td width="50%"><img src="docs/images/03-risk-zone-explanation.jpg" alt="Risk heat-map and zone explanation"><br><sub><b>Explainable zones</b> — risk heat-map and a factor-by-factor breakdown.</sub></td>
+</tr>
+<tr>
+<td><img src="docs/images/04-compare-priority.jpg" alt="Baseline versus scenario comparison"><br><sub><b>Compare</b> baseline and scenario, then rank where to look first.</sub></td>
+<td><img src="docs/images/05-map-routes.jpg" alt="2D map with route analysis"><br><sub><b>2D map</b> with peak flood cells and road-network analysis.</sub></td>
+</tr>
+</table>
+
+---
+
+## Quick start
+
+You need **Node 18+**. Python 3.10+ is only needed for the optional API and the tests.
 
 ```bash
-make data      # optional - processed data is already committed in data/processed (re-fetches OSM + DEM if data/raw is empty)
-make web       # 3D twin  ->  http://127.0.0.1:5173      (needs Node 18+)
-make api       # optional FastAPI ->  http://127.0.0.1:8000/docs   (pip install -r backend/requirements.txt)
-make test      # 30 Python tests + 4 TypeScript tests + typecheck
+git clone <your-repo-url> prithvi-ai
+cd prithvi-ai/frontend
+npm install
+npm run dev          # → http://127.0.0.1:5173
 ```
-The web app works on its own (in-browser engine). When the API is running the header shows **API online** and the assistant answers through it.
 
-## What's in the prototype (pack P0 + most of P1)
+That's all you need — the 3D twin runs fully in the browser and starts a simulation automatically.
 
-| Pack requirement | Where |
-|---|---|
-| Pilot-area map, ≥2 layers, layer controls | **3D Digital Twin** + **2D Map** (MapLibre); layer panel (left) |
-| Baseline score with visible factor contributions | *Risk index* heat-map; **Zone** tab (T · R · D · E, weighted points, baseline marker) |
-| Scenario controls (rainfall, drainage blockage, mitigation) | Left panel: 4 presets, sliders, per-inlet click-to-block, temporary pumps |
-| Baseline vs scenario comparison | **Compare** view (baseline / scenario / Δ) + Overview (bands, mean index, zones moved up) + 16-scenario library |
-| Exposure overlay: roads & critical facilities in flagged zones | **Overview → Exposure**; flooded buildings/roads/facilities counted live in the timeline strip |
-| Explainability panel | **Zone** tab: sentences generated from the numbers (English / Telugu) |
-| Data provenance + limitations | **Data & limits** tab (source, licence, resolution, processing, status: observed/derived/proxy/simulated) |
-| Priority ranking, CSV/JSON export | **Priority** tab, Overview export buttons |
-| Road-network analysis (graph-based, not "safe route") | **Routes** tab; route drawn in 3D |
-| RAG assistant with citations + abstain | **Assistant** tab (`ai-engine/rag`, extractive BM25, demo corpus) |
-| English + Telugu | `EN / తె` toggle (Telugu draft needs human review) |
-| Real-time 3D simulation | Web-Worker shallow-water solver → shaded flowing water with rain ripples and shore foam, rain, wet roads, hotspot depth pins, scrubbable timeline |
-| Realistic 3D scene | OSM buildings with textured facades, roofs and lit windows; lane-marked roads with pavements; sun shadows; sky lighting. Terrain relief is exaggerated ×3, buildings and water depth are true size. Trees are decoration only (no tree data) |
+**Optional backend** (shows *API online* in the header and answers assistant questions through it):
+
+```bash
+cd backend
+pip install -r requirements.txt
+python3 -m uvicorn main:app --port 8000      # interactive docs: http://127.0.0.1:8000/docs
+```
+
+Shortcuts are available through the `Makefile` (`make web`, `make api`, `make test`, `make data`). A WebGL-capable browser is required.
+
+---
+
+## How it works
+
+```mermaid
+flowchart LR
+    OSM[(OpenStreetMap)] --> GIS
+    DEM[(Copernicus GLO-90 DEM)] --> GIS
+    GIS["gis-engine<br/>terrain · processing · risk_analysis"] --> DATA[("data/processed<br/>pilot dataset")]
+    DATA --> FE
+    DATA --> BE
+    subgraph FE["frontend (React + Three.js)"]
+        TW["maps/twin3d<br/>3D scene + flood solver (Web Worker)"]
+        SC["scenarios<br/>controls + risk engine"]
+        DB["dashboard<br/>panels, timeline, assistant"]
+    end
+    subgraph BE["backend (FastAPI)"]
+        API["api · services"] --> SIM["simulation<br/>NumPy reference solver"]
+    end
+    AI["ai-engine<br/>risk_scoring · rag"] --> BE
+    FE -. optional .-> BE
+```
+
+1. **Data pipeline** (`gis-engine`) downloads OpenStreetMap buildings, roads and facilities plus a coarse elevation model, rasterises them to a 12.5 m grid, fills spurious pits in the terrain, and derives per-zone indicators.
+2. **Risk index** (`ai-engine/risk_scoring`, mirrored in TypeScript) combines terrain, rainfall, drainage vulnerability and exposure with transparent, provisional weights.
+3. **Flood solver** is a mass-conserving 2-D *virtual-pipe* shallow-water model. It runs in a Web Worker for the live 3D view; an independent NumPy implementation (`backend/simulation`) is used as a reference, and a test checks the two agree.
+4. **Assistant** (`ai-engine/rag`) is extractive BM25 retrieval: it quotes cited sentences from a small document set, or abstains. No generative model is involved.
+
+More detail: [`docs/methodology.md`](docs/methodology.md) · [`docs/architecture.md`](docs/architecture.md).
+
+---
+
+## What is real and what is assumed
+
+Trustworthy tools say where their numbers come from. This one is explicit:
+
+| Layer | Source | Status |
+|---|---|---|
+| Buildings, roads, facilities, water bodies | OpenStreetMap contributors (ODbL) | **observed** — coverage is thin in this area (472 footprints) |
+| Terrain | Copernicus GLO-90 (~90 m *surface* model) via Open-Meteo | **derived** — smoothed, resampled, pit-filled |
+| Storm-drain inlets (56) | none — **no drainage inventory exists in the data** | **proxy** — spread evenly along roads; blockage is a sensitivity assumption |
+| Rainfall | user-defined scenario | **simulated** — uniform, not a forecast |
+| Flood water | simplified solver on a coarse terrain model | **simulated, uncalibrated** — compare scenarios, don't read as real depth |
+
+* No accuracy figure is claimed: there are no ground-truth flood extents. The model is checked for **mass conservation, determinism, monotonicity** (more rain or blockage never reduces risk) and **agreement between its TypeScript and NumPy implementations**.
+* Terrain relief is exaggerated ×3 in the 3D view; buildings and water depth are true size. Trees are decoration only.
+* The assistant's corpus is a **demo corpus** of short, team-written summaries — not official guidance.
+* The Telugu translation is a first draft and needs review by a Telugu speaker.
+
+Full list: [`docs/limitations.md`](docs/limitations.md).
+
+---
 
 ## Controls
 
 | | 3D Digital Twin | 2D Map |
 |---|---|---|
-| Rotate | left-drag · **⟲ ⟳** buttons · `Q`/`E` · `←`/`→` | right-drag or Ctrl-drag · **⟲ ⟳** |
-| Tilt | `↑`/`↓` · **▲ ▼** (top-down ↔ street level) | right-drag up/down · **▲ ▼** |
+| Rotate | left-drag · **⟲ ⟳** · `Q` / `E` · `←` `→` | right-drag or Ctrl-drag · **⟲ ⟳** |
+| Tilt | `↑` `↓` · **▲ ▼** (top-down ↔ street level) | right-drag up/down · **▲ ▼** |
 | Pan | right-drag or Shift-drag · `W A S D` | left-drag |
 | Zoom | scroll · **＋ －** (hold to repeat) | scroll · **＋ －** |
-| Fly to a spot | double-click the ground | – |
-| **Compass** | the dial rotates with the view and shows the heading; click it (or press `N`) to face north | same |
-| Reset / top-down | **⌂** / **⊞** · `0` / `T` | same |
+| Fly to a spot | double-click the ground | — |
+| **Compass** | dial rotates with the view and shows the heading; click it (or press `N`) to face north | same |
+| Top-down / reset | **⊞** / **⌂** · `T` / `0` | same |
 
-The camera cannot leave the model, so you cannot get lost; **⌂** always brings you back.
+The camera cannot leave the model, so you can't get lost.
 
-## Honest status of the data and model
+---
 
-* **Observed:** buildings, roads, facilities, water bodies — OpenStreetMap (ODbL). Coverage is thin here (472 footprints), and the UI says so.
-* **Derived:** terrain — Copernicus GLO-90 (~90 m *surface* model) via Open-Meteo, smoothed, resampled, depression-filled.
-* **Proxy:** storm-drain inlets (56) — **no drainage inventory exists in the data**; they are evenly spread along roads. Blockage is a sensitivity assumption.
-* **Simulated:** rainfall is user-defined; the water solver is simplified and **uncalibrated** — no accuracy is claimed (no ground-truth flood extents). It is validated only for mass conservation, determinism, monotonicity and agreement between its TypeScript and NumPy implementations.
-* The assistant's corpus is a **demo corpus** of short team-written summaries (see `ai-engine/rag/corpus/`). Replace it with extracts of official documents you may use.
+## API
 
-Details: [`docs/methodology.md`](docs/methodology.md) · [`docs/architecture.md`](docs/architecture.md) · [`docs/data-sources.md`](docs/data-sources.md) · [`docs/limitations.md`](docs/limitations.md) · [`docs/demo-script.md`](docs/demo-script.md)
+FastAPI, 11 routes, contract in [`docs/contracts/openapi.json`](docs/contracts/openapi.json) with JSON Schemas alongside.
+
+| Method | Path | Purpose |
+|---|---|---|
+| GET | `/health` | service health |
+| GET | `/api/v1/areas` · `/areas/{id}/layers` · `/baseline` · `/facilities` | pilot area, provenance, baseline map, mapped facilities |
+| POST | `/api/v1/scenarios` | create and compute a scenario (`simulate: true` also runs the NumPy flood solver) |
+| GET | `/api/v1/scenarios/{id}` · `/geojson` · `/compare` | stored scenario, zone GeoJSON, baseline-vs-scenario comparison |
+| GET | `/api/v1/zones/{zone_id}/explanation` | factor breakdown and reasons |
+| POST | `/api/v1/assistant/query` | cited, extractive answer — or an explicit abstain |
+
+Every response carries a `data_status` and its assumptions; numeric inputs are validated.
+
+---
 
 ## Repository structure
 
-Same categories as the team's reference layout: **frontend**, **backend**, **gis-engine**, **ai-engine**, **data**, **docs**.
-
 ```
 prithvi-ai/
-│
-├── frontend/                          React + TypeScript + Vite + Three.js + MapLibre
-│   ├── public/data/                   pilot dataset + assistant corpus served to the browser
-│   ├── scripts/                       scenario-report.ts, export-reference.ts (TS↔Python parity fixture)
+├── frontend/                  React + TypeScript + Vite + Three.js + MapLibre
+│   ├── public/data/           pilot dataset + assistant corpus served to the browser
+│   ├── scripts/               scenario report, TS↔Python parity fixture
 │   └── src/
-│       ├── components/                header, NavPad (compass + zoom/rotate/tilt), i18n (EN/తె), api client
+│       ├── components/        header, compass / zoom pad, i18n (EN / తె), API client
 │       ├── maps/
-│       │   ├── twin3d/                3D digital twin: scene/ (Three.js) + sim/ (Web Worker flood solver)
-│       │   └── map2d/                 2D map (MapLibre) and the baseline/scenario Compare view
-│       ├── dashboard/
-│       │   ├── risk/                  overview, zone explanation, priority, routes, exports
-│       │   ├── timeline/              playback + live stats strip
-│       │   ├── assistant/             cited Q&A (browser fallback retrieval)
-│       │   └── provenance/            data sources + limitations
-│       ├── scenarios/                 scenario controls + engine/ (risk index, routing, dataset, types)
-│       └── App.tsx · main.tsx · store.ts · styles/
-│
-├── backend/                           FastAPI
-│   ├── api/                           routes
-│   ├── models/                        request schemas (schemas.py) + PostGIS schema (schema.sql)
-│   ├── services/                      dataset loading, scenarios, assistant
-│   ├── simulation/                    NumPy virtual-pipe flood solver (reference for the 3D twin)
-│   ├── tests/                         API + solver tests
-│   └── main.py · config.py · requirements.txt
-│
-├── gis-engine/
-│   ├── terrain/                       DEM download, smoothing, depression filling
-│   ├── processing/                    OSM download/parse/rasterise, proxy inlets, provenance, build_pilot_dataset.py
-│   ├── risk_analysis/                 per-zone terrain / imperviousness / exposure indicators
-│   └── gis_config.py                  pilot bounding box, grid, projection
-│
-├── ai-engine/
-│   ├── risk_scoring/                  explainable risk index (+ tests incl. TS parity)
-│   └── rag/                           retrieval, answer, ingest, corpus/ (demo documents), tests
-│
-├── data/
-│   ├── sample/                        (reserved)
-│   ├── processed/                     pilot_kakinada_01.json, corpus.json, layers.yaml (provenance)
-│   └── raw/                           cached downloads (git-ignored; re-created by `make data`)
-│
-├── docs/                              architecture, methodology, data-sources, limitations, api-contract, demo-script
-│   └── contracts/                     openapi.json + JSON Schemas
-│
-├── docker-compose.yml · Makefile · pytest.ini · .env.example · NOTICE.md · README.md
+│       │   ├── twin3d/        3D digital twin: scene/ (Three.js) + sim/ (Web Worker flood solver)
+│       │   └── map2d/         2D map (MapLibre) and the Compare view
+│       ├── dashboard/         risk/ · timeline/ · assistant/ · provenance/
+│       └── scenarios/         scenario controls + engine/ (risk index, routing, dataset)
+├── backend/                   FastAPI: api/ · models/ · services/ · simulation/ · tests/
+├── gis-engine/                terrain/ · processing/ · risk_analysis/   (data pipeline)
+├── ai-engine/                 risk_scoring/ · rag/                       (index + retrieval, with tests)
+├── data/                      processed/ (pilot data, provenance) · sample/ · raw/ (git-ignored cache)
+├── docs/                      architecture · methodology · data-sources · limitations · api-contract · demo-script
+│   └── contracts/             OpenAPI + JSON Schemas
+└── Makefile · docker-compose.yml · pytest.ini · .github/ (CI, templates)
 ```
 
-## Tech stack, hardware, dependencies (for the submission form)
-React 18, TypeScript, Vite, Three.js, MapLibre GL, Zustand · Python 3.12+, FastAPI, NumPy, Pydantic · Overpass API, Open-Meteo elevation (Copernicus GLO-90).
-Runs on a laptop; WebGL required. Internet is needed only for the data refresh and OSM map tiles in the 2D view.
+---
+
+## Development
+
+```bash
+make test                 # 30 Python tests + 4 web tests + typecheck
+python3 -m pytest -q      # Python only (risk index, parity with TypeScript, solver, RAG, API)
+cd frontend && npm test   # solver tests (mass conservation, determinism, monotonicity)
+make data                 # re-download OSM + DEM and rebuild data/processed (cached in data/raw)
+```
+
+* **Keep the two risk engines in sync.** After changing `frontend/src/scenarios/engine/risk.ts` or `ai-engine/risk_scoring/engine.py`, run `cd frontend && npx vite-node scripts/export-reference.ts`, then `python3 -m pytest` — the parity test fails if they disagree.
+* **Changing the pilot area:** edit the bounding box in `gis-engine/gis_config.py` and run `make data`. Check that DEM, roads, buildings and facilities exist for the new area first.
+* `docker-compose.yml` is provided for the API and web dev server; it has not been verified yet.
+* CI (GitHub Actions) runs the Python tests, the web typecheck, tests and production build on every push and pull request.
+
+---
+
+## Roadmap
+
+- [ ] Calibrate and validate against a documented historical flood event (held-out extent, IoU / precision / recall)
+- [ ] Surveyed drainage network and culverts instead of proxy inlets
+- [ ] Real rainfall input (e.g. NASA GPM IMERG) with spatial variation
+- [ ] More pilot areas and a PostGIS-backed data layer (schema in `backend/models/schema.sql`)
+- [ ] Official preparedness documents in the assistant corpus, reviewed Telugu translation
+- [ ] Higher-resolution terrain (LiDAR / survey DEM)
+
+---
+
+## Contributing
+
+Contributions are welcome — please read [CONTRIBUTING.md](CONTRIBUTING.md) first. The one rule that matters most here: **never present simulated or assumed values as measured, and never claim accuracy that has not been validated.**
+
+Security issues: see [SECURITY.md](SECURITY.md). Everyone taking part is expected to follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
+---
+
+## Data and attribution
+
+* Map data © **OpenStreetMap contributors**, available under the [ODbL 1.0](https://www.openstreetmap.org/copyright).
+* Terrain: **Copernicus DEM GLO-90**, sampled via the Open-Meteo elevation API.
+* Third-party libraries keep their own licences.
+
+Details in [NOTICE.md](NOTICE.md).
 
 ## AI-tool disclosure
-This prototype was written with an AI coding assistant (Claude). Every team member must read and be able to explain the code they submit (viva).
-Suggested ownership split is in the project pack (`08_Team_Roles_and_Workflow.md`).
 
-Map data © OpenStreetMap contributors (ODbL). Terrain: Copernicus DEM GLO-90 via Open-Meteo.
+This project was built with an AI coding assistant (Claude). The team reviews, understands and is responsible for every part of the code it submits.
+
+## License
+
+**No licence has been chosen yet.** Until one is added, all rights are reserved: you are welcome to read the code, but you may not copy, modify or redistribute it. If you would like to reuse it, please open an issue.
