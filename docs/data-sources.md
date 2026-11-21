@@ -1,4 +1,4 @@
-# Data sources (see data/metadata/layers.yaml for the generated provenance table)
+# Data sources (see data/processed/layers.yaml for the generated provenance table)
 
 | Layer | Source | Terms | Status |
 |---|---|---|---|

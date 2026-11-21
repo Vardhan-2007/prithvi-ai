@@ -38,13 +38,13 @@ Virtual-pipe shallow-water model (Mei, Decaudin & Hu 2007) on a 128 × 133 grid 
 * **Sinks** — proxy inlets (0.25 m³/s each, ramping up over the first 3 cm of depth), optional pumps, and a downstream outfall on the lowest edge modelled as a broad-crested weir over an assumed 0.30 m tail-water bund.
 * **Not modelled** — sub-surface drainage networks, culverts, tides/storm surge, infiltration dynamics, antecedent moisture, river flooding.
 
-`apps/web/src/features/twin3d/sim/floodSolver.ts` (browser, Web Worker) and `engines/hydro` (NumPy) implement the same equations; tests check mass conservation (< 1e-6 relative error) and the two agree on peak flooded cells/depth.
+`frontend/src/maps/twin3d/sim/floodSolver.ts` (browser, Web Worker) and `backend/simulation` (NumPy) implement the same equations; tests check mass conservation (< 1e-6 relative error) and the two agree on peak flooded cells/depth.
 
 ## 3. Road-network analysis
 Graph from OSM `highway` ways. A segment is removed when the peak simulated depth along it (so far) exceeds a user threshold (default 0.25 m, *assumption*). Shortest path (Dijkstra) between two mapped facilities, dry vs scenario. **Not** a certified safe route.
 
 ## 4. Assistant
-Extractive BM25 retrieval over `engines/rag/corpus/*.md`. Answers are built from retrieved sentences with citations or the assistant abstains (score / coverage thresholds). Retrieved text is data; no generative model follows instructions in it. The corpus is a **demo corpus** of team-written summaries — replace/extend it with extracts of official documents you have the right to use.
+Extractive BM25 retrieval over `ai-engine/rag/corpus/*.md`. Answers are built from retrieved sentences with citations or the assistant abstains (score / coverage thresholds). Retrieved text is data; no generative model follows instructions in it. The corpus is a **demo corpus** of team-written summaries — replace/extend it with extracts of official documents you have the right to use.
 
 ## 5. Validation path (not done in this prototype)
 Pick a documented historical event, hold it out, compare simulated extent with observed extent (IoU / precision / recall), and report uncertainty. Until then: repeatability, monotonicity, mass-balance and parity tests only.
