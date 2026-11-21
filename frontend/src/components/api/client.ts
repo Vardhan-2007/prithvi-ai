@@ -1,8 +1,11 @@
 // Optional FastAPI backend. The app is fully usable without it (local engine fallback), but when the API
 // is reachable the assistant and exports go through it - matching the contract in docs/contracts/openapi.json.
-const BASE = (import.meta.env.VITE_API_URL as string | undefined) ?? "http://127.0.0.1:8000";
+// Dev: defaults to the local API. Production: no API unless VITE_API_URL is set at build time, so a deployed site never
+// probes the visitor's own localhost.
+const BASE = ((import.meta.env.VITE_API_URL as string | undefined) ?? (import.meta.env.DEV ? "http://127.0.0.1:8000" : "")).replace(/\/+$/, "");
 
 async function j<T>(path: string, init?: RequestInit, timeout = 4000): Promise<T> {
+  if (!BASE) throw new Error("API not configured");
   const ctl = new AbortController(); const t = setTimeout(() => ctl.abort(), timeout);
   try {
     const r = await fetch(`${BASE}${path}`, { ...init, signal: ctl.signal, headers: { "Content-Type": "application/json", ...(init?.headers ?? {}) } });

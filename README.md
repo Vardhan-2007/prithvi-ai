@@ -28,7 +28,7 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 ---
 
 ## Contents
-[Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [What is real and what is assumed](#what-is-real-and-what-is-assumed) · [Controls](#controls) · [API](#api) · [Repository structure](#repository-structure) · [Development](#development) · [Roadmap](#roadmap) · [Contributing](#contributing) · [Data and attribution](#data-and-attribution) · [License](#license)
+[Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [What is real and what is assumed](#what-is-real-and-what-is-assumed) · [Controls](#controls) · [API](#api) · [Repository structure](#repository-structure) · [Development](#development) · [Deployment](#deployment) · [Roadmap](#roadmap) · [Contributing](#contributing) · [Data and attribution](#data-and-attribution) · [License](#license)
 
 ---
 
@@ -205,6 +205,12 @@ make data                 # re-download OSM + DEM and rebuild data/processed (ca
 * **Changing the pilot area:** edit the bounding box in `gis-engine/gis_config.py` and run `make data`. Check that DEM, roads, buildings and facilities exist for the new area first.
 * `docker-compose.yml` is provided for the API and web dev server; it has not been verified yet.
 * CI (GitHub Actions) runs the Python tests, the web typecheck, tests and production build on every push and pull request.
+
+---
+
+## Deployment
+
+The 3D twin is a static site, so it deploys in minutes to Vercel, Netlify, Cloudflare Pages or GitHub Pages; the FastAPI backend is optional. Step-by-step instructions and a pre-launch checklist are in **[docs/deployment.md](docs/deployment.md)**.
 
 ---
 
