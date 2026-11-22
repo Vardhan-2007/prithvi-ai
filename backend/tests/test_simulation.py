@@ -19,7 +19,8 @@ def make(mm=60, hrs=1.0, block=0.25, tail=0.5):
 
 def test_hyetograph_integrates():
     assert abs(cumulative_rain_mm(6 * 3600, 100, 6) - 100) < 1e-9
-    assert abs(rain_rate_mm_h(0.4 * 6 * 3600, 100, 6) - 100 / 3) < 1e-6
+    assert abs(rain_rate_mm_h(0.5 * 6 * 3600, 100, 6) - 100 / 3) < 1e-6      # peak at the midpoint
+    assert abs(rain_rate_mm_h(0.25 * 6 * 3600, 100, 6) - rain_rate_mm_h(0.75 * 6 * 3600, 100, 6)) < 1e-9  # symmetric
 
 
 def test_mass_is_conserved():
@@ -28,6 +29,23 @@ def test_mass_is_conserved():
     st = s.stats()
     err = abs(s.expected_rain_m3() - (st["stored_m3"] + st["drain_m3"] + st["outfall_m3"])) / s.expected_rain_m3()
     assert err < 1e-6
+
+
+def test_water_recedes_after_the_rain_stops():
+    s = make(mm=60, hrs=1.0, tail=3.0)
+    peak_stored = 0.0
+    while s.t < s.total_seconds - 1e-9:
+        s.step()
+        if s.t % 120 == 0:
+            peak_stored = max(peak_stored, s.stats()["stored_m3"])
+    end = s.stats()
+    assert peak_stored > 0
+    assert end["stored_m3"] < 0.1 * peak_stored          # most of the water has gone
+    peak_cells = int((s.peak >= 0.15).sum())
+    assert peak_cells > 100 and end["flooded_cells"] <= 0.01 * peak_cells     # the flooded area has all but vanished
+    assert end["max_depth"] < 0.3 * float(s.peak.max())
+    # mass still closes with the recession counted as drained volume
+    assert abs(s.expected_rain_m3() - (end["stored_m3"] + end["drain_m3"] + end["outfall_m3"])) / s.expected_rain_m3() < 1e-6
 
 
 def test_depth_non_negative_and_buildings_dry():

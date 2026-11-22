@@ -17,12 +17,16 @@ PUMP_CAPACITY_M3S = 0.15
 OUTFALL_CREST_M = 0.30
 OUTFALL_CW = 0.5
 FLOOD_DEPTH_M = 0.15
+PEAK_FRACTION = 0.5   # symmetric triangular storm: peak at the midpoint of the duration
+# After the rain stops, standing water recedes exponentially (stands for unresolved gaps/gutters, infiltration, evaporation).
+# ASSUMED, not calibrated. Mirrors RECESSION_TAU_H in the browser solver.
+RECESSION_TAU_H = 1.0
 DT = 2.0
 
 
 def rain_rate_mm_h(t: float, total_mm: float, duration_h: float) -> float:
     D = duration_h * 3600.0
-    tp = 0.4 * D
+    tp = PEAK_FRACTION * D
     if t < 0 or t >= D:
         return 0.0
     peak = 2 * total_mm / duration_h
@@ -31,7 +35,7 @@ def rain_rate_mm_h(t: float, total_mm: float, duration_h: float) -> float:
 
 def cumulative_rain_mm(t: float, total_mm: float, duration_h: float) -> float:
     D = duration_h * 3600.0
-    tp = 0.4 * D
+    tp = PEAK_FRACTION * D
     t = min(max(t, 0.0), D)
     peak = 2 * total_mm / duration_h / 3600.0
     if t <= tp:
@@ -94,6 +98,9 @@ class VirtualPipeSolver:
         rate = rain_rate_mm_h(self.t, self.rain_mm, self.duration_h) / 1000 / 3600
         if rate > 0:
             h += rate * dt * self.rain_w
+        if self.t >= self.duration_h * 3600.0:
+            lost = h * (1.0 - np.exp(-dt / (RECESSION_TAU_H * 3600.0)))
+            h -= lost; self.drain_m3 += float(lost.sum()) * A
         for iy, ix in self.inlets:
             d = h[iy, ix]
             if d > 0:

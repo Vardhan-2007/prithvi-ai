@@ -11,6 +11,10 @@ export const PUMP_CAPACITY_M3S = 0.15;
 export const OUTFALL_CREST_M = 0.30;      // assumed tail-water / bund height at the downstream edge
 export const OUTFALL_CW = 0.5;            // broad-crested weir coefficient
 export const FLOOD_DEPTH_M = 0.15;        // "flooded" threshold used for statistics (assumption)
+// After the rain stops, remaining standing water recedes exponentially with this time constant. It stands for everything the
+// 12.5 m grid cannot resolve: water trapped behind building footprints leaking out through gaps and gutters, infiltration,
+// evaporation and informal pumping. Without it, pockets walled in by buildings would hold water for ever. ASSUMED, not calibrated.
+export const RECESSION_TAU_H = 1.0;
 export const DT = 2;                      // seconds per solver step
 export const SNAP_S = 120;                // snapshot interval (simulated seconds)
 
@@ -29,15 +33,16 @@ export interface SnapStats {
   floodedCells: number; maxDepth: number; rainMmH: number; cumRainMm: number;
 }
 
-/** Triangular hyetograph peaking at 40 % of the duration; integrates to `totalMm`. mm/h */
+/** Symmetric triangular hyetograph: rises to a peak at the midpoint of the duration, then falls; integrates to `totalMm`. mm/h */
+export const PEAK_FRACTION = 0.5;
 export function rainRateMmH(tSeconds: number, totalMm: number, durationH: number): number {
-  const D = durationH * 3600, tp = 0.4 * D;
+  const D = durationH * 3600, tp = PEAK_FRACTION * D;
   if (tSeconds < 0 || tSeconds >= D) return 0;
   const peak = (2 * totalMm) / durationH; // mm/h
   return tSeconds < tp ? peak * (tSeconds / tp) : peak * (1 - (tSeconds - tp) / (D - tp));
 }
 export function cumulativeRainMm(tSeconds: number, totalMm: number, durationH: number): number {
-  const D = durationH * 3600, tp = 0.4 * D;
+  const D = durationH * 3600, tp = PEAK_FRACTION * D;
   const t = Math.min(Math.max(tSeconds, 0), D);
   const peak = (2 * totalMm) / durationH / 3600; // mm/s
   if (t <= tp) return 0.5 * peak * (t * t) / tp;
@@ -114,6 +119,12 @@ export class FloodSolver {
       const add = rateMs * dt;
       for (let i = 0; i < n; i++) { const w = this.rainW[i]; if (w > 0) h[i] += add * w; }
       this.rainM3 += add * A * n * 0.7; // approx accounting (mean runoff ~0.7); exact balance is tracked below
+    }
+
+    // 1b) recession once the rain has stopped (counted as drained volume, so the mass balance still closes)
+    if (this.t >= this.init.durationH * 3600) {
+      const frac = 1 - Math.exp(-dt / (RECESSION_TAU_H * 3600));
+      for (let i = 0; i < n; i++) { const d = h[i]; if (d > 0) { const v = d * frac; h[i] = d - v; this.drainM3 += v * A; } }
     }
 
     // 2) sinks

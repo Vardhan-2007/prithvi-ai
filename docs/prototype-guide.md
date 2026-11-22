@@ -18,7 +18,7 @@ Values below were read from the code (`frontend/src/…`, `ai-engine/…`, `gis-
 | Facilities | 14 health (hospitals, clinics), 2 emergency (fire, police), 7 shelter candidates (school, town hall, places of worship) |
 | Terrain | Copernicus GLO-90 (~90 m), 21 × 21 samples → smoothed → 12.5 m grid; range 1.63–8.75 m |
 | Drain inlets | 56 **proxy** points (no real drainage data) |
-| Tests | 30 Python + 4 web = 34 |
+| Tests | 32 Python + 5 web = 37 |
 
 ---
 
@@ -121,7 +121,7 @@ The 8 stats (all for the current playhead):
 | **Facilities reached** | facilities with ≥ 0.15 m in the 3 × 3 cells around them |
 | **Rain now** (mm/h) | current hyetograph rate |
 | **Rain so far** (mm) | cumulative rain |
-| **Drained** (k m³) | cumulative volume removed by inlets + pumps (outfall volume is shown in the Overview) |
+| **Drained** (k m³) | cumulative volume removed by inlets + pumps, plus the post-rain recession (outfall volume is shown in the Overview) |
 
 ---
 
@@ -144,7 +144,7 @@ Top 12 zones by **`priority = index × (0.6 + 0.4·E) + 4 × min(2, facilities i
 Pick **From** and **To** facilities and a **"segment unusable above"** depth (0.10–0.60 m, step 0.05, default 0.25 m). The app builds a graph from OSM road nodes, removes edges whose **peak depth so far** (sampled every 5 m) ≥ threshold, and runs **Dijkstra**. Shows dry-network distance, scenario distance, extra distance (%), network km above threshold, and a verdict (no change / longer / **cut**). The path is drawn in 3D (green = scenario path, yellow = dry path when cut). Default pair: the farthest-apart *connected* health → emergency/shelter pair (Mahaveer Hospital → a place of worship, 2.38 km). It updates as the simulation advances. **Not a certified safe route.**
 
 ### 5.5 Assistant (`ai-engine/rag`, `dashboard/assistant`)
-* 8 team-written documents → 25 paragraph chunks (index method, drainage meaning, simulation limits, data sources, official sources, general flood preparedness, facilities/road exposure, priority ranking).
+* 8 team-written documents → 26 paragraph chunks (index method, drainage meaning, simulation limits, data sources, official sources, general flood preparedness, facilities/road exposure, priority ranking).
 * Retrieval: **BM25** (k₁ = 1.5, b = 0.75) over stemmed tokens. It answers only if the best chunk has **score ≥ 1.6 and ≥ 34 % of the query terms**; otherwise it **abstains** and points to IMD/NDMA/CWC.
 * The answer = the first 3 sentences of the top 2 chunks, each tagged **[1] [2]** with a citation list. If your question contains *this/current/now/selected*, the live scenario summary is appended.
 * No generative model — it cannot invent advice. Goes via FastAPI when online (4 s timeout), otherwise the same logic runs in the browser. 5 suggested questions.
@@ -169,7 +169,7 @@ A **virtual-pipe shallow-water model** (after Mei, Decaudin & Hu 2007) on the 12
 **Inputs prepared once**
 1. **Ground** = conditioned DEM; **road cells lowered 0.15 m** (assumed kerb channel); **building cells are walls** (water cannot enter).
 2. **Rain weights:** runoff coefficient **0.9** for building + road cells, **0.55** elsewhere (assumed). Rain falling on a building is delivered to the **nearest non-building cell**.
-3. **Hyetograph:** triangular, **peak at 40 % of the duration**, peak rate = 2 × total ÷ duration (mm/h); it integrates exactly to the chosen total.
+3. **Hyetograph:** symmetric triangle, **peak at the midpoint (50 %) of the duration**, peak rate = 2 × total ÷ duration (mm/h); it integrates exactly to the chosen total.
 4. **Outfall:** the domain edge with the **lowest mean ground level** is the downstream boundary.
 
 **Each 2-second step**
@@ -179,9 +179,11 @@ A **virtual-pipe shallow-water model** (after Mei, Decaudin & Hu 2007) on the 12
 4. **Flux (virtual pipes):** every cell exchanges water with its 4 neighbours; each pipe's flow grows with the water-surface height difference (`g·pipeArea/Δx`), with **0.93 damping**; flows are scaled so a cell never gives away more water than it holds; flow into building cells is zero.
 5. **Depth update:** `h += Δt × (inflow − outflow) ÷ area`, never below 0. Peak depth per cell is tracked.
 
+**Recession (after the rain stops):** standing water recedes exponentially with a **1 h time constant** (counted as drained volume, so mass still balances). It stands for unresolved gaps and gutters, infiltration and evaporation, and is an **assumption**. It acts only after the rain stops, so peak depths and areas are unaffected. Without it, pockets walled in by buildings held water for ever (≈ 2.5 ha left 3 h after the rain).
+
 **Output** = depth grid per snapshot → 3D water, stats, maps, routes. **Mass is conserved**: rain = stored + drained + outfall (tests: error < 2 % in the browser test, < 10⁻⁶ for the NumPy reference; measured ~10⁻¹⁴). Results are deterministic.
 
-**Worked example — 200 mm in 4 h, 50 % blocked:** peak rain 100 mm/h at T+1:36; by T+1:46 the solver shows 23.0 ha ≥ 0.15 m, max 0.70 m, 106 buildings reached, 2.5 km of road ≥ 0.25 m, 4 facilities reached, 15 k m³ drained.
+**Worked example — 200 mm in 4 h, 50 % blocked:** the rain rises to **100 mm/h at T+2:00** (the midpoint) and falls to zero at T+4:00. At T+2:00 the solver shows 22.6 ha ≥ 0.15 m with a maximum depth of 0.70 m; the flooded area peaks at **24.0 ha at T+2:14** (deepest 0.74 m), is 11.5 ha when the rain stops (T+4:00), 0.44 ha at T+6:00 and 0.02 ha at T+7:00 — the water goes back.
 
 **Honest limits:** uncalibrated; coarse (~90 m) surface-model terrain; proxy drains; no sub-surface pipe network, culverts, tides, river flooding, infiltration dynamics or antecedent moisture. Use it to **compare scenarios**, not to read real depths.
 

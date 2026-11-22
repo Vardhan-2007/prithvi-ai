@@ -5,8 +5,10 @@ publisher: PRITHVI AI team (project documentation)
 url: docs/methodology.md
 kind: project
 ---
-The 3D water surface comes from a simplified two-dimensional shallow-water solver on a 12.5 m grid. Rain falls according to a triangular hyetograph that peaks at 40 percent of the chosen duration. Water flows downhill around building footprints, collects in low ground and leaves through proxy inlets, optional temporary pumps and an assumed downstream outfall.
+The 3D water surface comes from a simplified two-dimensional shallow-water solver on a 12.5 m grid. Rain falls according to a symmetric triangular hyetograph that rises to a peak at the midpoint of the chosen duration and then falls to zero. Water flows downhill around building footprints, collects in low ground and leaves through proxy inlets, optional temporary pumps and an assumed downstream outfall.
 
 The solver is uncalibrated. The terrain comes from a coarse 90 m surface model with depression filling, road cells are assumed to sit 0.15 m lower than their surroundings, and runoff coefficients are assumptions. Depths are scenario outputs for comparison only. They are not forecasts and must not be read as street-level flood depth.
 
 Vertical exaggeration of 3 times is applied in the 3D view so that relief and shallow water are visible.
+
+After the rain stops, standing water is assumed to recede with a time constant of about one hour. This stands for drainage the model cannot resolve, such as gaps and gutters, infiltration and evaporation, and it is an assumption rather than a measurement. Peak depths and peak flooded areas are not affected by it.
