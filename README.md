@@ -12,7 +12,7 @@ A real-time **3D flood-scenario twin** of a city neighbourhood: change the rain 
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000?logo=threedotjs&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-30%20Python%20%2B%204%20web-brightgreen)
+![Tests](https://img.shields.io/badge/tests-31%20Python%20%2B%204%20web-brightgreen)
 
 ![PRITHVI AI — 3D flood twin of central Kakinada](docs/images/01-overview-3d.jpg)
 
@@ -24,6 +24,9 @@ A real-time **3D flood-scenario twin** of a city neighbourhood: change the rain 
 > For real warnings use the [India Meteorological Department](https://mausam.imd.gov.in/), [NDMA](https://ndma.gov.in/) and your district administration.
 
 Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
+
+**Live demo:** [prithvi-ai-psi.vercel.app](https://prithvi-ai-psi.vercel.app) · **API:** [prithvi-ai-api.onrender.com](https://prithvi-ai-api.onrender.com/docs) (interactive docs)
+> The API runs on a free tier that sleeps when idle: the first request after a pause can take up to a minute. The site keeps working meanwhile, using its in-browser engine.
 
 ---
 
