@@ -1,0 +1,11 @@
+node_modules/
+browsers/
+cache/
+frames/
+probe/
+audio/
+out/
+*.log
+vite.pid
+tts_venv/
+models/

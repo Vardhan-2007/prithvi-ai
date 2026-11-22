@@ -1,0 +1,486 @@
+{
+ "scenarios": {
+  "base": {
+   "meanIndex": 25.6,
+   "baseMean": 25.6,
+   "bands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "baseBands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "peakHa": 3,
+   "peakDepth": 0.4,
+   "peakBuildings": 26,
+   "peakFacilities": 1,
+   "totalDrainedK": 28,
+   "totalOutK": 11,
+   "storedEndK": 13,
+   "flaggedZones": 0,
+   "flaggedRoadKm": 0,
+   "flaggedFacilities": [],
+   "timeline": [
+    {
+     "t": 900,
+     "ha": 0,
+     "maxDepth": 0.04
+    },
+    {
+     "t": 1800,
+     "ha": 0,
+     "maxDepth": 0.08
+    },
+    {
+     "t": 3600,
+     "ha": 0,
+     "maxDepth": 0.14
+    },
+    {
+     "t": 5760,
+     "ha": 0.4,
+     "maxDepth": 0.22
+    },
+    {
+     "t": 7200,
+     "ha": 0.9,
+     "maxDepth": 0.29
+    },
+    {
+     "t": 9000,
+     "ha": 1.9,
+     "maxDepth": 0.37
+    },
+    {
+     "t": 14400,
+     "ha": 2.5,
+     "maxDepth": 0.39
+    },
+    {
+     "t": 25200,
+     "ha": 1.9,
+     "maxDepth": 0.33
+    }
+   ],
+   "zonesMovedUp": 0
+  },
+  "A": {
+   "meanIndex": 44.3,
+   "baseMean": 25.6,
+   "bands": {
+    "lower": 28,
+    "moderate": 164,
+    "higher": 79,
+    "highest": 1
+   },
+   "baseBands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "peakHa": 24.2,
+   "peakDepth": 0.73,
+   "peakBuildings": 114,
+   "peakFacilities": 4,
+   "totalDrainedK": 41,
+   "totalOutK": 283,
+   "storedEndK": 18,
+   "flaggedZones": 80,
+   "flaggedRoadKm": 9.5,
+   "flaggedFacilities": [
+    "Sai Sudha Hospital",
+    "Vijaya Nursing Home - Kakinada",
+    "Shravani Ent Hospital",
+    "Choday Apparao Nature Cure Hospital",
+    "Gadam Dental Hospital",
+    "Fire station",
+    "Unnamed place of worship",
+    "Unnamed place of worship"
+   ],
+   "timeline": [
+    {
+     "t": 900,
+     "ha": 0,
+     "maxDepth": 0.14
+    },
+    {
+     "t": 1800,
+     "ha": 1,
+     "maxDepth": 0.26
+    },
+    {
+     "t": 3600,
+     "ha": 10.7,
+     "maxDepth": 0.51
+    },
+    {
+     "t": 5760,
+     "ha": 21.3,
+     "maxDepth": 0.67
+    },
+    {
+     "t": 7200,
+     "ha": 23.6,
+     "maxDepth": 0.73
+    },
+    {
+     "t": 9000,
+     "ha": 21.8,
+     "maxDepth": 0.73
+    },
+    {
+     "t": 14400,
+     "ha": 10.6,
+     "maxDepth": 0.7
+    },
+    {
+     "t": 25200,
+     "ha": 2.9,
+     "maxDepth": 0.7
+    }
+   ],
+   "zonesMovedUp": 244
+  },
+  "A0": {
+   "meanIndex": 39.8,
+   "baseMean": 25.6,
+   "bands": {
+    "lower": 75,
+    "moderate": 159,
+    "higher": 37,
+    "highest": 1
+   },
+   "baseBands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "peakHa": 22.5,
+   "peakDepth": 0.71,
+   "peakBuildings": 110,
+   "peakFacilities": 4,
+   "totalDrainedK": 83,
+   "totalOutK": 243,
+   "storedEndK": 16,
+   "flaggedZones": 38,
+   "flaggedRoadKm": 1.9,
+   "flaggedFacilities": [],
+   "timeline": [
+    {
+     "t": 900,
+     "ha": 0,
+     "maxDepth": 0.14
+    },
+    {
+     "t": 1800,
+     "ha": 0.8,
+     "maxDepth": 0.25
+    },
+    {
+     "t": 3600,
+     "ha": 9.5,
+     "maxDepth": 0.49
+    },
+    {
+     "t": 5760,
+     "ha": 19.7,
+     "maxDepth": 0.65
+    },
+    {
+     "t": 7200,
+     "ha": 21.9,
+     "maxDepth": 0.71
+    },
+    {
+     "t": 9000,
+     "ha": 20,
+     "maxDepth": 0.7
+    },
+    {
+     "t": 14400,
+     "ha": 9.5,
+     "maxDepth": 0.7
+    },
+    {
+     "t": 25200,
+     "ha": 2.6,
+     "maxDepth": 0.7
+    }
+   ],
+   "zonesMovedUp": 197
+  },
+  "A100": {
+   "meanIndex": 49.6,
+   "baseMean": 25.6,
+   "bands": {
+    "lower": 1,
+    "moderate": 100,
+    "higher": 169,
+    "highest": 2
+   },
+   "baseBands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "peakHa": 25.3,
+   "peakDepth": 0.75,
+   "peakBuildings": 114,
+   "peakFacilities": 4,
+   "totalDrainedK": 0,
+   "totalOutK": 322,
+   "storedEndK": 20,
+   "flaggedZones": 171,
+   "flaggedRoadKm": 28.2,
+   "flaggedFacilities": [
+    "Sai Sudha Hospital",
+    "Vijaya Nursing Home - Kakinada",
+    "Shravani Ent Hospital",
+    "Choday Apparao Nature Cure Hospital",
+    "Kusuma Nursing Home",
+    "Sri Sai Krishna Hospital",
+    "Sri Bala Prabha Multispeciality Hospital",
+    "Dr. Sudhakar Hospital",
+    "Gadam Dental Hospital",
+    "Aswini Nursing Home",
+    "Fire station",
+    "Unnamed place of worship",
+    "Unnamed townhall",
+    "Unnamed place of worship",
+    "Unnamed place of worship"
+   ],
+   "timeline": [
+    {
+     "t": 900,
+     "ha": 0,
+     "maxDepth": 0.14
+    },
+    {
+     "t": 1800,
+     "ha": 1.4,
+     "maxDepth": 0.26
+    },
+    {
+     "t": 3600,
+     "ha": 11.6,
+     "maxDepth": 0.52
+    },
+    {
+     "t": 5760,
+     "ha": 22.6,
+     "maxDepth": 0.69
+    },
+    {
+     "t": 7200,
+     "ha": 24.8,
+     "maxDepth": 0.75
+    },
+    {
+     "t": 9000,
+     "ha": 23.1,
+     "maxDepth": 0.74
+    },
+    {
+     "t": 14400,
+     "ha": 11.4,
+     "maxDepth": 0.7
+    },
+    {
+     "t": 25200,
+     "ha": 3.1,
+     "maxDepth": 0.7
+    }
+   ],
+   "zonesMovedUp": 271
+  },
+  "Ap": {
+   "meanIndex": 43.3,
+   "baseMean": 25.6,
+   "bands": {
+    "lower": 37,
+    "moderate": 167,
+    "higher": 68,
+    "highest": 0
+   },
+   "baseBands": {
+    "lower": 239,
+    "moderate": 33,
+    "higher": 0,
+    "highest": 0
+   },
+   "peakHa": 24.2,
+   "peakDepth": 0.73,
+   "peakBuildings": 114,
+   "peakFacilities": 4,
+   "totalDrainedK": 46,
+   "totalOutK": 278,
+   "storedEndK": 18,
+   "flaggedZones": 68,
+   "flaggedRoadKm": 8.1,
+   "flaggedFacilities": [
+    "Choday Apparao Nature Cure Hospital",
+    "Unnamed place of worship",
+    "Unnamed place of worship"
+   ],
+   "timeline": [
+    {
+     "t": 900,
+     "ha": 0,
+     "maxDepth": 0.14
+    },
+    {
+     "t": 1800,
+     "ha": 1,
+     "maxDepth": 0.25
+    },
+    {
+     "t": 3600,
+     "ha": 10.6,
+     "maxDepth": 0.5
+    },
+    {
+     "t": 5760,
+     "ha": 21.3,
+     "maxDepth": 0.66
+    },
+    {
+     "t": 7200,
+     "ha": 23.5,
+     "maxDepth": 0.73
+    },
+    {
+     "t": 9000,
+     "ha": 21.7,
+     "maxDepth": 0.72
+    },
+    {
+     "t": 14400,
+     "ha": 10.5,
+     "maxDepth": 0.7
+    },
+    {
+     "t": 25200,
+     "ha": 2.8,
+     "maxDepth": 0.7
+    }
+   ],
+   "zonesMovedUp": 235
+  }
+ },
+ "zone": {
+  "id": "zone_142",
+  "idx": 69,
+  "baseIdx": 47.5,
+  "factors": {
+   "terrain": 0.7161,
+   "rainfall": 0.65,
+   "drainage": 0.8,
+   "exposure": 0.5657
+  },
+  "contrib": {
+   "terrain": 21.482999999999997,
+   "rainfall": 16.25,
+   "drainage": 20,
+   "exposure": 11.314
+  },
+  "baseContrib": {
+   "terrain": 21.482999999999997,
+   "rainfall": 2.125,
+   "drainage": 12.626038781163434,
+   "exposure": 11.314
+  },
+  "imperv": 50,
+  "cap": 0,
+  "baseCap": 49
+ },
+ "route": {
+  "blockedKm": {
+   "0.1": 14.01,
+   "0.25": 2.6
+  }
+ },
+ "film": {
+  "ids": [
+   "inlet_48",
+   "inlet_52"
+  ],
+  "before": {
+   "zone": 69,
+   "mean": 44.3,
+   "flagged": 80,
+   "fac": 8
+  },
+  "after": {
+   "zone": 61.7,
+   "mean": 44,
+   "flagged": 72,
+   "fac": 8
+  },
+  "flaggedFac": [
+   {
+    "id": "n6758713152",
+    "name": "Sai Sudha Hospital",
+    "cat": "health",
+    "x": 48.2,
+    "y": 1164.6
+   },
+   {
+    "id": "n6758721151",
+    "name": "Vijaya Nursing Home - Kakinada",
+    "cat": "health",
+    "x": 137.3,
+    "y": 1303.3
+   },
+   {
+    "id": "n6758735035",
+    "name": "Shravani Ent Hospital",
+    "cat": "health",
+    "x": 64.2,
+    "y": 1216.9
+   },
+   {
+    "id": "n7790467465",
+    "name": "Choday Apparao Nature Cure Hospital",
+    "cat": "health",
+    "x": 605.9,
+    "y": 55.9
+   },
+   {
+    "id": "n7790467509",
+    "name": "Gadam Dental Hospital",
+    "cat": "health",
+    "x": 84.3,
+    "y": 1166.9
+   },
+   {
+    "id": "n10171081034",
+    "name": "Fire station",
+    "cat": "emergency",
+    "x": 111.6,
+    "y": 1384.3
+   },
+   {
+    "id": "w1193899729",
+    "name": "Unnamed place of worship",
+    "cat": "shelter",
+    "x": 1487.6,
+    "y": 1233.5
+   },
+   {
+    "id": "w1193917413",
+    "name": "Unnamed place of worship",
+    "cat": "shelter",
+    "x": 1301.6,
+    "y": 1610.5
+   }
+  ]
+ }
+}

@@ -1,0 +1,1234 @@
+{
+ "sr": 24000,
+ "long": {},
+ "short": {
+  "f1": [
+   {
+    "text": "Eleven forty at night, in Kakinada.",
+    "file": "audio/cache/509fe48f666521776579a3c697c67464.pcm",
+    "dur": 3.05
+   },
+   {
+    "text": "The city is quiet.",
+    "file": "audio/cache/202fa29609a6251491e2f9402468d7f4.pcm",
+    "dur": 1.8
+   },
+   {
+    "text": "The forecast is not.",
+    "file": "audio/cache/b557310cf128e821875720b009e6008a.pcm",
+    "dur": 1.95
+   }
+  ],
+  "f2": [
+   {
+    "text": "Heavy rain will arrive by morning.",
+    "file": "audio/cache/7da29fd303aa838013158d51d6089963.pcm",
+    "dur": 2.575
+   },
+   {
+    "text": "In the municipal control room, an engineer named Meera looks at the streets that flood every year, and cannot predict them.",
+    "file": "audio/cache/2e535328d278a2d772d145951187b88a.pcm",
+    "dur": 7.45
+   }
+  ],
+  "f4": [
+   {
+    "text": "She opens Prithvi A I and enters the forecast: two hundred millimetres of rain over four hours, with half the drains blocked.",
+    "file": "audio/cache/5572f810da30ded2f13a00fa83a419bf.pcm",
+    "dur": 7.95
+   }
+  ],
+  "f6": [
+   {
+    "text": "The rain begins softly.",
+    "file": "audio/cache/9d2b0cdf4d31ad1a83db50887b241328.pcm",
+    "dur": 2
+   },
+   {
+    "text": "Twenty minutes in, the first water gathers in the low corners of the town.",
+    "file": "audio/cache/50cb6764d7d5ee8b2ac6de5faba36a16.pcm",
+    "dur": 4.675
+   }
+  ],
+  "f7": [
+   {
+    "text": "By one o'clock, ten hectares lie under water.",
+    "file": "audio/cache/1829e44f8e0e29b6bf44216aa8979465.pcm",
+    "dur": 3.35
+   },
+   {
+    "text": "By two, nearly twenty four.",
+    "file": "audio/cache/82ec7ac24d1ac01c09a12a7ec78af5b2.pcm",
+    "dur": 2.35
+   }
+  ],
+  "f8": [
+   {
+    "text": "Eight places that matter sit inside blocks ranked as higher risk: five hospitals or clinics, the fire station, and two shelter candidates.",
+    "file": "audio/cache/d386ce039d4fd5a61115a1c2d0107f39.pcm",
+    "dur": 9.75
+   }
+  ],
+  "f10": [
+   {
+    "text": "One block comes first: block one four two, with a score of sixty nine.",
+    "file": "audio/cache/00c95d87410e50317ac795ead1890081.pcm",
+    "dur": 5.025
+   },
+   {
+    "text": "Both of its drains are blocked.",
+    "file": "audio/cache/d0fefd1b5ad14625bc8d5f8724b9c686.pcm",
+    "dur": 2.275
+   }
+  ],
+  "f11": [
+   {
+    "text": "Clear just those two drains, and the block's score falls from sixty nine to 61.7, and higher risk blocks across town fall from 80 to 72.",
+    "file": "audio/cache/238786ac6b21151e873ddb751d37b40a.pcm",
+    "dur": 10.675
+   }
+  ],
+  "f12": [
+   {
+    "text": "Nothing in this story really happened.",
+    "file": "audio/cache/9ec5fe2fa664d4c3aadbb3df05dc95bc.pcm",
+    "dur": 2.5
+   },
+   {
+    "text": "It was a rehearsal.",
+    "file": "audio/cache/46d0e4f2368ffb770e9828c6e906cb01.pcm",
+    "dur": 1.8
+   },
+   {
+    "text": "And a rehearsal is exactly what Prithvi A I is for.",
+    "file": "audio/cache/80e55bb33076ef9564488eae1618c0a8.pcm",
+    "dur": 3.85
+   }
+  ],
+  "b1": [
+   {
+    "text": "Prithvi A I.",
+    "file": "audio/cache/ff975f9dcecbc97c12b764a69e32bf63.pcm",
+    "dur": 1.675
+   },
+   {
+    "text": "A neighbourhood risk digital twin, built for Hack With Aditya twenty twenty six.",
+    "file": "audio/cache/33a5eb18b9561e4c5e75b8795b613729.pcm",
+    "dur": 5.3
+   }
+  ],
+  "b6": [
+   {
+    "text": "Three things work together: a flood simulator, a risk score for every block, and planning tools that turn results into decisions.",
+    "file": "audio/cache/0ab5bb82ac901c5b788933102b4b938f.pcm",
+    "dur": 8.45
+   }
+  ],
+  "b11": [
+   {
+    "text": "On the left are the scenario controls, in the centre the three-D twin, on the right the results, and along the bottom a timeline with live numbers.",
+    "file": "audio/cache/821b2be734a3b3d1cefd0dafd807d29d.pcm",
+    "dur": 9.675
+   }
+  ],
+  "b15": [
+   {
+    "text": "A scenario is three numbers: total rain, how long it lasts, and what share of the drains are blocked.",
+    "file": "audio/cache/2ae04702796b5ddf500b591027f7ed1c.pcm",
+    "dur": 6.6
+   }
+  ],
+  "b20": [
+   {
+    "text": "Two hundred millimetres of rain over four hours, with half the drains blocked.",
+    "file": "audio/cache/e0f3f5a7995505ff574d310e1d1c9809.pcm",
+    "dur": 4.975
+   },
+   {
+    "text": "The twin starts dry.",
+    "file": "audio/cache/59ceeae142d521a22185457644e352f8.pcm",
+    "dur": 1.975
+   }
+  ],
+  "b23": [
+   {
+    "text": "Press play.",
+    "file": "audio/cache/1452f3361e0364f688668390293fb643.pcm",
+    "dur": 1.5
+   },
+   {
+    "text": "Water appears in the low corners within half an hour, covers ten point seven hectares after one hour, and is widest a little after two hours, at nearly twenty four hectares.",
+    "file": "audio/cache/330e4bb3ea55b5086232f49b65dc241a.pcm",
+    "dur": 11.275
+   }
+  ],
+  "b29": [
+   {
+    "text": "Click any drain inlet to block it, and the simulation restarts.",
+    "file": "audio/cache/087cb6be371f8302c0552b5219d4136a.pcm",
+    "dur": 4.25
+   }
+  ],
+  "b30a": [
+   {
+    "text": "The same storm, with every drain open, flags 38 blocks and no facility.",
+    "file": "audio/cache/ff01bb06088a4a83f9ed73bb938ba8be.pcm",
+    "dur": 5.55
+   }
+  ],
+  "b30b": [
+   {
+    "text": "With half the drains blocked, it flags 80 blocks, 9.5 kilometres of road and 8 facilities.",
+    "file": "audio/cache/df1cbc5f19fdd0776eb23200b19cf2ee.pcm",
+    "dur": 7.175
+   }
+  ],
+  "b30c": [
+   {
+    "text": "With every drain blocked: 171 blocks and 15 facilities.",
+    "file": "audio/cache/27ba77d81b3f7cd61453c9d93b9271bb.pcm",
+    "dur": 5.05
+   }
+  ],
+  "b31": [
+   {
+    "text": "Blockage enlarges the flood only modestly in this model, but it changes the risk score and exposure a great deal.",
+    "file": "audio/cache/ac8036473c06001e44665f927147b396.pcm",
+    "dur": 7.625
+   },
+   {
+    "text": "We report that plainly.",
+    "file": "audio/cache/4b967b0b771bb6aae7f7ae76ecc6bc66.pcm",
+    "dur": 2
+   }
+  ],
+  "b33": [
+   {
+    "text": "Prithvi A I also scores every hundred metre block from zero to one hundred.",
+    "file": "audio/cache/a4f47ab538d2e49c241e9f2d16c9a798.pcm",
+    "dur": 5.45
+   },
+   {
+    "text": "It is a ranking index, not a chance of flooding and not a depth.",
+    "file": "audio/cache/4ef9dce6deeb38b89694b98b927b6216.pcm",
+    "dur": 4.2
+   }
+  ],
+  "b35": [
+   {
+    "text": "For block one four two: terrain 21.5 points, rainfall 16.3, drainage 20.0, exposure 11.3, together 69.",
+    "file": "audio/cache/3c7e6c76f9931817d17947cd22e604f6.pcm",
+    "dur": 11.85
+   }
+  ],
+  "b36a": [
+   {
+    "text": "Switch on the heat-map: teal is lower, yellow moderate, orange higher and red highest.",
+    "file": "audio/cache/e60f20633e7dd6ca124ac6318801f990.pcm",
+    "dur": 5.675
+   }
+  ],
+  "b40": [
+   {
+    "text": "The Overview shows the mean score up 18.7 from the baseline, with 244 blocks moving up a band.",
+    "file": "audio/cache/072187c372c4120b961d6323177b9bca.pcm",
+    "dur": 7.85
+   }
+  ],
+  "b44": [
+   {
+    "text": "The Priority tab ranks the blocks to inspect first, with the main driver for each.",
+    "file": "audio/cache/9310ae5854f10415728824babb33774a.pcm",
+    "dur": 5.375
+   },
+   {
+    "text": "It is a planning aid, not an evacuation order.",
+    "file": "audio/cache/93df24c6f88b5e6cfcec6458be1f730f.pcm",
+    "dur": 3.375
+   }
+  ],
+  "b47": [
+   {
+    "text": "At twenty five centimetres the path from Mahaveer Hospital is unaffected.",
+    "file": "audio/cache/82b44a24ac63faded1797e76e69c51e1.pcm",
+    "dur": 4.825
+   },
+   {
+    "text": "At ten centimetres, 14 kilometres of road drop out and the route is cut.",
+    "file": "audio/cache/3b3d8b4c2d9bb95a4cfc7b37d2bb41f4.pcm",
+    "dur": 5.275
+   }
+  ],
+  "b51": [
+   {
+    "text": "How far can you trust it?",
+    "file": "audio/cache/dac5ebe3a4aec5bbe13af8fec34c98b2.pcm",
+    "dur": 1.925
+   },
+   {
+    "text": "This is a what-if tool, not a forecast.",
+    "file": "audio/cache/7e03fb3a09f13bce6887f6a9b091efb2.pcm",
+    "dur": 2.8
+   },
+   {
+    "text": "Rainfall is a number you choose, the drains are stand-ins, the terrain is coarse, and the water model has not been checked against a real flood, so we claim no accuracy.",
+    "file": "audio/cache/678d38523a2600deb683b85ca2bc6085.pcm",
+    "dur": 10.925
+   }
+  ],
+  "b53": [
+   {
+    "text": "Next is calibration against a real past flood, with surveyed drains and real rainfall.",
+    "file": "audio/cache/2d037dc56754ee66ed057893cf548fc8.pcm",
+    "dur": 6.2
+   },
+   {
+    "text": "Until then, use it to compare scenarios, plan drills and prioritise inspections, not to issue alerts.",
+    "file": "audio/cache/23b8263c41e5704d88e9962c43d45320.pcm",
+    "dur": 7.225
+   }
+  ],
+  "b56": [
+   {
+    "text": "Prithvi A I.",
+    "file": "audio/cache/ff975f9dcecbc97c12b764a69e32bf63.pcm",
+    "dur": 1.675
+   },
+   {
+    "text": "See the water.",
+    "file": "audio/cache/4cd4cb256347c11456f09b935fcb10be.pcm",
+    "dur": 1.55
+   },
+   {
+    "text": "Test the what-ifs.",
+    "file": "audio/cache/06b545ee5373ec260f6e338c5386f658.pcm",
+    "dur": 1.7
+   },
+   {
+    "text": "Understand the why.",
+    "file": "audio/cache/cb3b017ef16bed63d1f0799fbe6986c0.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "Thank you.",
+    "file": "audio/cache/50b1ee2d5a0c49395e50b58e0ea4c200.pcm",
+    "dur": 1.45
+   }
+  ]
+ },
+ "voice": "af_heart",
+ "speed": 0.92,
+ "story": {
+  "f1": [
+   {
+    "text": "Eleven forty at night, in Kakinada.",
+    "file": "audio/cache/b136b8a2537f00178c046debdae0bcc7.pcm",
+    "dur": 3.15
+   },
+   {
+    "text": "The city is quiet.",
+    "file": "audio/cache/234d196bf14f249c8386d5a11407a871.pcm",
+    "dur": 1.925
+   },
+   {
+    "text": "The forecast is not.",
+    "file": "audio/cache/b3d6f82369c036dc6a2ad89d901548e6.pcm",
+    "dur": 2.075
+   }
+  ],
+  "f2": [
+   {
+    "text": "Heavy rain will arrive by morning.",
+    "file": "audio/cache/e60ad7fb8cc48f53f7c2d1fbcfca3e87.pcm",
+    "dur": 2.725
+   },
+   {
+    "text": "In the municipal control room, an engineer named Meera is looking at the streets that flood every year.",
+    "file": "audio/cache/5a1831b68ba44eab9a1d33208cae1531.pcm",
+    "dur": 6.725
+   },
+   {
+    "text": "Streets she knows by heart, and still cannot predict.",
+    "file": "audio/cache/7784bd56ecb128cf99b4539b551df1e2.pcm",
+    "dur": 3.55
+   }
+  ],
+  "f3": [
+   {
+    "text": "Every monsoon, she is asked the same questions.",
+    "file": "audio/cache/9a29ddfb9ac595abb15a9495995111d6.pcm",
+    "dur": 3.625
+   },
+   {
+    "text": "Which streets will hold water?",
+    "file": "audio/cache/7a2007b46952ac032579503eeca4fbc5.pcm",
+    "dur": 2.325
+   },
+   {
+    "text": "What if the drains are still blocked from last season?",
+    "file": "audio/cache/31dddc98cfdce9d4d70276f7408bd82d.pcm",
+    "dur": 3.35
+   },
+   {
+    "text": "Where should the crews go first?",
+    "file": "audio/cache/b39800a0a33602a0cd1c6dc6cff6cf04.pcm",
+    "dur": 2.25
+   },
+   {
+    "text": "And every monsoon, the answers come from memory, and paper maps.",
+    "file": "audio/cache/43a3db6a4d73481bb1ee0933b3a16536.pcm",
+    "dur": 4.75
+   }
+  ],
+  "f4": [
+   {
+    "text": "Tonight, she has something different.",
+    "file": "audio/cache/bc8c3049edc68213256645663c2130ef.pcm",
+    "dur": 2.475
+   },
+   {
+    "text": "She opens Prithvi A I, and enters the forecast: two hundred millimetres of rain, over four hours.",
+    "file": "audio/cache/356089914e20966e3f9acfcf5fb19e92.pcm",
+    "dur": 6.925
+   },
+   {
+    "text": "She marks half the drains as blocked, the way they were last year.",
+    "file": "audio/cache/4f525bfaf109181db98faf059bf77501.pcm",
+    "dur": 4.175
+   }
+  ],
+  "f5": [
+   {
+    "text": "Midnight.",
+    "file": "audio/cache/c9bacd589b4ba742dabe4ea9bfe44a4c.pcm",
+    "dur": 1.625
+   },
+   {
+    "text": "The rain begins.",
+    "file": "audio/cache/dfe6374a35d221af851bb5ddc7539c6e.pcm",
+    "dur": 1.875
+   }
+  ],
+  "f6": [
+   {
+    "text": "It starts softly.",
+    "file": "audio/cache/58eb924ddea7d6debf539470c3828275.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "For twenty minutes, nothing seems wrong.",
+    "file": "audio/cache/5aea86d72acd4f18a8e9292a88c600c9.pcm",
+    "dur": 3.025
+   },
+   {
+    "text": "Then, in the low corners of the town, the first water gathers.",
+    "file": "audio/cache/a9addecd7739a2b150d073edffce95e9.pcm",
+    "dur": 4.475
+   }
+  ],
+  "f7": [
+   {
+    "text": "By one o'clock, ten hectares lie under water.",
+    "file": "audio/cache/32f3b2c04b7207aa9ae5285a205f102a.pcm",
+    "dur": 3.65
+   },
+   {
+    "text": "The rain peaks at one thirty six.",
+    "file": "audio/cache/924c342a66e46d4b5a3d2f5d80656e78.pcm",
+    "dur": 2.575
+   },
+   {
+    "text": "By two, nearly twenty four hectares: the widest the flood will ever be.",
+    "file": "audio/cache/0d14fc0643310f1525c314f50044249b.pcm",
+    "dur": 5.15
+   }
+  ],
+  "f8": [
+   {
+    "text": "Then Meera sees what the paper maps never showed her.",
+    "file": "audio/cache/ed38e46b6f2dbb9a6959173652935e40.pcm",
+    "dur": 3.675
+   },
+   {
+    "text": "Eight places that matter sit inside blocks the model ranks as higher risk.",
+    "file": "audio/cache/108762dbba10d063fd9a026e70755cf4.pcm",
+    "dur": 5.4
+   },
+   {
+    "text": "Five hospitals or clinics.",
+    "file": "audio/cache/feff1f35931640fc4f1482bd47ec8c4d.pcm",
+    "dur": 2.4
+   },
+   {
+    "text": "The fire station.",
+    "file": "audio/cache/4f9b025d5dbfdd0fd678e80b76b4c082.pcm",
+    "dur": 1.9
+   },
+   {
+    "text": "And two places that could serve as shelters.",
+    "file": "audio/cache/6d04a5f238b439c7b234f937aad13880.pcm",
+    "dur": 3.2
+   }
+  ],
+  "f9": [
+   {
+    "text": "She checks whether Mahaveer Hospital stays connected to a shelter two point four kilometres away.",
+    "file": "audio/cache/f1848d89884f46c75a227c1e027802f7.pcm",
+    "dur": 6.875
+   },
+   {
+    "text": "At twenty five centimetres of water, it does.",
+    "file": "audio/cache/3eda509d67d970aaa80ae09cafec2b57.pcm",
+    "dur": 3.2
+   },
+   {
+    "text": "At ten centimetres, fourteen kilometres of road drop out, and the connection is cut.",
+    "file": "audio/cache/093e0920c30dca464b787df67d40167e.pcm",
+    "dur": 5.9
+   },
+   {
+    "text": "Not a route to follow.",
+    "file": "audio/cache/9e4091bcb64264d413a98e7269a52da3.pcm",
+    "dur": 2.075
+   },
+   {
+    "text": "A warning to plan around.",
+    "file": "audio/cache/20844396aaf83516dc58e190e4816295.pcm",
+    "dur": 2.275
+   }
+  ],
+  "f10": [
+   {
+    "text": "She does not need to send crews everywhere.",
+    "file": "audio/cache/dd9aa67c29ba1187efd549a5de5ca5ea.pcm",
+    "dur": 2.975
+   },
+   {
+    "text": "One block comes first: block one four two.",
+    "file": "audio/cache/ebd2e6b1484bd370ad295a840da1e750.pcm",
+    "dur": 3.5
+   },
+   {
+    "text": "A score of sixty nine, the highest in the town.",
+    "file": "audio/cache/e147a6377f4fcc19c9279591020c88df.pcm",
+    "dur": 3.55
+   },
+   {
+    "text": "Both of its drains are blocked.",
+    "file": "audio/cache/f521f45e7c372091ed13aef85775d188.pcm",
+    "dur": 2.375
+   }
+  ],
+  "f11": [
+   {
+    "text": "So she tries one thing: clear just those two drains, and run it again.",
+    "file": "audio/cache/6b927f865533df0d35ee6c4e541b6016.pcm",
+    "dur": 4.8
+   },
+   {
+    "text": "The block's score falls from sixty nine to 61.7, and the number of higher risk blocks across the town falls from 80 to 72.",
+    "file": "audio/cache/c741608cf77ca325f729c9ef35dce5e6.pcm",
+    "dur": 10
+   },
+   {
+    "text": "Two drains, cleared before the rain.",
+    "file": "audio/cache/34ebd4f257dede563d63b664954b049c.pcm",
+    "dur": 2.825
+   }
+  ],
+  "f12": [
+   {
+    "text": "At six, the rain has stopped, and the water is draining away.",
+    "file": "audio/cache/a58856b53abf372566b1f49799e1841d.pcm",
+    "dur": 4.2
+   },
+   {
+    "text": "Nothing in this story really happened.",
+    "file": "audio/cache/816ad479489d847bcdd6deecf180ccf7.pcm",
+    "dur": 2.7
+   },
+   {
+    "text": "It was a rehearsal.",
+    "file": "audio/cache/b2d0b9e5dc7a14f49b4f743678290b2d.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "And a rehearsal is exactly what Prithvi A I is for.",
+    "file": "audio/cache/0b2543e61462b130067babf3b0f2919c.pcm",
+    "dur": 4
+   }
+  ]
+ },
+ "cine": {
+  "f1": [
+   {
+    "text": "Eleven forty at night, in Kakinada.",
+    "file": "audio/cache/b136b8a2537f00178c046debdae0bcc7.pcm",
+    "dur": 3.15
+   },
+   {
+    "text": "The city is quiet.",
+    "file": "audio/cache/234d196bf14f249c8386d5a11407a871.pcm",
+    "dur": 1.925
+   },
+   {
+    "text": "The forecast is not.",
+    "file": "audio/cache/b3d6f82369c036dc6a2ad89d901548e6.pcm",
+    "dur": 2.075
+   }
+  ],
+  "g1": [
+   {
+    "text": "Earlier that evening, the town did what towns do when rain is forecast.",
+    "file": "audio/cache/5b618bb54fd147ec404c5ad20627bb1a.pcm",
+    "dur": 4.95
+   },
+   {
+    "text": "Shutters came down early.",
+    "file": "audio/cache/34e17fcf2ae329ecdf50fb42ed5af7d5.pcm",
+    "dur": 2.175
+   },
+   {
+    "text": "Sacks were lifted onto high shelves.",
+    "file": "audio/cache/6a8a9ae4bccd60b54c7c5f9c61e62d38.pcm",
+    "dur": 2.575
+   },
+   {
+    "text": "Somewhere, a radio repeated the warning, and nobody quite believed it would be as bad as last time.",
+    "file": "audio/cache/800ed01bdede56595ec71a50efbfbcfc.pcm",
+    "dur": 6.65
+   }
+  ],
+  "f2": [
+   {
+    "text": "Heavy rain will arrive by morning.",
+    "file": "audio/cache/e60ad7fb8cc48f53f7c2d1fbcfca3e87.pcm",
+    "dur": 2.725
+   },
+   {
+    "text": "In the municipal control room, an engineer named Meera is looking at the streets that flood every year.",
+    "file": "audio/cache/5a1831b68ba44eab9a1d33208cae1531.pcm",
+    "dur": 6.725
+   },
+   {
+    "text": "Streets she knows by heart, and still cannot predict.",
+    "file": "audio/cache/7784bd56ecb128cf99b4539b551df1e2.pcm",
+    "dur": 3.55
+   }
+  ],
+  "g2": [
+   {
+    "text": "Meera has worked on these streets for eleven years.",
+    "file": "audio/cache/faff3056c156a9ccefe2c916c01179dc.pcm",
+    "dur": 3.375
+   },
+   {
+    "text": "She knows which lanes drown first, and which drain covers lift in the first heavy rain.",
+    "file": "audio/cache/b223674ef00eab556f0162988bd7c3d6.pcm",
+    "dur": 6.05
+   },
+   {
+    "text": "What she has never known is how much water, how fast, and where it will go next.",
+    "file": "audio/cache/9ade4bb863a1ca368f2a3d89ba4e00fa.pcm",
+    "dur": 5.225
+   }
+  ],
+  "f3": [
+   {
+    "text": "Every monsoon, she is asked the same questions.",
+    "file": "audio/cache/9a29ddfb9ac595abb15a9495995111d6.pcm",
+    "dur": 3.625
+   },
+   {
+    "text": "Which streets will hold water?",
+    "file": "audio/cache/7a2007b46952ac032579503eeca4fbc5.pcm",
+    "dur": 2.325
+   },
+   {
+    "text": "What if the drains are still blocked from last season?",
+    "file": "audio/cache/31dddc98cfdce9d4d70276f7408bd82d.pcm",
+    "dur": 3.35
+   },
+   {
+    "text": "Where should the crews go first?",
+    "file": "audio/cache/b39800a0a33602a0cd1c6dc6cff6cf04.pcm",
+    "dur": 2.25
+   },
+   {
+    "text": "And every monsoon, the answers come from memory, and paper maps.",
+    "file": "audio/cache/43a3db6a4d73481bb1ee0933b3a16536.pcm",
+    "dur": 4.75
+   }
+  ],
+  "g3": [
+   {
+    "text": "This time, she has a way to ask.",
+    "file": "audio/cache/cc415e71b49c34de15b70a313331882c.pcm",
+    "dur": 2.7
+   },
+   {
+    "text": "Not to predict the rain; nobody can promise that.",
+    "file": "audio/cache/0f0a07748f68f63068440d679f0703a5.pcm",
+    "dur": 3.8
+   },
+   {
+    "text": "But to rehearse it, and ask what if, before the first drop falls.",
+    "file": "audio/cache/07c18d0f4ce96ab23fd16eb52679fe65.pcm",
+    "dur": 4.425
+   }
+  ],
+  "f4": [
+   {
+    "text": "Tonight, she has something different.",
+    "file": "audio/cache/bc8c3049edc68213256645663c2130ef.pcm",
+    "dur": 2.475
+   },
+   {
+    "text": "She opens Prithvi A I, and enters the forecast: two hundred millimetres of rain, over four hours.",
+    "file": "audio/cache/356089914e20966e3f9acfcf5fb19e92.pcm",
+    "dur": 6.925
+   },
+   {
+    "text": "She marks half the drains as blocked, the way they were last year.",
+    "file": "audio/cache/4f525bfaf109181db98faf059bf77501.pcm",
+    "dur": 4.175
+   }
+  ],
+  "f5": [
+   {
+    "text": "Midnight.",
+    "file": "audio/cache/c9bacd589b4ba742dabe4ea9bfe44a4c.pcm",
+    "dur": 1.625
+   },
+   {
+    "text": "The rain begins.",
+    "file": "audio/cache/dfe6374a35d221af851bb5ddc7539c6e.pcm",
+    "dur": 1.875
+   }
+  ],
+  "f6": [
+   {
+    "text": "It starts softly.",
+    "file": "audio/cache/58eb924ddea7d6debf539470c3828275.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "For twenty minutes, nothing seems wrong.",
+    "file": "audio/cache/5aea86d72acd4f18a8e9292a88c600c9.pcm",
+    "dur": 3.025
+   },
+   {
+    "text": "Then, in the low corners of the town, the first water gathers.",
+    "file": "audio/cache/a9addecd7739a2b150d073edffce95e9.pcm",
+    "dur": 4.475
+   }
+  ],
+  "g4": [
+   {
+    "text": "The water finds the old paths first.",
+    "file": "audio/cache/75a55df24a85015f5b4668f90e1e8653.pcm",
+    "dur": 2.75
+   },
+   {
+    "text": "The low lanes.",
+    "file": "audio/cache/10da88cd4566bf3c37c5b86b0bdd7674.pcm",
+    "dur": 1.825
+   },
+   {
+    "text": "The field behind the school.",
+    "file": "audio/cache/652cc7316b081760cc14e9e3b745a696.pcm",
+    "dur": 2.225
+   },
+   {
+    "text": "The road that has always been the first to go.",
+    "file": "audio/cache/fa428e03c0322ad4a02a65c2c214fd2c.pcm",
+    "dur": 3.225
+   }
+  ],
+  "f7": [
+   {
+    "text": "By one o'clock, ten hectares lie under water.",
+    "file": "audio/cache/32f3b2c04b7207aa9ae5285a205f102a.pcm",
+    "dur": 3.65
+   },
+   {
+    "text": "The rain peaks at one thirty six.",
+    "file": "audio/cache/924c342a66e46d4b5a3d2f5d80656e78.pcm",
+    "dur": 2.575
+   },
+   {
+    "text": "By two, nearly twenty four hectares: the widest the flood will ever be.",
+    "file": "audio/cache/0d14fc0643310f1525c314f50044249b.pcm",
+    "dur": 5.15
+   }
+  ],
+  "g5": [
+   {
+    "text": "From above, it looks almost calm.",
+    "file": "audio/cache/e61595597bb9dc7df0a033311919d83e.pcm",
+    "dur": 2.575
+   },
+   {
+    "text": "A dark sheet, laid gently over the town.",
+    "file": "audio/cache/2c2e9b87bfffa1ff235532f225b3408b.pcm",
+    "dur": 3.125
+   },
+   {
+    "text": "It is not calm.",
+    "file": "audio/cache/29598452fd6c4e42923d48b0e6608ffc.pcm",
+    "dur": 1.825
+   }
+  ],
+  "f8": [
+   {
+    "text": "Then Meera sees what the paper maps never showed her.",
+    "file": "audio/cache/ed38e46b6f2dbb9a6959173652935e40.pcm",
+    "dur": 3.675
+   },
+   {
+    "text": "Eight places that matter sit inside blocks the model ranks as higher risk.",
+    "file": "audio/cache/108762dbba10d063fd9a026e70755cf4.pcm",
+    "dur": 5.4
+   },
+   {
+    "text": "Five hospitals or clinics.",
+    "file": "audio/cache/feff1f35931640fc4f1482bd47ec8c4d.pcm",
+    "dur": 2.4
+   },
+   {
+    "text": "The fire station.",
+    "file": "audio/cache/4f9b025d5dbfdd0fd678e80b76b4c082.pcm",
+    "dur": 1.9
+   },
+   {
+    "text": "And two places that could serve as shelters.",
+    "file": "audio/cache/6d04a5f238b439c7b234f937aad13880.pcm",
+    "dur": 3.2
+   }
+  ],
+  "g6": [
+   {
+    "text": "A hospital does not close for rain.",
+    "file": "audio/cache/e108d7c1c9320a534e8cc1d9455a4a27.pcm",
+    "dur": 2.775
+   },
+   {
+    "text": "Its patients still need one road in, and one road out.",
+    "file": "audio/cache/4bc45529cae2882395a3a7a08eadfe76.pcm",
+    "dur": 3.95
+   }
+  ],
+  "f9": [
+   {
+    "text": "She checks whether Mahaveer Hospital stays connected to a shelter two point four kilometres away.",
+    "file": "audio/cache/f1848d89884f46c75a227c1e027802f7.pcm",
+    "dur": 6.875
+   },
+   {
+    "text": "At twenty five centimetres of water, it does.",
+    "file": "audio/cache/3eda509d67d970aaa80ae09cafec2b57.pcm",
+    "dur": 3.2
+   },
+   {
+    "text": "At ten centimetres, fourteen kilometres of road drop out, and the connection is cut.",
+    "file": "audio/cache/093e0920c30dca464b787df67d40167e.pcm",
+    "dur": 5.9
+   },
+   {
+    "text": "Not a route to follow.",
+    "file": "audio/cache/9e4091bcb64264d413a98e7269a52da3.pcm",
+    "dur": 2.075
+   },
+   {
+    "text": "A warning to plan around.",
+    "file": "audio/cache/20844396aaf83516dc58e190e4816295.pcm",
+    "dur": 2.275
+   }
+  ],
+  "g7": [
+   {
+    "text": "Meera looks at the screen for a long time.",
+    "file": "audio/cache/d471a5a063afecd9d4518da220001e50.pcm",
+    "dur": 2.85
+   },
+   {
+    "text": "There are two hundred and seventy two blocks on the map.",
+    "file": "audio/cache/5ec516cf5ed86062eda51c5df7bc35d4.pcm",
+    "dur": 3.8
+   },
+   {
+    "text": "She cannot fix them all.",
+    "file": "audio/cache/3b7aad936cfde815f5c309987c7764ba.pcm",
+    "dur": 2.075
+   },
+   {
+    "text": "She has to choose.",
+    "file": "audio/cache/8c2239fb4e7c9ad8f24535d67d9a0234.pcm",
+    "dur": 1.9
+   }
+  ],
+  "f10": [
+   {
+    "text": "She does not need to send crews everywhere.",
+    "file": "audio/cache/dd9aa67c29ba1187efd549a5de5ca5ea.pcm",
+    "dur": 2.975
+   },
+   {
+    "text": "One block comes first: block one four two.",
+    "file": "audio/cache/ebd2e6b1484bd370ad295a840da1e750.pcm",
+    "dur": 3.5
+   },
+   {
+    "text": "A score of sixty nine, the highest in the town.",
+    "file": "audio/cache/e147a6377f4fcc19c9279591020c88df.pcm",
+    "dur": 3.55
+   },
+   {
+    "text": "Both of its drains are blocked.",
+    "file": "audio/cache/f521f45e7c372091ed13aef85775d188.pcm",
+    "dur": 2.375
+   }
+  ],
+  "f11": [
+   {
+    "text": "So she tries one thing: clear just those two drains, and run it again.",
+    "file": "audio/cache/6b927f865533df0d35ee6c4e541b6016.pcm",
+    "dur": 4.8
+   },
+   {
+    "text": "The block's score falls from sixty nine to 61.7, and the number of higher risk blocks across the town falls from 80 to 72.",
+    "file": "audio/cache/c741608cf77ca325f729c9ef35dce5e6.pcm",
+    "dur": 10
+   },
+   {
+    "text": "Two drains, cleared before the rain.",
+    "file": "audio/cache/34ebd4f257dede563d63b664954b049c.pcm",
+    "dur": 2.825
+   }
+  ],
+  "g8": [
+   {
+    "text": "She writes it down.",
+    "file": "audio/cache/dace7d74cd800a9ef58b23dea3e4224e.pcm",
+    "dur": 1.825
+   },
+   {
+    "text": "Block one four two.",
+    "file": "audio/cache/49c548aa27d967932b84b8bc3ac3da58.pcm",
+    "dur": 1.975
+   },
+   {
+    "text": "Then the next, and the next, by score, until the list runs out of people.",
+    "file": "audio/cache/b1fe37e0f97eb4013acd86d6b8efaca9.pcm",
+    "dur": 4.85
+   },
+   {
+    "text": "A crew of four, a truck, a long pole, and a plan.",
+    "file": "audio/cache/746a329d731fda8417143861a162e1d4.pcm",
+    "dur": 3.875
+   }
+  ],
+  "h1": [
+   {
+    "text": "At six, the rain has stopped, and the water is draining away, hectare by hectare, until the town is dry again.",
+    "file": "audio/cache/6fc6a7326c2f84556679ba1ecbe11e98.pcm",
+    "dur": 7.75
+   }
+  ],
+  "g10": [
+   {
+    "text": "Meera closes the laptop.",
+    "file": "audio/cache/a98687648bfc0482518b3988ddd3d08d.pcm",
+    "dur": 2.325
+   },
+   {
+    "text": "The real rain is still hours away.",
+    "file": "audio/cache/0ddfc11c8de54dd6f4707f4871b7bdbc.pcm",
+    "dur": 2.825
+   },
+   {
+    "text": "She does not know whether her list will be enough.",
+    "file": "audio/cache/571dbd61088f7bcb844bce3acbdbd9fc.pcm",
+    "dur": 2.9
+   },
+   {
+    "text": "Nobody does.",
+    "file": "audio/cache/e5a520a64b76429605bab067a0cea4c7.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "But tonight, for the first time, she knows where to look first.",
+    "file": "audio/cache/25d83a95da9f07e5ef179bb9d49d061d.pcm",
+    "dur": 3.9
+   }
+  ],
+  "h2": [
+   {
+    "text": "Nothing in this story really happened.",
+    "file": "audio/cache/816ad479489d847bcdd6deecf180ccf7.pcm",
+    "dur": 2.7
+   },
+   {
+    "text": "It was a rehearsal.",
+    "file": "audio/cache/b2d0b9e5dc7a14f49b4f743678290b2d.pcm",
+    "dur": 1.85
+   },
+   {
+    "text": "And a rehearsal is exactly what Prithvi A I is for.",
+    "file": "audio/cache/0b2543e61462b130067babf3b0f2919c.pcm",
+    "dur": 4
+   }
+  ]
+ },
+ "te": {
+  "f1": [
+   {
+    "text": "\u0c30\u0c3e\u0c24\u0c4d\u0c30\u0c3f \u0c2a\u0c26\u0c15\u0c4a\u0c02\u0c21\u0c41 \u0c28\u0c32\u0c2d\u0c48.",
+    "file": "audio/cache/te_57a7b54c21a1753f20e550d290ff995f.pcm",
+    "dur": 2.8135
+   },
+   {
+    "text": "\u0c15\u0c3e\u0c15\u0c3f\u0c28\u0c3e\u0c21 \u0c2a\u0c4d\u0c30\u0c36\u0c3e\u0c02\u0c24\u0c02\u0c17\u0c3e \u0c09\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_306361c922203f25c2479a2f3597fa97.pcm",
+    "dur": 2.2562083333333334
+   },
+   {
+    "text": "\u0c15\u0c3e\u0c28\u0c40 \u0c35\u0c3e\u0c24\u0c3e\u0c35\u0c30\u0c23 \u0c38\u0c42\u0c1a\u0c28 \u0c2e\u0c3e\u0c24\u0c4d\u0c30\u0c02 \u0c2a\u0c4d\u0c30\u0c36\u0c3e\u0c02\u0c24\u0c02\u0c17\u0c3e \u0c32\u0c47\u0c26\u0c41.",
+    "file": "audio/cache/te_8ed83023f63bd1fd2cd37040aa74a8a7.pcm",
+    "dur": 4.74075
+   }
+  ],
+  "f2": [
+   {
+    "text": "\u0c09\u0c26\u0c2f\u0c3e\u0c28\u0c3f\u0c15\u0c32\u0c4d\u0c32\u0c3e \u0c2d\u0c3e\u0c30\u0c40 \u0c35\u0c30\u0c4d\u0c37\u0c02 \u0c30\u0c3e\u0c28\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_a0209cfc7e3048ec894ebc1b923f9e01.pcm",
+    "dur": 2.7670416666666666
+   },
+   {
+    "text": "\u0c2e\u0c41\u0c28\u0c4d\u0c38\u0c3f\u0c2a\u0c32\u0c4d \u0c15\u0c02\u0c1f\u0c4d\u0c30\u0c4b\u0c32\u0c4d \u0c30\u0c42\u0c2e\u0c4d\u200c\u0c32\u0c4b, \u0c2e\u0c40\u0c30\u0c3e \u0c05\u0c28\u0c47 \u0c07\u0c02\u0c1c\u0c28\u0c40\u0c30\u0c4d \u0c2a\u0c4d\u0c30\u0c24\u0c3f \u0c0f\u0c1f\u0c3e \u0c2e\u0c41\u0c28\u0c3f\u0c17\u0c3f\u0c2a\u0c4b\u0c2f\u0c47 \u0c35\u0c40\u0c27\u0c41\u0c32\u0c28\u0c41 \u0c1a\u0c42\u0c38\u0c4d\u0c24\u0c4b\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_8478460c6843457cf147e35a34675218.pcm",
+    "dur": 8.432708333333334
+   },
+   {
+    "text": "\u0c05\u0c35\u0c3f \u0c06\u0c2e\u0c46\u0c15\u0c41 \u0c15\u0c02\u0c20\u0c24\u0c3e \u0c24\u0c46\u0c32\u0c3f\u0c38\u0c3f\u0c28 \u0c35\u0c40\u0c27\u0c41\u0c32\u0c41, \u0c05\u0c2f\u0c3f\u0c28\u0c3e \u0c35\u0c3e\u0c1f\u0c3f \u0c17\u0c24\u0c3f\u0c28\u0c3f \u0c06\u0c2e\u0c46 \u0c2e\u0c41\u0c02\u0c26\u0c41\u0c17\u0c3e \u0c05\u0c02\u0c1a\u0c28\u0c3e \u0c35\u0c47\u0c2f\u0c32\u0c47\u0c15\u0c2a\u0c4b\u0c24\u0c4b\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_f828578d6fd5b798f87e5c0920cc7995.pcm",
+    "dur": 8.246958333333334
+   }
+  ],
+  "f3": [
+   {
+    "text": "\u0c2a\u0c4d\u0c30\u0c24\u0c3f \u0c35\u0c30\u0c4d\u0c37\u0c3e\u0c15\u0c3e\u0c32\u0c02\u0c32\u0c4b \u0c06\u0c2e\u0c46\u0c28\u0c41 \u0c05\u0c35\u0c47 \u0c2a\u0c4d\u0c30\u0c36\u0c4d\u0c28\u0c32\u0c41 \u0c05\u0c21\u0c41\u0c17\u0c41\u0c24\u0c3e\u0c30\u0c41.",
+    "file": "audio/cache/te_2b155f1d4d47c6188da78779badacb28.pcm",
+    "dur": 4.171875
+   },
+   {
+    "text": "\u0c0f \u0c35\u0c40\u0c27\u0c41\u0c32\u0c4d\u0c32\u0c4b \u0c28\u0c40\u0c33\u0c4d\u0c32\u0c41 \u0c28\u0c3f\u0c32\u0c41\u0c38\u0c4d\u0c24\u0c3e\u0c2f\u0c3f?",
+    "file": "audio/cache/te_ca7101146723ed6e2c52e4f22a8e08e8.pcm",
+    "dur": 2.685791666666667
+   },
+   {
+    "text": "\u0c17\u0c24 \u0c38\u0c40\u0c1c\u0c28\u0c4d \u0c28\u0c41\u0c02\u0c1a\u0c3f \u0c15\u0c3e\u0c32\u0c41\u0c35\u0c32\u0c41 \u0c07\u0c02\u0c15\u0c3e \u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c2a\u0c4b\u0c2f\u0c47 \u0c09\u0c02\u0c1f\u0c47 \u0c0f\u0c2e\u0c35\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f?",
+    "file": "audio/cache/te_6cd389e9f5a0256a7124fcfa8375e7e5.pcm",
+    "dur": 5.69275
+   },
+   {
+    "text": "\u0c38\u0c3f\u0c2c\u0c4d\u0c2c\u0c02\u0c26\u0c3f\u0c28\u0c3f \u0c2e\u0c41\u0c02\u0c26\u0c41 \u0c0e\u0c15\u0c4d\u0c15\u0c21\u0c3f\u0c15\u0c3f \u0c2a\u0c02\u0c2a\u0c3e\u0c32\u0c3f?",
+    "file": "audio/cache/te_f56bc8e83f4b56af14a21dc99262f7ab.pcm",
+    "dur": 2.5696666666666665
+   },
+   {
+    "text": "\u0c2a\u0c4d\u0c30\u0c24\u0c3f\u0c38\u0c3e\u0c30\u0c40 \u0c38\u0c2e\u0c3e\u0c27\u0c3e\u0c28\u0c3e\u0c32\u0c41 \u0c1c\u0c4d\u0c1e\u0c3e\u0c2a\u0c15\u0c36\u0c15\u0c4d\u0c24\u0c3f \u0c28\u0c41\u0c02\u0c1a\u0c3f, \u0c15\u0c3e\u0c17\u0c3f\u0c24\u0c02 \u0c2e\u0c4d\u0c2f\u0c3e\u0c2a\u0c41\u0c32 \u0c28\u0c41\u0c02\u0c1a\u0c47 \u0c35\u0c38\u0c4d\u0c24\u0c3e\u0c2f\u0c3f.",
+    "file": "audio/cache/te_c7e603f2f591038de02c5455ed861db8.pcm",
+    "dur": 6.4242083333333335
+   }
+  ],
+  "f4": [
+   {
+    "text": "\u0c08 \u0c30\u0c3e\u0c24\u0c4d\u0c30\u0c3f \u0c06\u0c2e\u0c46 \u0c26\u0c17\u0c4d\u0c17\u0c30 \u0c12\u0c15 \u0c15\u0c4a\u0c24\u0c4d\u0c24 \u0c38\u0c3e\u0c27\u0c28\u0c02 \u0c09\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_4dc4c538ba4e5e09965c2ecdb077b3bb.pcm",
+    "dur": 4.229916666666667
+   },
+   {
+    "text": "\u0c06\u0c2e\u0c46 \u0c2a\u0c43\u0c25\u0c4d\u0c35\u0c3f \u0c0f\u0c10 \u0c24\u0c46\u0c30\u0c3f\u0c1a\u0c3f, \u0c38\u0c42\u0c1a\u0c28\u0c28\u0c41 \u0c28\u0c2e\u0c4b\u0c26\u0c41 \u0c1a\u0c47\u0c38\u0c4d\u0c24\u0c41\u0c02\u0c26\u0c3f: \u0c28\u0c3e\u0c32\u0c41\u0c17\u0c41 \u0c17\u0c02\u0c1f\u0c32\u0c4d\u0c32\u0c4b \u0c30\u0c46\u0c02\u0c21\u0c41\u0c35\u0c02\u0c26\u0c32 \u0c2e\u0c3f\u0c32\u0c4d\u0c32\u0c40\u0c2e\u0c40\u0c1f\u0c30\u0c4d\u0c32 \u0c35\u0c30\u0c4d\u0c37\u0c02.",
+    "file": "audio/cache/te_3b80185a5bc2a176beed3d3e9649e1c6.pcm",
+    "dur": 8.212125
+   },
+   {
+    "text": "\u0c17\u0c24 \u0c38\u0c02\u0c35\u0c24\u0c4d\u0c38\u0c30\u0c02\u0c32\u0c3e\u0c17\u0c47 \u0c38\u0c17\u0c02 \u0c15\u0c3e\u0c32\u0c41\u0c35\u0c32\u0c41 \u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c2a\u0c4b\u0c2f\u0c3e\u0c2f\u0c28\u0c3f \u0c06\u0c2e\u0c46 \u0c17\u0c41\u0c30\u0c4d\u0c24\u0c3f\u0c38\u0c4d\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_9dc3955ed03d05cfa3019d44f91161d4.pcm",
+    "dur": 6.052666666666667
+   }
+  ],
+  "f5": [
+   {
+    "text": "\u0c05\u0c30\u0c4d\u0c27\u0c30\u0c3e\u0c24\u0c4d\u0c30\u0c3f.",
+    "file": "audio/cache/te_1c0c5abfdafb645d5d39eb2141e398bd.pcm",
+    "dur": 1.3390416666666667
+   },
+   {
+    "text": "\u0c35\u0c30\u0c4d\u0c37\u0c02 \u0c2e\u0c4a\u0c26\u0c32\u0c35\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_c77d66da5ff8129694c75ac7180440ed.pcm",
+    "dur": 1.745375
+   }
+  ],
+  "f6": [
+   {
+    "text": "\u0c2e\u0c46\u0c32\u0c4d\u0c32\u0c17\u0c3e \u0c2e\u0c4a\u0c26\u0c32\u0c35\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_f3f65db8d05839cb0cc5a99e2b5ccf7b.pcm",
+    "dur": 1.7918333333333334
+   },
+   {
+    "text": "\u0c07\u0c30\u0c35\u0c48 \u0c28\u0c3f\u0c2e\u0c3f\u0c37\u0c3e\u0c32 \u0c35\u0c30\u0c15\u0c41 \u0c0f\u0c2e\u0c40 \u0c24\u0c2a\u0c4d\u0c2a\u0c41\u0c17\u0c3e \u0c05\u0c28\u0c3f\u0c2a\u0c3f\u0c02\u0c1a\u0c26\u0c41.",
+    "file": "audio/cache/te_619b883ed016f966585cccfe2b155c72.pcm",
+    "dur": 4.438875
+   },
+   {
+    "text": "\u0c24\u0c30\u0c4d\u0c35\u0c3e\u0c24, \u0c2a\u0c1f\u0c4d\u0c1f\u0c23\u0c02\u0c32\u0c4b\u0c28\u0c3f \u0c32\u0c4b\u0c24\u0c1f\u0c4d\u0c1f\u0c41 \u0c2e\u0c42\u0c32\u0c32\u0c4d\u0c32\u0c4b \u0c2e\u0c4a\u0c26\u0c1f\u0c3f \u0c28\u0c40\u0c30\u0c41 \u0c1a\u0c47\u0c30\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_cccdb95cd3c4e01d500f74bd2793c308.pcm",
+    "dur": 5.530208333333333
+   }
+  ],
+  "f7": [
+   {
+    "text": "\u0c12\u0c02\u0c1f\u0c3f \u0c17\u0c02\u0c1f\u0c15\u0c32\u0c4d\u0c32\u0c3e \u0c2a\u0c26\u0c3f \u0c39\u0c46\u0c15\u0c4d\u0c1f\u0c3e\u0c30\u0c4d\u0c32\u0c41 \u0c28\u0c40\u0c1f\u0c3f\u0c32\u0c4b \u0c2e\u0c41\u0c28\u0c3f\u0c17\u0c3f\u0c2a\u0c4b\u0c24\u0c3e\u0c2f\u0c3f.",
+    "file": "audio/cache/te_d96e53cb4294c2f93ca4a5fb600c9220.pcm",
+    "dur": 5.495416666666666
+   },
+   {
+    "text": "\u0c12\u0c15\u0c1f\u0c40 \u0c2e\u0c41\u0c2a\u0c4d\u0c2a\u0c48 \u0c06\u0c30\u0c41\u0c15\u0c41 \u0c35\u0c30\u0c4d\u0c37\u0c02 \u0c17\u0c30\u0c3f\u0c37\u0c4d\u0c20\u0c3e\u0c28\u0c3f\u0c15\u0c3f \u0c1a\u0c47\u0c30\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_0dea1f7d355ab020bc4a98e143b1cd0c.pcm",
+    "dur": 4.752375
+   },
+   {
+    "text": "\u0c30\u0c46\u0c02\u0c21\u0c41 \u0c17\u0c02\u0c1f\u0c32\u0c15\u0c32\u0c4d\u0c32\u0c3e \u0c26\u0c3e\u0c26\u0c3e\u0c2a\u0c41 \u0c07\u0c30\u0c35\u0c48 \u0c28\u0c3e\u0c32\u0c41\u0c17\u0c41 \u0c39\u0c46\u0c15\u0c4d\u0c1f\u0c3e\u0c30\u0c4d\u0c32\u0c41.",
+    "file": "audio/cache/te_e8803692d58dfeffd3b1328fb19ce49b.pcm",
+    "dur": 4.183458333333333
+   },
+   {
+    "text": "\u0c08 \u0c35\u0c30\u0c26 \u0c1a\u0c47\u0c30\u0c47 \u0c17\u0c30\u0c3f\u0c37\u0c4d\u0c20 \u0c35\u0c3f\u0c38\u0c4d\u0c24\u0c40\u0c30\u0c4d\u0c23\u0c02 \u0c07\u0c26\u0c47.",
+    "file": "audio/cache/te_1e23c32909de2d0904eae53e940a514a.pcm",
+    "dur": 3.2895
+   }
+  ],
+  "f8": [
+   {
+    "text": "\u0c05\u0c2a\u0c4d\u0c2a\u0c41\u0c21\u0c41 \u0c2e\u0c40\u0c30\u0c3e\u0c15\u0c41, \u0c15\u0c3e\u0c17\u0c3f\u0c24\u0c02 \u0c2e\u0c4d\u0c2f\u0c3e\u0c2a\u0c41\u0c32\u0c41 \u0c0e\u0c2a\u0c4d\u0c2a\u0c41\u0c21\u0c42 \u0c1a\u0c42\u0c2a\u0c3f\u0c02\u0c1a\u0c28\u0c3f\u0c26\u0c3f \u0c15\u0c28\u0c3f\u0c2a\u0c3f\u0c38\u0c4d\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_4d0c7e3deffe22914d0c4832ae7e7d20.pcm",
+    "dur": 6.203625
+   },
+   {
+    "text": "\u0c2e\u0c4b\u0c21\u0c32\u0c4d \u0c05\u0c27\u0c3f\u0c15 \u0c2a\u0c4d\u0c30\u0c2e\u0c3e\u0c26\u0c02\u0c17\u0c3e \u0c1a\u0c42\u0c2a\u0c3f\u0c02\u0c1a\u0c3f\u0c28 \u0c2c\u0c4d\u0c32\u0c3e\u0c15\u0c4d\u200c\u0c32\u0c32\u0c4b \u0c0e\u0c28\u0c3f\u0c2e\u0c3f\u0c26\u0c3f \u0c2e\u0c41\u0c16\u0c4d\u0c2f\u0c2e\u0c48\u0c28 \u0c2a\u0c4d\u0c30\u0c26\u0c47\u0c36\u0c3e\u0c32\u0c41 \u0c09\u0c28\u0c4d\u0c28\u0c3e\u0c2f\u0c3f.",
+    "file": "audio/cache/te_13d5fd65d42f4911a36b29fa89c3f5dc.pcm",
+    "dur": 6.226833333333333
+   },
+   {
+    "text": "\u0c10\u0c26\u0c41 \u0c06\u0c38\u0c41\u0c2a\u0c24\u0c4d\u0c30\u0c41\u0c32\u0c41 \u0c32\u0c47\u0c26\u0c3e \u0c15\u0c4d\u0c32\u0c3f\u0c28\u0c3f\u0c15\u0c4d\u200c\u0c32\u0c41.",
+    "file": "audio/cache/te_e3dee588181ea1d590e875515fde6933.pcm",
+    "dur": 3.2895
+   },
+   {
+    "text": "\u0c05\u0c17\u0c4d\u0c28\u0c3f\u0c2e\u0c3e\u0c2a\u0c15 \u0c15\u0c47\u0c02\u0c26\u0c4d\u0c30\u0c02.",
+    "file": "audio/cache/te_ba1429f5e6fd908050c484559d0124a2.pcm",
+    "dur": 1.6757083333333334
+   },
+   {
+    "text": "\u0c2e\u0c30\u0c3f\u0c2f\u0c41 \u0c06\u0c36\u0c4d\u0c30\u0c2f\u0c3e\u0c32\u0c41\u0c17\u0c3e \u0c09\u0c2a\u0c2f\u0c4b\u0c17\u0c2a\u0c21\u0c47 \u0c30\u0c46\u0c02\u0c21\u0c41 \u0c38\u0c4d\u0c25\u0c32\u0c3e\u0c32\u0c41.",
+    "file": "audio/cache/te_6efee860d92d35a5147255cbfdc64e2a.pcm",
+    "dur": 3.986083333333333
+   }
+  ],
+  "f9": [
+   {
+    "text": "\u0c2e\u0c39\u0c3e\u0c35\u0c40\u0c30\u0c4d \u0c06\u0c38\u0c41\u0c2a\u0c24\u0c4d\u0c30\u0c3f, \u0c30\u0c46\u0c02\u0c21\u0c41 \u0c2a\u0c3e\u0c2f\u0c3f\u0c02\u0c1f\u0c4d \u0c28\u0c3e\u0c32\u0c41\u0c17\u0c41 \u0c15\u0c3f\u0c32\u0c4b\u0c2e\u0c40\u0c1f\u0c30\u0c4d\u0c32 \u0c26\u0c42\u0c30\u0c02\u0c32\u0c4b\u0c28\u0c3f \u0c06\u0c36\u0c4d\u0c30\u0c2f\u0c3e\u0c28\u0c3f\u0c15\u0c3f \u0c07\u0c02\u0c15\u0c3e \u0c05\u0c28\u0c41\u0c38\u0c02\u0c27\u0c3e\u0c28\u0c2e\u0c48 \u0c09\u0c02\u0c26\u0c3e \u0c05\u0c28\u0c3f \u0c06\u0c2e\u0c46 \u0c2a\u0c30\u0c3f\u0c36\u0c40\u0c32\u0c3f\u0c38\u0c4d\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_7189c528be14c76e541f4b97cd15d94a.pcm",
+    "dur": 11.915708333333333
+   },
+   {
+    "text": "\u0c07\u0c30\u0c35\u0c48 \u0c10\u0c26\u0c41 \u0c38\u0c46\u0c02\u0c1f\u0c40\u0c2e\u0c40\u0c1f\u0c30\u0c4d\u0c32 \u0c28\u0c40\u0c1f\u0c3f\u0c32\u0c4b, \u0c05\u0c35\u0c41\u0c28\u0c41.",
+    "file": "audio/cache/te_bdf8db7680df485d49bba5ec14c6ef7b.pcm",
+    "dur": 4.2995833333333335
+   },
+   {
+    "text": "\u0c2a\u0c26\u0c3f \u0c38\u0c46\u0c02\u0c1f\u0c40\u0c2e\u0c40\u0c1f\u0c30\u0c4d\u0c32\u0c32\u0c4b, \u0c2a\u0c26\u0c4d\u0c28\u0c3e\u0c32\u0c41\u0c17\u0c41 \u0c15\u0c3f\u0c32\u0c4b\u0c2e\u0c40\u0c1f\u0c30\u0c4d\u0c32 \u0c30\u0c4b\u0c21\u0c4d\u0c32\u0c41 \u0c2a\u0c28\u0c3f\u0c15\u0c3f\u0c30\u0c3e\u0c15\u0c41\u0c02\u0c21\u0c3e \u0c2a\u0c4b\u0c24\u0c3e\u0c2f\u0c3f, \u0c05\u0c28\u0c41\u0c38\u0c02\u0c27\u0c3e\u0c28\u0c02 \u0c24\u0c46\u0c17\u0c3f\u0c2a\u0c4b\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_1363a5f14bd404cea85d80296602b861.pcm",
+    "dur": 9.024833333333333
+   },
+   {
+    "text": "\u0c05\u0c26\u0c3f \u0c05\u0c28\u0c41\u0c38\u0c30\u0c3f\u0c02\u0c1a\u0c3e\u0c32\u0c4d\u0c38\u0c3f\u0c28 \u0c2e\u0c3e\u0c30\u0c4d\u0c17\u0c02 \u0c15\u0c3e\u0c26\u0c41.",
+    "file": "audio/cache/te_d156bd9bbdd140e60905c75892308c2d.pcm",
+    "dur": 2.62775
+   },
+   {
+    "text": "\u0c2a\u0c4d\u0c30\u0c23\u0c3e\u0c33\u0c3f\u0c15 \u0c35\u0c47\u0c38\u0c41\u0c15\u0c4b\u0c35\u0c3e\u0c32\u0c4d\u0c38\u0c3f\u0c28 \u0c39\u0c46\u0c1a\u0c4d\u0c1a\u0c30\u0c3f\u0c15.",
+    "file": "audio/cache/te_e2de3e8feea7f6aaa7c5d69bc8a03302.pcm",
+    "dur": 2.836708333333333
+   }
+  ],
+  "f10": [
+   {
+    "text": "\u0c06\u0c2e\u0c46 \u0c05\u0c02\u0c26\u0c30\u0c3f\u0c28\u0c40 \u0c05\u0c28\u0c4d\u0c28\u0c3f\u0c1a\u0c4b\u0c1f\u0c4d\u0c32\u0c15\u0c42 \u0c2a\u0c02\u0c2a\u0c3e\u0c32\u0c4d\u0c38\u0c3f\u0c28 \u0c05\u0c35\u0c38\u0c30\u0c02 \u0c32\u0c47\u0c26\u0c41.",
+    "file": "audio/cache/te_3a1eb8d815ed9a36a728cd1a660ac807.pcm",
+    "dur": 4.26475
+   },
+   {
+    "text": "\u0c12\u0c15 \u0c2c\u0c4d\u0c32\u0c3e\u0c15\u0c4d \u0c2e\u0c4a\u0c26\u0c1f\u0c3f \u0c38\u0c4d\u0c25\u0c3e\u0c28\u0c02\u0c32\u0c4b \u0c09\u0c02\u0c26\u0c3f: \u0c2c\u0c4d\u0c32\u0c3e\u0c15\u0c4d \u0c28\u0c42\u0c1f \u0c28\u0c32\u0c2d\u0c48 \u0c30\u0c46\u0c02\u0c21\u0c41.",
+    "file": "audio/cache/te_8c2a8bb41521c80105bb645ed7aec738.pcm",
+    "dur": 5.588291666666667
+   },
+   {
+    "text": "\u0c38\u0c4d\u0c15\u0c4b\u0c30\u0c41 \u0c05\u0c30\u0c35\u0c48 \u0c24\u0c4a\u0c2e\u0c4d\u0c2e\u0c3f\u0c26\u0c3f, \u0c2a\u0c1f\u0c4d\u0c1f\u0c23\u0c02\u0c32\u0c4b\u0c28\u0c47 \u0c05\u0c24\u0c4d\u0c2f\u0c27\u0c3f\u0c15\u0c02.",
+    "file": "audio/cache/te_25bc6349b4779f5d320983637b685dd8.pcm",
+    "dur": 4.647875
+   },
+   {
+    "text": "\u0c26\u0c3e\u0c28\u0c3f \u0c30\u0c46\u0c02\u0c21\u0c41 \u0c15\u0c3e\u0c32\u0c41\u0c35\u0c32\u0c42 \u0c2e\u0c42\u0c38\u0c41\u0c15\u0c41\u0c2a\u0c4b\u0c2f\u0c3e\u0c2f\u0c3f.",
+    "file": "audio/cache/te_5eb43cd7b7745d86b23a8946a5fa8115.pcm",
+    "dur": 3.359166666666667
+   }
+  ],
+  "f11": [
+   {
+    "text": "\u0c15\u0c3e\u0c2c\u0c1f\u0c4d\u0c1f\u0c3f \u0c06\u0c2e\u0c46 \u0c12\u0c15\u0c47 \u0c12\u0c15\u0c4d\u0c15\u0c1f\u0c3f \u0c2a\u0c4d\u0c30\u0c2f\u0c24\u0c4d\u0c28\u0c3f\u0c38\u0c4d\u0c24\u0c41\u0c02\u0c26\u0c3f: \u0c06 \u0c30\u0c46\u0c02\u0c21\u0c41 \u0c15\u0c3e\u0c32\u0c41\u0c35\u0c32\u0c28\u0c41 \u0c36\u0c41\u0c2d\u0c4d\u0c30\u0c02 \u0c1a\u0c47\u0c38\u0c3f, \u0c2e\u0c33\u0c4d\u0c32\u0c40 \u0c28\u0c21\u0c3f\u0c2a\u0c3f \u0c1a\u0c42\u0c21\u0c1f\u0c02.",
+    "file": "audio/cache/te_fe5c7c322b463191956eb7cca5b16bbe.pcm",
+    "dur": 8.583666666666666
+   },
+   {
+    "text": "\u0c2c\u0c4d\u0c32\u0c3e\u0c15\u0c4d \u0c38\u0c4d\u0c15\u0c4b\u0c30\u0c41 \u0c05\u0c30\u0c35\u0c48 \u0c24\u0c4a\u0c2e\u0c4d\u0c2e\u0c3f\u0c26\u0c3f \u0c28\u0c41\u0c02\u0c1a\u0c3f \u0c05\u0c30\u0c35\u0c48 \u0c12\u0c15\u0c1f\u0c3f \u0c2a\u0c3e\u0c2f\u0c3f\u0c02\u0c1f\u0c4d \u0c0f\u0c21\u0c41\u0c15\u0c41 \u0c24\u0c17\u0c4d\u0c17\u0c41\u0c24\u0c41\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_ba47d249fcd0c193378fd87e0a614abb.pcm",
+    "dur": 6.041083333333333
+   },
+   {
+    "text": "\u0c2a\u0c1f\u0c4d\u0c1f\u0c23\u0c2e\u0c02\u0c24\u0c1f\u0c3e \u0c05\u0c27\u0c3f\u0c15 \u0c2a\u0c4d\u0c30\u0c2e\u0c3e\u0c26 \u0c2c\u0c4d\u0c32\u0c3e\u0c15\u0c4d\u200c\u0c32\u0c41 \u0c0e\u0c28\u0c2d\u0c48 \u0c28\u0c41\u0c02\u0c1a\u0c3f \u0c21\u0c46\u0c2c\u0c4d\u0c2c\u0c48 \u0c30\u0c46\u0c02\u0c21\u0c41\u0c15\u0c41 \u0c24\u0c17\u0c4d\u0c17\u0c41\u0c24\u0c3e\u0c2f\u0c3f.",
+    "file": "audio/cache/te_0d4aeea428b0743cb06f0afb5608528b.pcm",
+    "dur": 6.830541666666667
+   },
+   {
+    "text": "\u0c35\u0c30\u0c4d\u0c37\u0c3e\u0c28\u0c3f\u0c15\u0c3f \u0c2e\u0c41\u0c02\u0c26\u0c47 \u0c30\u0c46\u0c02\u0c21\u0c41 \u0c15\u0c3e\u0c32\u0c41\u0c35\u0c32\u0c41 \u0c36\u0c41\u0c2d\u0c4d\u0c30\u0c02.",
+    "file": "audio/cache/te_d5064a96b19032fe54cc86e77207d554.pcm",
+    "dur": 4.0441666666666665
+   }
+  ],
+  "f12": [
+   {
+    "text": "\u0c06\u0c30\u0c41 \u0c17\u0c02\u0c1f\u0c32\u0c15\u0c41 \u0c35\u0c30\u0c4d\u0c37\u0c02 \u0c06\u0c17\u0c3f\u0c02\u0c26\u0c3f, \u0c28\u0c40\u0c30\u0c41 \u0c24\u0c17\u0c4d\u0c17\u0c3f\u0c2a\u0c4b\u0c24\u0c4b\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_3d7a4ab3e5580d46726aaf35a29fb911.pcm",
+    "dur": 4.404041666666667
+   },
+   {
+    "text": "\u0c08 \u0c15\u0c25\u0c32\u0c4b \u0c28\u0c3f\u0c1c\u0c02\u0c17\u0c3e \u0c0f\u0c26\u0c40 \u0c1c\u0c30\u0c17\u0c32\u0c47\u0c26\u0c41.",
+    "file": "audio/cache/te_9c585ea28b89319225a5eaa8a7a99af1.pcm",
+    "dur": 3.57975
+   },
+   {
+    "text": "\u0c07\u0c26\u0c3f \u0c12\u0c15 \u0c30\u0c3f\u0c39\u0c3e\u0c30\u0c4d\u0c38\u0c32\u0c4d.",
+    "file": "audio/cache/te_594b0dc6cd452dfb35065774c605a3fc.pcm",
+    "dur": 1.6060416666666666
+   },
+   {
+    "text": "\u0c05\u0c32\u0c3e\u0c02\u0c1f\u0c3f \u0c30\u0c3f\u0c39\u0c3e\u0c30\u0c4d\u0c38\u0c32\u0c4d \u0c15\u0c4b\u0c38\u0c2e\u0c47 \u0c2a\u0c43\u0c25\u0c4d\u0c35\u0c3f \u0c0f\u0c10 \u0c30\u0c42\u0c2a\u0c4a\u0c02\u0c26\u0c3f\u0c02\u0c26\u0c3f.",
+    "file": "audio/cache/te_c43e59af101d219e90e4a28ff07c6a87.pcm",
+    "dur": 4.682708333333333
+   }
+  ]
+ }
+}
