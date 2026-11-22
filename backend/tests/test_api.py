@@ -58,3 +58,17 @@ def test_simulate_option_returns_uncalibrated_label():
     body = {**BODY, "rainfall_scenario": {**BODY["rainfall_scenario"], "duration_hours": 1, "value": 40}, "simulate": True}
     r = c.post("/api/v1/scenarios", json=body, timeout=120)
     assert r.status_code == 201 and r.json()["simulation"]["status"] == "uncalibrated_scenario_output"
+
+
+def test_solver_endpoint_is_single_flight(monkeypatch):
+    """A second simulate=true request while the solver is busy gets 429 instead of piling onto a small host."""
+    from api import routes
+
+    class Busy:
+        def locked(self):
+            return True
+
+    monkeypatch.setattr(routes, "_SIM_LOCK", Busy())
+    r = c.post("/api/v1/scenarios", json={**BODY, "simulate": True})
+    assert r.status_code == 429 and r.headers["retry-after"] == "10"
+    assert c.post("/api/v1/scenarios", json=BODY).status_code == 201  # plain scenarios are unaffected

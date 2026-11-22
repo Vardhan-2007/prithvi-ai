@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import asyncio
+
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
@@ -9,6 +11,7 @@ from services import assistant, scenarios
 from services.data import dataset, zones_geojson
 
 router = APIRouter()
+_SIM_LOCK = asyncio.Lock()
 
 
 def _area(area_id: str) -> dict:
@@ -65,7 +68,11 @@ async def create_scenario(req: ScenarioRequest):
     rec = scenarios.create(req)
     out = {k: rec[k] for k in ("scenario_id", "status", "data_status", "summary", "mean_index", "baseline_mean_index", "band_counts", "assumptions", "results_geojson_url")}
     if req.simulate:
-        out["simulation"] = await run_in_threadpool(scenarios.simulate, rec["core"], rec["result"])
+        # the reference solver takes ~10 s of CPU: run one at a time so a burst of requests cannot exhaust a small host
+        if _SIM_LOCK.locked():
+            raise HTTPException(429, "the reference solver is busy; retry in a few seconds", headers={"Retry-After": "10"})
+        async with _SIM_LOCK:
+            out["simulation"] = await run_in_threadpool(scenarios.simulate, rec["core"], rec["result"])
     return out
 
 

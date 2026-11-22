@@ -1,0 +1,11 @@
+.git
+.github
+**/node_modules
+**/__pycache__
+.pytest_cache
+frontend
+video
+docs
+data/raw
+**/.DS_Store
+*.mp4

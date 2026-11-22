@@ -1,0 +1,14 @@
+# Render Blueprint: New -> Blueprint -> pick this repo. Deploys the FastAPI backend as a Docker web service.
+# After the first deploy, set PRITHVI_CORS_ORIGINS to your frontend's exact origin (no trailing slash).
+services:
+  - type: web
+    name: prithvi-ai-api
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    plan: free
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: PRITHVI_CORS_ORIGINS
+        sync: false   # you enter this in the Render dashboard, e.g. https://prithvi-ai.vercel.app

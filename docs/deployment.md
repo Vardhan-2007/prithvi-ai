@@ -33,23 +33,24 @@ The workflow builds with `VITE_BASE=/<repo>/` so assets resolve under the sub-pa
 
 ---
 
-## Optional — the FastAPI backend (e.g. Render)
+## Optional — the FastAPI backend (Render, via Docker)
 
-The backend reads `data/processed/` and imports `ai-engine/`, so deploy from the **repository root**.
+The repo ships a `Dockerfile` (built from the repository root, because the API reads `data/processed/` and imports `ai-engine/`) and a `render.yaml` Blueprint.
 
-1. Render → **New → Web Service** → connect the repo. Leave *Root Directory* empty.
-2. **Build command:** `pip install -r backend/requirements.txt`
-3. **Start command:** `cd backend && uvicorn main:app --host 0.0.0.0 --port $PORT`
-4. **Environment variables:**
-   * `PYTHON_VERSION` = `3.12`
-   * `PRITHVI_CORS_ORIGINS` = your site's exact origin, e.g. `https://prithvi-ai.vercel.app` (no trailing slash; comma-separate several)
-5. Deploy, then check `https://<your-api>.onrender.com/health` → `{"status":"ok",…}`.
-6. In your **frontend host's** settings add `VITE_API_URL=https://<your-api>.onrender.com` and **redeploy** (it is baked in at build time).
+1. Render → **New → Blueprint** → pick the `prithvi-ai` repo → **Apply**. (Or **New → Web Service → Docker**, leaving *Root Directory* empty.)
+2. When asked for `PRITHVI_CORS_ORIGINS`, enter your site's exact origin, e.g. `https://prithvi-ai.vercel.app` (no trailing slash; comma-separate several).
+3. Wait for the deploy, then open `https://<your-api>.onrender.com/health` → `{"status":"ok",…}`. Interactive docs are at `/docs`.
+4. In your **frontend host's** settings add `VITE_API_URL=https://<your-api>.onrender.com` and **redeploy** (it is baked in at build time).
+5. Open the site: the header should say **API online**, and assistant answers end with "via FastAPI".
+
+Run the same image locally: `docker build -t prithvi-api .` then `docker run -p 8000:8000 -e PRITHVI_CORS_ORIGINS=http://localhost:5173 prithvi-api`.
+
+What was checked: the API runs from exactly the files the image contains (`backend/`, `ai-engine/`, `data/processed/`); CORS answers only the configured origin; a production frontend built with `VITE_API_URL` shows *API online* and answers the assistant through the API; `simulate: true` takes ~8 s and a second concurrent request gets `429` instead of piling up. **Not checked:** the Docker image build itself and the Render deploy (run them once and check `/health`).
 
 Notes:
 * Free tiers sleep when idle; the first request can take ~30–60 s. The site keeps working meanwhile (it falls back to the in-browser engine).
-* The API has **no authentication** and no rate limiting. It only computes scenarios from public data, but don't treat it as hardened. `simulate: true` requests run a ~10 s solver — add rate limiting before exposing it widely.
-* The backend deployment steps are written from the platform docs and have not been exercised end to end.
+* The API has **no authentication**. It only computes scenarios from public data. `simulate: true` is single-flight (one solver run at a time); add real rate limiting before exposing it widely.
+* Scenarios are held in memory (last 200) and are lost on restart. The container runs a single worker for that reason.
 
 ---
 
@@ -69,5 +70,5 @@ Notes:
 | Blank page, 404 for `/assets/...` | Hosting under a sub-path without `VITE_BASE=/<path>/` at build time |
 | "This view could not start" | The browser has WebGL disabled or unavailable |
 | Header never shows *API online* | `VITE_API_URL` not set at build time, wrong URL, or the origin missing from `PRITHVI_CORS_ORIGINS` |
-| Backend crashes at start | Start command must `cd backend`; build from the repo root so `data/` and `ai-engine/` exist |
+| Backend crashes at start | Build from the repo root (the `Dockerfile` copies `backend/`, `ai-engine/`, `data/processed/`); read the Render logs |
 | CI red on a pull request | Run `make test` locally — CI runs the same checks |
