@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useStore, PRESETS, DEFAULT_SCENARIO, type RiskLayer } from "../store";
 import { useT } from "../components/i18n/i18n";
+import { LivePanel } from "./LivePanel";
 
 function Slider({ label, value, min, max, step, unit, onChange, hint }: {
   label: string; value: number; min: number; max: number; step: number; unit: string; hint?: string; onChange: (v: number) => void;
@@ -25,6 +26,7 @@ export function ScenarioPanel() {
   const applyScenario = useStore((s) => s.applyScenario);
   const clear = useStore((s) => s.clearOverrides);
   const timer = useRef<number | undefined>(undefined);
+  const live = useStore((s) => s.liveMode.on);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const change = (p: Partial<typeof sc>) => {
@@ -45,7 +47,8 @@ export function ScenarioPanel() {
   return (
     <aside className="panel left">
       <div className="panel-head"><h2>{t("sc.title")}</h2><span className="tag sim">{t("tag.simulated")}</span></div>
-      <div className="chips">
+      <LivePanel />
+      <div className={"chips" + (live ? " dim" : "")}>
         {PRESETS.map((p) => (
           <button key={p.id} className={"chip" + (isPreset(p) ? " on" : "")}
             onClick={() => { applyScenario({ rainfallMm: p.rainfallMm, durationH: p.durationH, blockageFrac: p.blockageFrac, overrides: {}, name: t(`preset.${p.id}`) }); }}>

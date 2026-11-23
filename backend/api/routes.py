@@ -7,7 +7,7 @@ from fastapi.concurrency import run_in_threadpool
 
 from config import AREA_ID, VERSION
 from models.schemas import AssistantRequest, ScenarioRequest
-from services import assistant, scenarios
+from services import assistant, forecast, scenarios
 from services.data import dataset, zones_geojson
 
 router = APIRouter()
@@ -58,6 +58,27 @@ def facilities(area_id: str):
     return {"data_status": "observed", "attribution": "(c) OpenStreetMap contributors, ODbL", "items": [
         {**f, "lonlat": [ds["meta"]["origin"]["lon"] + f["x"] / ds["meta"]["m_per_deg"]["lon"], ds["meta"]["origin"]["lat"] + f["y"] / ds["meta"]["m_per_deg"]["lat"]]}
         for f in ds["facilities"]]}
+
+
+def pilot_centre(ds: dict) -> tuple[float, float]:
+    w, s, e, n = ds["meta"]["bbox"]
+    return (s + n) / 2, (w + e) / 2
+
+
+@router.get("/api/v1/areas/{area_id}/forecast")
+async def area_forecast(area_id: str, hours: int = Query(default=24)):
+    """Live mode: next `hours` of hourly rain for the pilot from the Open-Meteo ensemble, as three storms
+    (low / likely / high = ensemble members at the 10th / 50th / 90th percentile of total rain). Cached for 1 h.
+    A forecast-driven SCENARIO input - not an official forecast or warning."""
+    ds = _area(area_id)
+    if hours not in forecast.ALLOWED_HOURS:
+        raise HTTPException(422, f"hours must be one of {list(forecast.ALLOWED_HOURS)}")
+    lat, lon = pilot_centre(ds)
+    try:
+        out = await run_in_threadpool(forecast.live_forecast, lat, lon, hours)
+    except forecast.ForecastUnavailable as exc:
+        raise HTTPException(503, f"live forecast unavailable: {exc}. The what-if mode still works.") from exc
+    return {"area_id": area_id, "centre": {"lat": round(lat, 5), "lon": round(lon, 5)}, **out}
 
 
 @router.post("/api/v1/scenarios", status_code=201)

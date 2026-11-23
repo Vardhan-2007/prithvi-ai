@@ -3,6 +3,8 @@ import type { Dataset, Scenario, ScenarioResult } from "./scenarios/engine/types
 import { BASELINE, evaluate, resolveInletOpen, zoneWater, type PumpSite } from "./scenarios/engine/risk";
 import { simData, startSim, seek, stopSim, scenarioStorm, onSimUpdate, peakAtPlayhead } from "./maps/twin3d/sim/simController";
 import type { Lang } from "./components/i18n/i18n";
+import { getForecast, type CaseKey, type ForecastHours, type ForecastResult } from "./scenarios/engine/forecast";
+import { stepStorm } from "./maps/twin3d/sim/storm";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
 
@@ -27,6 +29,16 @@ export const DEFAULT_SCENARIO: Scenario = {
 
 type Result = ScenarioResult & { pumpSites: PumpSite[] };
 
+/** Live mode: the scenario's rain comes from the latest ensemble forecast instead of the sliders. */
+export interface LiveMode {
+  on: boolean;
+  hours: ForecastHours;
+  status: "idle" | "loading" | "ok" | "error";
+  forecast: ForecastResult | null;
+  caseKey: CaseKey;
+  error: string | null;
+}
+
 interface State {
   ds: Dataset | null;
   error: string | null;
@@ -47,6 +59,11 @@ interface State {
   simRunKey: number;
   live: LiveStats | null;
   setLive(l: LiveStats): void;
+  liveMode: LiveMode;
+  setLiveOn(on: boolean): void;
+  setLiveHours(h: ForecastHours): void;
+  setLiveCase(c: CaseKey): void;
+  refreshForecast(): Promise<void>;
   init(ds: Dataset, baselineWater?: number[] | null): void;
   finalizeFromSim(): void;
   setLang(l: Lang): void;
@@ -75,6 +92,40 @@ export const useStore = create<State>((set, get) => ({
   layers: { risk: "off", peak: false, trees: true, buildings: true, roads: true, drains: true, facilities: true, water: true, rain: true, pumps: true },
   playing: true, speed: 600, routeFrom: null, routeTo: null, routeThreshold: 0.25, apiOnline: null, simRunKey: 0, live: null,
   setLive: (live) => set({ live }),
+  liveMode: { on: false, hours: 24, status: "idle", forecast: null, caseKey: "likely", error: null },
+
+  setLiveOn(on) {
+    set({ liveMode: { ...get().liveMode, on } });
+    if (on) void get().refreshForecast();
+    else get().applyScenario({ ...DEFAULT_SCENARIO });   // back to what-if mode (drops the forecast storm)
+  },
+  setLiveHours(hours) {
+    set({ liveMode: { ...get().liveMode, hours } });
+    if (get().liveMode.on) void get().refreshForecast();
+  },
+  setLiveCase(caseKey) {
+    set({ liveMode: { ...get().liveMode, caseKey } });
+    const f = get().liveMode.forecast;
+    if (!get().liveMode.on || !f) return;
+    const c = f.data.cases[caseKey];
+    get().applyScenario({
+      name: `Live forecast · ${caseKey} · ${c.total_mm} mm / ${f.data.hours} h`,
+      storm: stepStorm(c.hyetograph_mm, 1, { startIso: f.data.start_utc + "Z", label: `${f.data.source.name}, ${caseKey} member` }),
+    });
+  },
+  async refreshForecast() {
+    const { ds, liveMode } = get(); if (!ds) return;
+    set({ liveMode: { ...liveMode, status: "loading", error: null } });
+    const [w, s, e, n] = ds.meta.bbox;
+    try {
+      const forecast = await getForecast((s + n) / 2, (w + e) / 2, liveMode.hours);
+      if (!get().liveMode.on) return;   // switched off while loading
+      set({ liveMode: { ...get().liveMode, status: "ok", forecast, error: null } });
+      get().setLiveCase(get().liveMode.caseKey);
+    } catch (err) {
+      set({ liveMode: { ...get().liveMode, status: "error", error: err instanceof Error ? err.message : String(err) } });
+    }
+  },
 
   init(ds, baselineWater) {
     const baseline = evaluate(ds, BASELINE);
@@ -101,10 +152,13 @@ export const useStore = create<State>((set, get) => ({
     const ds = get().ds; if (!ds) return;
     const scenario: Scenario = { ...get().scenario, ...p };
     // Moving the rain or duration sliders leaves forecast / replay mode: drop the hyetograph.
-    if (!("storm" in p) && ("rainfallMm" in p || "durationH" in p)) delete scenario.storm;
+    if (!("storm" in p) && ("rainfallMm" in p || "durationH" in p)) {
+      delete scenario.storm;
+      if (get().liveMode.on) set({ liveMode: { ...get().liveMode, on: false } });   // manual rain = what-if mode
+    }
     // A hyetograph fixes the total depth and duration used by the risk index.
     if (scenario.storm) {
-      scenario.rainfallMm = scenario.storm.mm.reduce((a, b) => a + b, 0);
+      scenario.rainfallMm = Math.round(scenario.storm.mm.reduce((a, b) => a + b, 0) * 10) / 10;
       scenario.durationH = scenario.storm.mm.length * scenario.storm.stepH;
     }
     pendingRun = -1; // the running simulation no longer matches the scenario: never finalize from it

@@ -5,7 +5,8 @@
 | Buildings, roads, facilities, water | OpenStreetMap contributors via Overpass (https://www.openstreetmap.org/) | ODbL 1.0, attribution required | observed (completeness varies) |
 | Terrain | Copernicus GLO-90 DEM via the Open-Meteo elevation API (https://dataspace.copernicus.eu/) | Copernicus DEM licence, attribution | derived (90 m surface model) |
 | Drain inlets | Team assumption — farthest-point sampling along roads | n/a | **proxy** |
-| Rainfall | User-defined; NASA GPM IMERG (https://gpm.nasa.gov/data/imerg) is the future calibration candidate | n/a | simulated |
+| Rainfall (what-if) | User-defined; NASA GPM IMERG (https://gpm.nasa.gov/data/imerg) is the future calibration candidate | n/a | simulated |
+| Rainfall (Live mode) | ECMWF IFS 0.25° ensemble (`ecmwf_ifs025_ensemble`, 51 members) via the Open-Meteo Ensemble API (https://open-meteo.com/en/docs/ensemble-api), hourly precipitation for the pilot centre, fetched at run time and cached 1 h | Open-Meteo free API: non-commercial use, attribution required (CC BY 4.0 data) | simulated (model forecast) |
 
 Real warnings and forecasts: IMD https://mausam.imd.gov.in/ · NDMA https://ndma.gov.in/ · CWC https://cwc.gov.in/ · ISRO Bhuvan https://bhuvan.nrsc.gov.in/
 

@@ -149,6 +149,54 @@
     }
    }
   },
+  "/api/v1/areas/{area_id}/forecast": {
+   "get": {
+    "summary": "Area Forecast",
+    "description": "Live mode: next `hours` of hourly rain for the pilot from the Open-Meteo ensemble, as three storms\n(low / likely / high = ensemble members at the 10th / 50th / 90th percentile of total rain). Cached for 1 h.\nA forecast-driven SCENARIO input - not an official forecast or warning.",
+    "operationId": "area_forecast_api_v1_areas__area_id__forecast_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     },
+     {
+      "name": "hours",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 24,
+       "title": "Hours"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/scenarios": {
    "post": {
     "summary": "Create Scenario",

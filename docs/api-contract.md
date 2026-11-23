@@ -9,6 +9,7 @@ The machine-readable contract is [`docs/contracts/openapi.json`](contracts/opena
 | POST | `/api/v1/scenarios` | create + compute a scenario (`simulate: true` also runs the NumPy reference solver) |
 | GET | `/api/v1/scenarios/{id}` · `/geojson` · `/compare` | stored scenario, zone GeoJSON, baseline-vs-scenario comparison |
 | GET | `/api/v1/zones/{zone_id}/explanation` | factor breakdown + sentences |
+| GET | `/api/v1/areas/{id}/forecast?hours=24\|48\|72` | Live mode: next N h of hourly rain from the Open-Meteo ECMWF ensemble as low / likely / high storms (cached 1 h; 503 if the service is unreachable) |
 | POST | `/api/v1/assistant/query` | cited, extractive answer or an explicit abstain |
 
 ### Rainfall input: total or hyetograph
