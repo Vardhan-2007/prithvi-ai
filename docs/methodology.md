@@ -5,7 +5,25 @@ nothing is trained, and **no accuracy figure is claimed** because no ground-trut
 
 ## 1. Risk index (per 100 m zone)
 
-`RiskIndex = 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)` — an *index* (relative ranking), not a probability or a depth.
+The index has two stages. Both are *indices* (relative rankings), not probabilities or depths.
+
+* **Provisional** (instant, shown while the flood run is going): `RiskIndex = 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)`
+* **Final** (once that scenario's flood run has finished): `RiskIndex = 100 × (0.20·T + 0.15·D + 0.20·E + 0.45·W)`
+
+W is the **simulated-water factor**: how much water the scenario's own flood run put into the zone. Rainfall drops out of the final formula because it is the same in every zone (it shifts every score equally, so it cannot rank them) and its real effect, where the water goes, now arrives through W. The UI labels which stage a score is in.
+
+Why: before this change the score never looked at the simulation. In a 200 mm / 4 h / 50 %-blocked run, 40 of the 80 zones flagged Higher/Highest were nearly dry in the simulation. `frontend/scripts/agreement-report.ts` prints this check:
+
+| Scenario | Stage | Rank agreement with simulated water (Spearman) | Top-20 overlap | Flagged zones | …of which nearly dry (W < 0.1) |
+|---|---|---|---|---|---|
+| 100 mm / 6 h / 25 % | provisional | 0.32 | 10 / 20 | 6 | 0 |
+| | final | 0.64 | 19 / 20 | 15 | 0 |
+| 200 mm / 4 h / 50 % | provisional | 0.40 | 10 / 20 | 80 | 40 |
+| | final | 0.79 | 19 / 20 | 30 | 0 |
+| 300 mm / 4 h / 75 % | provisional | 0.45 | 7 / 20 | 206 | 122 |
+| | final | 0.86 | 17 / 20 | 37 | 0 |
+
+This agreement is partly **by construction** (W is now an input to the score), so it shows the score and the 3D water are *consistent*, not that either is *accurate*. Accuracy needs comparison with observed flooding (see the roadmap).
 
 | Factor | Definition (all clipped to 0–1) | Status |
 |---|---|---|
@@ -13,8 +31,12 @@ nothing is trained, and **no accuracy figure is claimed** because no ground-trut
 | **R** rainfall | `0.5·min(1, total_mm/250) + 0.5·min(1, (total_mm/duration_h)/100)` — user-defined scenario, uniform in space | simulated |
 | **D** drainage vulnerability | `0.6·(1 − C) + 0.4·imperv`, where `C = min(1, Σ_open w / w_ref)`, `w = exp(−d/90 m)` over proxy inlets within 250 m (plus pumps) | proxy |
 | **E** exposure | `0.5·norm(building area) + 0.3·norm(road length) + 0.2·min(1, (health + emergency + ½·shelter)/2)` | derived |
+| **W** simulated water (final stage only) | Over the zone's non-building cells, using each cell's peak depth in the scenario's flood run: `0.5·min(1, share of cells ≥ 0.15 m / 0.5) + 0.5·min(1, 90th-percentile peak depth / 0.5 m)` | simulated (uncalibrated) |
 
-* Weights are provisional design assumptions, not calibrated coefficients.
+* All weights are design assumptions, not calibrated coefficients. The final weights give W the largest share (0.45) so the colours follow the water, while terrain, drainage and exposure still separate zones the coarse simulation treats alike.
+* The **baseline** is scored at the same stage as the scenario. The final baseline's W comes from one baseline flood run, precomputed in `data/processed/baseline_water.json` (`frontend/scripts/export-baseline-water.ts`).
+* Pump sites are always chosen from the *provisional*, no-pump score: pumps change the water, so choosing them from W would be circular.
+* The scenario library grid on the Overview tab shows instant provisional scores (running 16 floods to fill it would take minutes).
 * Display bands: Lower < 35 ≤ Moderate < 48 ≤ Higher < 60 ≤ Highest *relative* index. Thresholds are display choices.
 * **Baseline** = 30 mm over 6 h with every proxy inlet open (same weights, same data — only scenario inputs differ).
 * Blocking `x %` of inlets blocks the first `round(x·N)` entries of a fixed seeded permutation, so results repeat exactly.
@@ -24,7 +46,7 @@ nothing is trained, and **no accuracy figure is claimed** because no ground-trut
 * Missing data are never silently zero: zones without mapped assets get E = 0 *and* the UI shows the counts that produced it.
 
 ### Explainability
-`contributions = 100·w·factor` and sum exactly to the index (tested). The Zone tab shows factors vs baseline, plus sentences generated from the numbers (EN/Telugu).
+`contributions = 100·w·factor` and sum exactly to the index at either stage (tested). The Zone tab shows factors vs baseline, plus sentences generated from the numbers (EN/Telugu).
 
 ### Priority ranking
 `priority = index × (0.6 + 0.4·E) + 4·min(2, #mapped critical facilities)`. A planning aid, not a dispatch order.

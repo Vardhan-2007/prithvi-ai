@@ -1,14 +1,19 @@
-import type { Scenario, Zone, ZoneResult } from "../../scenarios/engine/types";
+import type { Scenario, ScoreStage, Zone, ZoneResult } from "../../scenarios/engine/types";
 import { tr } from "../../components/i18n/i18n";
 import type { Lang } from "../../components/i18n/i18n";
 
 /** Plain-language reasons behind a zone's score (EN / Telugu). Every sentence is derived from the numbers. */
-export function explainZone(lang: Lang, z: Zone, r: ZoneResult, base: ZoneResult, sc: Scenario, intensity: number): string[] {
+export function explainZone(lang: Lang, z: Zone, r: ZoneResult, base: ZoneResult, sc: Scenario, intensity: number, stage: ScoreStage = "provisional"): string[] {
   const t = (k: string, p?: Record<string, string | number>) => tr(lang, k, p);
   const out: string[] = [];
   const lvl = (v: number) => (v >= 0.66 ? "high" : v <= 0.33 ? "low" : "mid");
   out.push(t(`why.terrain.${lvl(r.factors.terrain)}`, { v: r.factors.terrain.toFixed(2), elev: z.mean_elev.toFixed(1) }));
-  out.push(t("why.rain", { mm: sc.rainfallMm, h: sc.durationH, i: intensity.toFixed(0), f: r.factors.rainfall.toFixed(2) }));
+  if (stage === "final") {
+    const w = r.factors.water;
+    out.push(t(`why.water.${w >= 0.5 ? "high" : w >= 0.15 ? "mid" : "low"}`, { w: w.toFixed(2), mm: +sc.rainfallMm.toFixed(1), h: +sc.durationH.toFixed(2) }));
+  } else {
+    out.push(t("why.rain", { mm: sc.rainfallMm, h: sc.durationH, i: intensity.toFixed(0), f: r.factors.rainfall.toFixed(2) }));
+  }
   out.push(t(r.openInlets < r.totalInlets ? "why.drain.blocked" : "why.drain.ok", {
     open: r.openInlets, total: r.totalInlets, cap: Math.round(r.drainCapacity * 100), v: r.factors.drainage.toFixed(2),
   }));

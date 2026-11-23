@@ -74,15 +74,20 @@ export interface ZoneResult {
   id: string;
   index: number;            // 0..100
   band: Band;
-  factors: { terrain: number; rainfall: number; drainage: number; exposure: number }; // normalised 0..1
-  contrib: { terrain: number; rainfall: number; drainage: number; exposure: number }; // weighted points
+  // normalised 0..1 / weighted points. `water` (simulated water, W) is 0 in the provisional stage.
+  factors: { terrain: number; rainfall: number; drainage: number; exposure: number; water: number };
+  contrib: { terrain: number; rainfall: number; drainage: number; exposure: number; water: number };
   drainCapacity: number;    // 0..1 effective local inlet capacity
   openInlets: number;
   totalInlets: number;
 }
 
+/** provisional = instant formula (terrain, rain, drainage, exposure); final = includes the simulated-water factor W. */
+export type ScoreStage = "provisional" | "final";
+
 export interface ScenarioResult {
   scenario: Scenario;
+  stage: ScoreStage;
   rainfallFactor: number;
   intensityMmH: number;
   zones: ZoneResult[];

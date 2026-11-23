@@ -1,11 +1,14 @@
 from __future__ import annotations
 
+import json
 import uuid
 from collections import OrderedDict
 from typing import Any
 
 import numpy as np
-from risk_scoring import BASELINE, evaluate
+from risk_scoring import BASELINE, evaluate, zone_water
+
+from config import DATA_DIR
 
 from .data import dataset, exposure
 
@@ -13,17 +16,40 @@ ASSUMPTIONS = [
     "Rainfall input is user-defined (a total or an hour-by-hour hyetograph); it is a scenario, not an official forecast",
     "Drainage inlets are proxy points; blockage is a sensitivity assumption, not an inspection record",
     "Risk index is a relative ranking - not a flood probability or depth estimate",
-    "Weights (0.30/0.25/0.25/0.20) are provisional design assumptions, not calibrated coefficients",
+    "Weights are design assumptions, not calibrated coefficients: provisional 0.30 terrain / 0.25 rainfall / 0.25 drainage / 0.20 exposure; "
+    "final (after the flood run) 0.20 terrain / 0.15 drainage / 0.20 exposure / 0.45 simulated water",
 ]
 _STORE: "OrderedDict[str, dict[str, Any]]" = OrderedDict()
 _BASE: dict[str, Any] | None = None
+_BASE_FINAL: dict[str, Any] | None = None
+BASELINE_WATER = DATA_DIR / "baseline_water.json"
 
 
-def baseline() -> dict[str, Any]:
-    global _BASE
+def baseline(stage: str = "provisional") -> dict[str, Any]:
+    """Baseline result at the requested stage. The final baseline uses the precomputed simulated-water factor
+    (data/processed/baseline_water.json, written by frontend/scripts/export-baseline-water.ts); if that file is
+    missing it falls back to the provisional baseline."""
+    global _BASE, _BASE_FINAL
     if _BASE is None:
         _BASE = evaluate(dataset(), BASELINE)
-    return _BASE
+    if stage != "final":
+        return _BASE
+    if _BASE_FINAL is None and BASELINE_WATER.exists():
+        w = json.loads(BASELINE_WATER.read_text())["water"]
+        _BASE_FINAL = evaluate(dataset(), BASELINE, water=w)
+    return _BASE_FINAL or _BASE
+
+
+def baseline_for(result: dict[str, Any]) -> dict[str, Any]:
+    return baseline(result.get("stage", "provisional"))
+
+
+def _summary(ds: dict, res: dict) -> dict[str, Any]:
+    exp = exposure(ds, res)
+    return {"zones_in_highest_index_band": res["band_counts"]["highest"],
+            "zones_in_higher_or_highest_band": res["band_counts"]["higher"] + res["band_counts"]["highest"],
+            "roads_intersecting_flagged_zones": exp["roads"], "flagged_road_km": round(exp["road_km"], 2),
+            "facilities_intersecting_flagged_zones": len(exp["facilities"])}
 
 
 def to_core(req) -> dict:
@@ -40,13 +66,9 @@ def create(req) -> dict[str, Any]:
     ds = dataset()
     core = to_core(req)
     res = evaluate(ds, core)
-    exp = exposure(ds, res)
     sid = f"scn_{uuid.uuid4().hex[:8]}"
     rec = {"scenario_id": sid, "status": "completed", "data_status": "simulated_scenario", "request": req.model_dump(), "core": core, "result": res,
-           "summary": {"zones_in_highest_index_band": res["band_counts"]["highest"],
-                       "zones_in_higher_or_highest_band": res["band_counts"]["higher"] + res["band_counts"]["highest"],
-                       "roads_intersecting_flagged_zones": exp["roads"], "flagged_road_km": round(exp["road_km"], 2),
-                       "facilities_intersecting_flagged_zones": len(exp["facilities"])},
+           "score_stage": "provisional", "summary": _summary(ds, res),
            "mean_index": res["mean_index"], "baseline_mean_index": baseline()["mean_index"], "band_counts": res["band_counts"],
            "assumptions": ASSUMPTIONS, "results_geojson_url": f"/api/v1/scenarios/{sid}/geojson"}
     _STORE[sid] = rec
@@ -57,6 +79,14 @@ def create(req) -> dict[str, Any]:
 
 def get(sid: str) -> dict[str, Any] | None:
     return _STORE.get(sid)
+
+
+def finalize(rec: dict[str, Any], water: list[float]) -> None:
+    """Rescore a stored scenario with the simulated-water factor W from its own flood run (FINAL stage)."""
+    ds = dataset()
+    res = evaluate(ds, rec["core"], water=water)
+    rec.update(result=res, score_stage="final", summary=_summary(ds, res), mean_index=res["mean_index"],
+               baseline_mean_index=baseline("final")["mean_index"], band_counts=res["band_counts"])
 
 
 def simulate(core: dict, res: dict) -> dict[str, Any]:
@@ -72,7 +102,8 @@ def simulate(core: dict, res: dict) -> dict[str, Any]:
                           core["rainfall_mm"], core["duration_h"],
                           storm=step_storm(core["hyetograph_mm"], core["step_h"]) if core.get("hyetograph_mm") else None)
     out = s.run()
-    return {"status": "uncalibrated_scenario_output", "peak_flooded_ha": round(out["peak_flooded_ha"], 2), "peak_max_depth_m": round(out["peak_max_depth"], 3),
+    water = zone_water(ds, s.peak)
+    return {"status": "uncalibrated_scenario_output", "_zone_water": water, "peak_flooded_ha": round(out["peak_flooded_ha"], 2), "peak_max_depth_m": round(out["peak_max_depth"], 3),
             "rain_m3": round(s.expected_rain_m3()), "drained_m3": round(float(out["drain_m3"])), "outfall_m3": round(float(out["outfall_m3"])),
             "stored_m3": round(out["stored_m3"]),
             "note": "Illustrative output of a simplified solver on a coarse terrain model. Not a flood-depth forecast."}

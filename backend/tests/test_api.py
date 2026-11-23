@@ -99,3 +99,28 @@ def test_simulate_accepts_a_hyetograph():
     assert r.status_code == 201
     sim = r.json()["simulation"]
     assert sim["status"] == "uncalibrated_scenario_output" and sim["rain_m3"] > 0
+
+
+def test_simulate_returns_final_scores_that_follow_the_water():
+    body = {**BODY, "rainfall_scenario": {"kind": "user_defined", "value": 120, "duration_hours": 2}, "drainage_blockage_fraction": 0.5, "simulate": True}
+    r = c.post("/api/v1/scenarios", json=body, timeout=180)
+    assert r.status_code == 201
+    j = r.json()
+    assert j["score_stage"] == "final" and len(j["zones"]) == 272
+    assert "_zone_water" not in j["simulation"]
+    flagged = [z for z in j["zones"] if z["band"] in ("higher", "highest")]
+    assert all(z["water"] > 0 for z in flagged if z["band"] == "highest")
+    stored = c.get(f"/api/v1/scenarios/{j['scenario_id']}").json()
+    assert stored["score_stage"] == "final" and stored["mean_index"] == j["mean_index"]
+    cmp_ = c.get(f"/api/v1/scenarios/{j['scenario_id']}/compare").json()
+    assert cmp_["score_stage"] == "final"
+    zid = max(j["zones"], key=lambda z: z["risk_index"])["zone_id"]
+    e = c.get(f"/api/v1/zones/{zid}/explanation", params={"scenario_id": j["scenario_id"]}).json()
+    assert e["score_stage"] == "final" and "water" in e["contributions"]
+    assert abs(sum(e["contributions"].values()) - e["risk_index"]) < 0.05
+    assert any("Simulated water factor" in s for s in e["explanation"])
+
+
+def test_without_simulate_the_score_is_provisional():
+    j = c.post("/api/v1/scenarios", json=BODY).json()
+    assert j["score_stage"] == "provisional"

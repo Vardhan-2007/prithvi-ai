@@ -131,3 +131,7 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .map-nav { position: absolute; right: 12px; top: 12px; z-index: 3; }
 .hint-bar { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); font-size: 11px; color: #c0cde6; background: #0a1226cc; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; pointer-events: none; opacity: .0; transition: opacity .4s; max-width: 92%; text-align: center; }
 .twin:hover .hint-bar, .mapwrap:hover .hint-bar { opacity: .9; }
+/* score stage: provisional (simulation running) vs final (includes simulated water) */
+.stage-line { font-size: 11px; margin: 4px 0 2px; padding: 3px 8px; border-radius: 6px; display: inline-block; }
+.stage-line.provisional { color: #fbbf24; background: rgba(251, 191, 36, .08); border: 1px dashed #5b4313; }
+.stage-line.final { color: #5eead4; background: rgba(45, 212, 191, .08); border: 1px solid #134e4a; }

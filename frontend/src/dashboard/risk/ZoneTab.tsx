@@ -1,11 +1,10 @@
 import { useMemo } from "react";
 import { useStore } from "../../store";
 import { useT, tr } from "../../components/i18n/i18n";
-import { BAND_COLORS, WEIGHTS } from "../../scenarios/engine/risk";
+import { BAND_COLORS, FACTOR_KEYS, weightsFor } from "../../scenarios/engine/risk";
 import { explainZone } from "./explain";
 import { depthAtPlayhead, peakAtPlayhead } from "../../maps/twin3d/sim/simController";
 
-const KEYS = ["terrain", "rainfall", "drainage", "exposure"] as const;
 
 export function ZoneTab() {
   const t = useT();
@@ -30,7 +29,9 @@ export function ZoneTab() {
 
   if (idx < 0) return <div className="empty">{t("zone.pick")}</div>;
   const z = ds.zones.zones[idx], r = res.zones[idx], b = base.zones[idx];
-  const sentences = explainZone(lang, z, r, b, sc, res.intensityMmH);
+  const W = weightsFor(res.stage);
+  const KEYS = FACTOR_KEYS.filter((k) => W[k] > 0);
+  const sentences = explainZone(lang, z, r, b, sc, res.intensityMmH, res.stage);
   const d = r.index - b.index;
   return (
     <div className="stack">
@@ -43,10 +44,11 @@ export function ZoneTab() {
           <div><div className="big">{r.index.toFixed(1)}</div><div className="muted">{t("zone.index")}</div></div>
           <div><div className={"big " + (d > 0.05 ? "up" : d < -0.05 ? "down" : "")}>{d >= 0 ? "+" : ""}{d.toFixed(1)}</div><div className="muted">{t("ov.vsBaseline")} ({b.index.toFixed(1)})</div></div>
         </div>
+        <div className={`stage-line ${res.stage}`}>{t(`stage.${res.stage}`)}</div>
         <div className="card-kicker mt">{t("zone.factors")}</div>
         {KEYS.map((k) => (
           <div className="factor" key={k}>
-            <div className="factor-head"><span>{t(`factor.${k}`)} <small>× {WEIGHTS[k].toFixed(2)}</small></span><b>{r.factors[k].toFixed(2)} → {r.contrib[k].toFixed(1)} {t("zone.pts")}</b></div>
+            <div className="factor-head"><span>{t(`factor.${k}`)} <small>× {W[k].toFixed(2)}</small></span><b>{r.factors[k].toFixed(2)} → {r.contrib[k].toFixed(1)} {t("zone.pts")}</b></div>
             <div className="bar"><i style={{ width: `${r.factors[k] * 100}%` }} /><u style={{ left: `${b.factors[k] * 100}%` }} title="baseline" /></div>
           </div>
         ))}

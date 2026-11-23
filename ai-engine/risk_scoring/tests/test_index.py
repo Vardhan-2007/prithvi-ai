@@ -73,3 +73,45 @@ def test_bands():
     assert [band_of(v) for v in (0, 34.9, 35, 48, 60, 100)] == ["lower", "lower", "moderate", "higher", "highest", "highest"]
     r, i = rainfall_factor(100, 6)
     assert i == pytest.approx(100 / 6) and 0 < r < 1
+
+
+# ---- final stage: simulated-water factor W ----
+from risk_scoring import WEIGHTS_FINAL, zone_water  # noqa: E402
+
+
+def _ds():
+    import json
+    from pathlib import Path
+    return json.loads((Path(__file__).resolve().parents[3] / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+
+
+def test_final_weights_sum_to_one_and_drop_uniform_rain():
+    assert abs(sum(WEIGHTS_FINAL.values()) - 1) < 1e-12
+    assert WEIGHTS_FINAL["rainfall"] == 0 and WEIGHTS_FINAL["water"] == max(WEIGHTS_FINAL.values())
+
+
+def test_zone_water_bounds_and_extremes():
+    ds = _ds()
+    n = ds["grid"]["nx"] * ds["grid"]["ny"]
+    assert zone_water(ds, [0.0] * n) == [0.0] * len(ds["zones"]["zones"])
+    full = zone_water(ds, [2.0] * n)
+    assert all(v == 1.0 or v == 0.0 for v in full)            # 0 only where a zone has no open cells
+    assert sum(full) > 0.9 * len(full)
+
+
+def test_final_stage_cannot_flag_a_dry_zone_and_more_water_never_lowers_the_index():
+    ds = _ds()
+    sc = {"rainfall_mm": 200, "duration_h": 4, "blockage_fraction": 0.5}
+    dry = evaluate(ds, sc, water=[0.0] * 272)
+    assert dry["stage"] == "final"
+    assert dry["band_counts"]["highest"] == 0            # without water the final index tops out at 55
+    wet = evaluate(ds, sc, water=[0.8] * 272)
+    for a, b in zip(dry["zones"], wet["zones"]):
+        assert b["risk_index"] >= a["risk_index"]
+        assert abs(sum(b["contributions"].values()) - b["risk_index"]) < 1e-9
+
+
+def test_provisional_is_unchanged_by_default():
+    ds = _ds()
+    r = evaluate(ds, {"rainfall_mm": 100, "duration_h": 6, "blockage_fraction": 0.25})
+    assert r["stage"] == "provisional" and all(z["factors"]["water"] == 0 for z in r["zones"])
