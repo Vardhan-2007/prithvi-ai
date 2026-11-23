@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useStore } from "../../store";
 import { TwinScene, VERT_EXAGGERATION, type HoverInfo } from "./scene/TwinScene";
 import { simData, depthAtPlayhead, peakAtPlayhead } from "./sim/simController";
-import { rainRateMmH } from "./sim/floodSolver";
+import { stormRateMmH } from "./sim/storm";
 import { xyToLonLat } from "../../scenarios/engine/dataset";
 import { BAND_COLORS } from "../../scenarios/engine/risk";
 import { useT } from "../../components/i18n/i18n";
@@ -64,7 +64,7 @@ export function Twin3D() {
         lastVersion = simData.version; lastPeak = peak;
         const ok = peak ? peakAtPlayhead(buf) : depthAtPlayhead(buf);
         if (ok) scene.setDepth(buf);
-        const rate = rainRateMmH(simData.playhead, simData.rainMm, simData.durationH);
+        const rate = stormRateMmH(simData.storm, simData.playhead);
         scene.setRainIntensity(Math.min(1, rate / 60));
       }
     };

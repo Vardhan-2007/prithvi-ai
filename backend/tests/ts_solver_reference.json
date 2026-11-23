@@ -1,0 +1,18 @@
+{
+ "note": "Written by frontend/scripts/export-solver-reference.ts - do not edit by hand",
+ "hyetograph_mm": [
+  6,
+  28,
+  3,
+  14
+ ],
+ "step_h": 0.25,
+ "tail_h": 0.25,
+ "blockage_fraction": 0.25,
+ "stored_m3": 33563.07783544308,
+ "drain_m3": 25590.771858423428,
+ "outfall_m3": 28087.733009620093,
+ "expected_rain_m3": 87241.87566733919,
+ "peak_flooded_cells": 889,
+ "peak_max_depth": 0.5650597214698792
+}

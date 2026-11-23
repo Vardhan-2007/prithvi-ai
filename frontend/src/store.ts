@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import type { Dataset, Scenario, ScenarioResult } from "./scenarios/engine/types";
 import { BASELINE, evaluate, resolveInletOpen, type PumpSite } from "./scenarios/engine/risk";
-import { simData, startSim, seek, stopSim } from "./maps/twin3d/sim/simController";
+import { simData, startSim, seek, stopSim, scenarioStorm } from "./maps/twin3d/sim/simController";
 import type { Lang } from "./components/i18n/i18n";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
@@ -89,7 +89,14 @@ export const useStore = create<State>((set, get) => ({
 
   patchScenario(p) {
     const ds = get().ds; if (!ds) return;
-    const scenario = { ...get().scenario, ...p };
+    const scenario: Scenario = { ...get().scenario, ...p };
+    // Moving the rain or duration sliders leaves forecast / replay mode: drop the hyetograph.
+    if (!("storm" in p) && ("rainfallMm" in p || "durationH" in p)) delete scenario.storm;
+    // A hyetograph fixes the total depth and duration used by the risk index.
+    if (scenario.storm) {
+      scenario.rainfallMm = scenario.storm.mm.reduce((a, b) => a + b, 0);
+      scenario.durationH = scenario.storm.mm.length * scenario.storm.stepH;
+    }
     set({ scenario, result: evaluate(ds, scenario) });
   },
   applyScenario(p, opts) {
@@ -123,7 +130,7 @@ export const useStore = create<State>((set, get) => ({
     const { ds, result, scenario } = get(); if (!ds || !result) return;
     const nx = ds.grid.nx;
     const pumpCells = result.pumpSites.map((p) => Math.min(ds.grid.ny - 1, Math.floor(p.y / ds.grid.cell_m)) * nx + Math.min(nx - 1, Math.floor(p.x / ds.grid.cell_m)));
-    startSim(ds, result.inletOpen, pumpCells, scenario.rainfallMm, scenario.durationH);
+    startSim(ds, result.inletOpen, pumpCells, scenarioStorm(scenario));
     seek(0);
     set({ playing: true, simRunKey: get().simRunKey + 1 });
     simData.playing = true;

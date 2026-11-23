@@ -52,6 +52,8 @@ export interface Dataset {
   layers: LayerMeta[];
 }
 
+import type { StepStorm } from "../../maps/twin3d/sim/storm";
+
 export type InletOverride = "blocked" | "cleared";
 
 export interface Scenario {
@@ -61,6 +63,9 @@ export interface Scenario {
   blockageFrac: number;     // 0..1 of inlets assumed unavailable (deterministic order)
   overrides: Record<string, InletOverride>; // per-inlet manual state
   pumps: boolean;           // mitigation: temporary pumps at top-priority zones
+  // Optional step hyetograph (forecast / replay). When set, rainfallMm and durationH are its total and length,
+  // and the flood solver uses the hour-by-hour shape instead of the triangle.
+  storm?: StepStorm;
 }
 
 export type Band = "lower" | "moderate" | "higher" | "highest";

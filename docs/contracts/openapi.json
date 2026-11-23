@@ -432,16 +432,26 @@
     "properties": {
      "kind": {
       "type": "string",
-      "const": "user_defined",
+      "enum": [
+       "user_defined",
+       "hyetograph"
+      ],
       "title": "Kind",
       "default": "user_defined"
      },
      "value": {
-      "type": "number",
-      "maximum": 600.0,
-      "minimum": 1.0,
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 1000.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
       "title": "Value",
-      "description": "total depth"
+      "description": "total depth (mm); derived for a hyetograph"
      },
      "unit": {
       "type": "string",
@@ -450,18 +460,46 @@
       "default": "mm"
      },
      "duration_hours": {
-      "type": "number",
-      "maximum": 72.0,
-      "minimum": 0.25,
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 168.0,
+        "minimum": 0.25
+       },
+       {
+        "type": "null"
+       }
+      ],
       "title": "Duration Hours"
+     },
+     "hyetograph_mm": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "number"
+        },
+        "type": "array",
+        "maxItems": 168,
+        "minItems": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hyetograph Mm",
+      "description": "rain depth per step (mm), steps of step_hours"
+     },
+     "step_hours": {
+      "type": "number",
+      "maximum": 6.0,
+      "minimum": 0.25,
+      "title": "Step Hours",
+      "default": 1.0
      }
     },
     "type": "object",
-    "required": [
-     "value",
-     "duration_hours"
-    ],
-    "title": "RainfallScenario"
+    "title": "RainfallScenario",
+    "description": "Either a total depth + duration (kind=user_defined, triangular storm) or an hour-by-hour\nhyetograph (kind=hyetograph, e.g. a forecast or a replayed storm). For a hyetograph, value and\nduration_hours are derived from it and must not be sent."
    },
    "ScenarioRequest": {
     "properties": {

@@ -72,3 +72,30 @@ def test_solver_endpoint_is_single_flight(monkeypatch):
     r = c.post("/api/v1/scenarios", json={**BODY, "simulate": True})
     assert r.status_code == 429 and r.headers["retry-after"] == "10"
     assert c.post("/api/v1/scenarios", json=BODY).status_code == 201  # plain scenarios are unaffected
+
+
+def test_hyetograph_scenario_derives_total_and_duration():
+    hy = {"kind": "hyetograph", "hyetograph_mm": [0, 5, 20, 40, 10, 0], "step_hours": 1}
+    r = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": hy})
+    assert r.status_code == 201
+    req = c.get(f"/api/v1/scenarios/{r.json()['scenario_id']}").json()["request"]["rainfall_scenario"]
+    assert req["value"] == 75 and req["duration_hours"] == 6
+    # same total/duration as a triangle storm -> same risk index (the index uses totals; the solver uses the shape)
+    tri = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": {"kind": "user_defined", "value": 75, "duration_hours": 6}}).json()
+    assert r.json()["mean_index"] == tri["mean_index"]
+
+
+def test_hyetograph_validation():
+    bad = [{"kind": "hyetograph"}, {"kind": "hyetograph", "hyetograph_mm": [500]}, {"kind": "hyetograph", "hyetograph_mm": [-1]},
+           {"kind": "user_defined", "value": 50, "duration_hours": 2, "hyetograph_mm": [5]}, {"kind": "user_defined", "value": 50},
+           {"kind": "hyetograph", "hyetograph_mm": [1] * 169}]
+    for rs in bad:
+        assert c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": rs}).status_code == 422, rs
+
+
+def test_simulate_accepts_a_hyetograph():
+    hy = {"kind": "hyetograph", "hyetograph_mm": [5, 25, 10], "step_hours": 0.25}
+    r = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": hy, "simulate": True}, timeout=120)
+    assert r.status_code == 201
+    sim = r.json()["simulation"]
+    assert sim["status"] == "uncalibrated_scenario_output" and sim["rain_m3"] > 0

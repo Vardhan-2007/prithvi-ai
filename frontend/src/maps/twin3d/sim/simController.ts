@@ -2,8 +2,9 @@
 // Kept outside React state: snapshots are large and the playhead changes every frame.
 import FloodWorker from "./floodWorker?worker";
 import { buildSolverInit, SNAP_S, type SnapStats } from "./floodSolver";
+import { stormDurationH, triangleStorm, type Storm } from "./storm";
 import type { WorkerOut } from "./floodWorker";
-import type { Dataset } from "../../../scenarios/engine/types";
+import type { Dataset, Scenario } from "../../../scenarios/engine/types";
 
 export interface Snap { depth: Uint16Array; peak: Uint16Array; stats: SnapStats }
 
@@ -15,7 +16,7 @@ export const simData = {
   playhead: 0,        // simulated seconds
   playing: true,
   speed: 600,         // simulated seconds per real second
-  rainMm: 0, durationH: 0, tailH: 3,
+  storm: triangleStorm(0, 1) as Storm, tailH: 3,
   version: 0,         // bumps when playhead jumps / new data (cheap change detection for the scene)
 };
 
@@ -27,14 +28,19 @@ const notify = () => listeners.forEach((l) => l());
 export function totalSeconds() { return simData.total * SNAP_S; }
 export function frontierSeconds() { return Math.max(0, (simData.snaps.length - 1) * SNAP_S); }
 
-export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[], rainMm: number, durationH: number, opts?: { autoplay?: boolean }) {
+/** The storm a scenario describes: its step hyetograph if it has one, otherwise the classic triangle. */
+export function scenarioStorm(sc: Pick<Scenario, "rainfallMm" | "durationH" | "storm">): Storm {
+  return sc.storm ?? triangleStorm(sc.rainfallMm, sc.durationH);
+}
+
+export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[], storm: Storm, opts?: { autoplay?: boolean }) {
   worker?.postMessage({ type: "stop" });
   worker?.terminate();
   worker = new FloodWorker();
   const runId = ++simData.runId;
   simData.snaps = []; simData.done = false; simData.playhead = 0;
-  simData.rainMm = rainMm; simData.durationH = durationH;
-  simData.total = Math.ceil(((durationH + simData.tailH) * 3600) / SNAP_S);
+  simData.storm = storm;
+  simData.total = Math.ceil(((stormDurationH(storm) + simData.tailH) * 3600) / SNAP_S);
   if (opts?.autoplay !== false) simData.playing = true;
   simData.version++;
   worker.onmessage = (ev: MessageEvent<WorkerOut>) => {
@@ -44,7 +50,7 @@ export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[],
     else if (m.type === "done") simData.done = true;
     notify();
   };
-  const init = buildSolverInit(ds, inletOpen, pumpCells, rainMm, durationH, simData.tailH);
+  const init = buildSolverInit(ds, inletOpen, pumpCells, storm, 0, simData.tailH);
   worker.postMessage({ type: "init", runId, init });
   notify();
 }

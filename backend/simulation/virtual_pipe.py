@@ -8,6 +8,10 @@ from collections import deque
 
 import numpy as np
 
+from .storm import PEAK_FRACTION, Storm, TriangleStorm, cumulative_mm, rate_mm_h  # noqa: F401  (PEAK_FRACTION kept for compatibility)
+from .storm import duration_h as storm_duration_h
+from .storm import total_mm as storm_total_mm
+
 G = 9.81
 ROAD_LOWERING_M = 0.15
 RUNOFF_IMPERVIOUS = 0.9
@@ -17,7 +21,6 @@ PUMP_CAPACITY_M3S = 0.15
 OUTFALL_CREST_M = 0.30
 OUTFALL_CW = 0.5
 FLOOD_DEPTH_M = 0.15
-PEAK_FRACTION = 0.5   # symmetric triangular storm: peak at the midpoint of the duration
 # After the rain stops, standing water recedes exponentially (stands for unresolved gaps/gutters, infiltration, evaporation).
 # ASSUMED, not calibrated. Mirrors RECESSION_TAU_H in the browser solver.
 RECESSION_TAU_H = 1.0
@@ -25,28 +28,19 @@ DT = 2.0
 
 
 def rain_rate_mm_h(t: float, total_mm: float, duration_h: float) -> float:
-    D = duration_h * 3600.0
-    tp = PEAK_FRACTION * D
-    if t < 0 or t >= D:
-        return 0.0
-    peak = 2 * total_mm / duration_h
-    return peak * (t / tp) if t < tp else peak * (1 - (t - tp) / (D - tp))
+    """Symmetric triangular storm (what-if presets), mm/h."""
+    return rate_mm_h(TriangleStorm(total_mm, duration_h), t)
 
 
 def cumulative_rain_mm(t: float, total_mm: float, duration_h: float) -> float:
-    D = duration_h * 3600.0
-    tp = PEAK_FRACTION * D
-    t = min(max(t, 0.0), D)
-    peak = 2 * total_mm / duration_h / 3600.0
-    if t <= tp:
-        return 0.5 * peak * t * t / tp
-    return 0.5 * peak * tp + peak * (t - tp) - 0.5 * peak * (t - tp) ** 2 / (D - tp)
+    return cumulative_mm(TriangleStorm(total_mm, duration_h), t)
 
 
 class VirtualPipeSolver:
     def __init__(self, dem: np.ndarray, obstacle: np.ndarray, road: np.ndarray, cell: float,
                  inlets: list[tuple[int, int, bool]], pump_cells: list[tuple[int, int]],
-                 rain_mm: float, duration_h: float, tail_h: float = 3.0):
+                 rain_mm: float, duration_h: float, tail_h: float = 3.0, storm: Storm | None = None):
+        # `storm` (triangle or step hyetograph) overrides rain_mm / duration_h, which then describe the classic triangle.
         self.ny, self.nx = dem.shape
         self.cell, self.A, self.pipe_a, self.damp = cell, cell * cell, 0.4 * cell, 0.93
         self.wall = obstacle.astype(bool)
@@ -54,7 +48,8 @@ class VirtualPipeSolver:
         self.h = np.zeros_like(self.z)
         self.peak = np.zeros_like(self.z)
         self.f = [np.zeros_like(self.z) for _ in range(4)]  # L, R, S(-y), N(+y)
-        self.rain_mm, self.duration_h, self.tail_h = rain_mm, duration_h, tail_h
+        self.storm: Storm = storm if storm is not None else TriangleStorm(rain_mm, duration_h)
+        self.rain_mm, self.duration_h, self.tail_h = storm_total_mm(self.storm), storm_duration_h(self.storm), tail_h
         self.t = 0.0
         self.rain_m3 = self.drain_m3 = self.outfall_m3 = 0.0
         self.inlets = [(iy, ix) for iy, ix, op in inlets if op]
@@ -95,7 +90,7 @@ class VirtualPipeSolver:
 
     def step(self, dt: float = DT) -> None:
         h, z, wall, A = self.h, self.z, self.wall, self.A
-        rate = rain_rate_mm_h(self.t, self.rain_mm, self.duration_h) / 1000 / 3600
+        rate = rate_mm_h(self.storm, self.t) / 1000 / 3600
         if rate > 0:
             h += rate * dt * self.rain_w
         if self.t >= self.duration_h * 3600.0:
@@ -157,7 +152,7 @@ class VirtualPipeSolver:
                 "flooded_cells": int((self.h >= FLOOD_DEPTH_M).sum()), "max_depth": float(self.h.max())}
 
     def expected_rain_m3(self) -> float:
-        return cumulative_rain_mm(self.t, self.rain_mm, self.duration_h) / 1000 * float(self.rain_w.sum()) * self.A
+        return cumulative_mm(self.storm, self.t) / 1000 * float(self.rain_w.sum()) * self.A
 
     def run(self, dt: float = DT) -> dict:
         while self.t < self.total_seconds - 1e-9:

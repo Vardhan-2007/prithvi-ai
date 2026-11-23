@@ -204,7 +204,7 @@ cd frontend && npm test   # solver tests (mass conservation, determinism, monoto
 make data                 # re-download OSM + DEM and rebuild data/processed (cached in data/raw)
 ```
 
-* **Keep the two risk engines in sync.** After changing `frontend/src/scenarios/engine/risk.ts` or `ai-engine/risk_scoring/engine.py`, run `cd frontend && npx vite-node scripts/export-reference.ts`, then `python3 -m pytest` — the parity test fails if they disagree.
+* **Keep the two risk engines in sync.** After changing `frontend/src/scenarios/engine/risk.ts` or `ai-engine/risk_scoring/engine.py`, run `cd frontend && npx vite-node scripts/export-reference.ts`, then `python3 -m pytest` — the parity test fails if they disagree. The two flood solvers are checked the same way: after changing `floodSolver.ts`, `storm.ts` or `backend/simulation/`, run `cd frontend && npx vite-node scripts/export-solver-reference.ts`.
 * **Changing the pilot area:** edit the bounding box in `gis-engine/gis_config.py` and run `make data`. Check that DEM, roads, buildings and facilities exist for the new area first.
 * `docker-compose.yml` is provided for the API and web dev server; it has not been verified yet.
 * CI (GitHub Actions) runs the Python tests, the web typecheck, tests and production build on every push and pull request.

@@ -1,6 +1,9 @@
 // Simplified 2-D "virtual pipe" shallow-water solver (after Mei, Decaudin & Hu 2007) on the pilot grid.
 // It is an UNCALIBRATED, illustrative scenario model: no surveyed drainage, no real event calibration,
 // 12.5 m cells, constant Manning-like damping. Output is "scenario water depth", not a forecast.
+import { stormCumulativeMm, stormDurationH, stormRateMmH, triangleStorm, type Storm } from "./storm";
+export { PEAK_FRACTION } from "./storm";
+export type { Storm } from "./storm";
 
 export const G = 9.81;
 export const ROAD_LOWERING_M = 0.15;      // assumed kerb/channel effect, applied to road cells
@@ -25,7 +28,8 @@ export interface SolverInit {
   road: Uint8Array;
   inlets: { cell: number; open: boolean }[];
   pumps: { cell: number }[];
-  rainMm: number; durationH: number; tailH: number;
+  storm: Storm;                           // rain input: triangle (what-if) or step hyetograph (forecast / replay)
+  tailH: number;                          // hours simulated after the rain ends
 }
 
 export interface SnapStats {
@@ -33,22 +37,13 @@ export interface SnapStats {
   floodedCells: number; maxDepth: number; rainMmH: number; cumRainMm: number;
 }
 
-/** Symmetric triangular hyetograph: rises to a peak at the midpoint of the duration, then falls; integrates to `totalMm`. mm/h */
-export const PEAK_FRACTION = 0.5;
+/** Symmetric triangular hyetograph (what-if presets): rises to a peak at the midpoint, then falls; integrates to `totalMm`. mm/h */
 export function rainRateMmH(tSeconds: number, totalMm: number, durationH: number): number {
-  const D = durationH * 3600, tp = PEAK_FRACTION * D;
-  if (tSeconds < 0 || tSeconds >= D) return 0;
-  const peak = (2 * totalMm) / durationH; // mm/h
-  return tSeconds < tp ? peak * (tSeconds / tp) : peak * (1 - (tSeconds - tp) / (D - tp));
+  return stormRateMmH(triangleStorm(totalMm, durationH), tSeconds);
 }
 export function cumulativeRainMm(tSeconds: number, totalMm: number, durationH: number): number {
-  const D = durationH * 3600, tp = PEAK_FRACTION * D;
-  const t = Math.min(Math.max(tSeconds, 0), D);
-  const peak = (2 * totalMm) / durationH / 3600; // mm/s
-  if (t <= tp) return 0.5 * peak * (t * t) / tp;
-  return 0.5 * peak * tp + peak * (t - tp) - 0.5 * peak * ((t - tp) ** 2) / (D - tp);
+  return stormCumulativeMm(triangleStorm(totalMm, durationH), tSeconds);
 }
-
 export class FloodSolver {
   readonly nx: number; readonly ny: number; readonly n: number; readonly cell: number;
   readonly init: SolverInit;
@@ -106,7 +101,8 @@ export class FloodSolver {
     this.pumpCells = Int32Array.from(init.pumps.map((p) => p.cell));
   }
 
-  get totalSeconds() { return (this.init.durationH + this.init.tailH) * 3600; }
+  get rainSeconds() { return stormDurationH(this.init.storm) * 3600; }
+  get totalSeconds() { return this.rainSeconds + this.init.tailH * 3600; }
 
   step(dt = DT) {
     const { nx, ny, n, A, pipeA, damp } = this;
@@ -114,7 +110,7 @@ export class FloodSolver {
     const [fL, fR, fS, fN] = this.f;
 
     // 1) rain
-    const rateMs = rainRateMmH(this.t, this.init.rainMm, this.init.durationH) / 1000 / 3600;
+    const rateMs = stormRateMmH(this.init.storm, this.t) / 1000 / 3600;
     if (rateMs > 0) {
       const add = rateMs * dt;
       for (let i = 0; i < n; i++) { const w = this.rainW[i]; if (w > 0) h[i] += add * w; }
@@ -122,7 +118,7 @@ export class FloodSolver {
     }
 
     // 1b) recession once the rain has stopped (counted as drained volume, so the mass balance still closes)
-    if (this.t >= this.init.durationH * 3600) {
+    if (this.t >= this.rainSeconds) {
       const frac = 1 - Math.exp(-dt / (RECESSION_TAU_H * 3600));
       for (let i = 0; i < n; i++) { const d = h[i]; if (d > 0) { const v = d * frac; h[i] = d - v; this.drainM3 += v * A; } }
     }
@@ -201,30 +197,32 @@ export class FloodSolver {
       if (d >= FLOOD_DEPTH_M) flooded++;
       if (d > maxD) maxD = d;
     }
-    const { rainMm, durationH } = this.init;
+    const storm = this.init.storm;
     return {
       t: this.t, rainM3: this.rainM3, drainM3: this.drainM3, outfallM3: this.outfallM3, storedM3: stored,
       floodedCells: flooded, maxDepth: maxD,
-      rainMmH: rainRateMmH(this.t, rainMm, durationH), cumRainMm: cumulativeRainMm(this.t, rainMm, durationH),
+      rainMmH: stormRateMmH(storm, this.t), cumRainMm: stormCumulativeMm(storm, this.t),
     };
   }
 
   /** exact rain mass balance: sum over cells of rainW * rain depth * area */
   expectedRainM3(): number {
     let w = 0; for (let i = 0; i < this.n; i++) w += this.rainW[i];
-    return (cumulativeRainMm(this.t, this.init.rainMm, this.init.durationH) / 1000) * w * this.A;
+    return (stormCumulativeMm(this.init.storm, this.t) / 1000) * w * this.A;
   }
 }
 
 export function buildSolverInit(
   ds: { grid: { nx: number; ny: number; cell_m: number; dem: number[]; building_mask: number[]; road_mask: number[] }; inlets: { ix: number; iy: number }[] },
-  open: boolean[], pumpCells: number[], rainMm: number, durationH: number, tailH = 3,
+  open: boolean[], pumpCells: number[], rain: number | Storm, durationH = 0, tailH = 3,
 ): SolverInit {
+  // `rain` is either a Storm, or a total depth (mm) that is turned into the classic triangle storm over `durationH`.
+  const storm: Storm = typeof rain === "number" ? triangleStorm(rain, durationH) : rain;
   const { nx, ny, cell_m } = ds.grid;
   return {
     nx, ny, cell: cell_m,
     dem: Float32Array.from(ds.grid.dem), obstacle: Uint8Array.from(ds.grid.building_mask), road: Uint8Array.from(ds.grid.road_mask),
     inlets: ds.inlets.map((inl, i) => ({ cell: inl.iy * nx + inl.ix, open: open[i] })),
-    pumps: pumpCells.map((cell) => ({ cell })), rainMm, durationH, tailH,
+    pumps: pumpCells.map((cell) => ({ cell })), storm, tailH,
   };
 }

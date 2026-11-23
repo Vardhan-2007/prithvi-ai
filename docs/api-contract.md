@@ -11,6 +11,17 @@ The machine-readable contract is [`docs/contracts/openapi.json`](contracts/opena
 | GET | `/api/v1/zones/{zone_id}/explanation` | factor breakdown + sentences |
 | POST | `/api/v1/assistant/query` | cited, extractive answer or an explicit abstain |
 
+### Rainfall input: total or hyetograph
+
+`rainfall_scenario` takes one of two shapes:
+
+```json
+{ "kind": "user_defined", "value": 100, "unit": "mm", "duration_hours": 6 }
+{ "kind": "hyetograph", "hyetograph_mm": [0, 5, 20, 40, 10, 0], "step_hours": 1 }
+```
+
+A `user_defined` storm is simulated as a symmetric triangle. A `hyetograph` is rain depth per step (1–168 steps, each 0–300 mm, steps of 0.25–6 h); `value` and `duration_hours` are derived from it, and sending them with a hyetograph is rejected. The risk index uses the total and duration; `simulate: true` uses the full shape (storms up to 12 h).
+
 Rules enforced by tests (`backend/tests/test_api.py`): numeric inputs validated, every response carries `data_status` and assumptions, the risk index is always called an index (0–100), never a probability or depth.
 Regenerate the OpenAPI file after changing routes:
 `cd backend && python3 -c "import json; from main import app; json.dump(app.openapi(), open('../docs/contracts/openapi.json','w'), indent=1)"`

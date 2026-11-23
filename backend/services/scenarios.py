@@ -10,7 +10,7 @@ from risk_scoring import BASELINE, evaluate
 from .data import dataset, exposure
 
 ASSUMPTIONS = [
-    "Rainfall input is user-defined, not a forecast",
+    "Rainfall input is user-defined (a total or an hour-by-hour hyetograph); it is a scenario, not an official forecast",
     "Drainage inlets are proxy points; blockage is a sensitivity assumption, not an inspection record",
     "Risk index is a relative ranking - not a flood probability or depth estimate",
     "Weights (0.30/0.25/0.25/0.20) are provisional design assumptions, not calibrated coefficients",
@@ -27,8 +27,13 @@ def baseline() -> dict[str, Any]:
 
 
 def to_core(req) -> dict:
-    return {"name": req.name or "Custom scenario", "rainfall_mm": req.rainfall_scenario.value, "duration_h": req.rainfall_scenario.duration_hours,
+    rs = req.rainfall_scenario
+    core = {"name": req.name or "Custom scenario", "rainfall_mm": rs.value, "duration_h": rs.duration_hours,
             "blockage_fraction": req.drainage_blockage_fraction, "overrides": dict(req.overrides), "pumps": req.pumps}
+    if rs.kind == "hyetograph":
+        core["hyetograph_mm"] = list(rs.hyetograph_mm)
+        core["step_h"] = rs.step_hours
+    return core
 
 
 def create(req) -> dict[str, Any]:
@@ -56,7 +61,7 @@ def get(sid: str) -> dict[str, Any] | None:
 
 def simulate(core: dict, res: dict) -> dict[str, Any]:
     """Reference NumPy solver run (same model as the 3D twin). Uncalibrated, illustrative."""
-    from simulation import VirtualPipeSolver
+    from simulation import VirtualPipeSolver, step_storm
 
     ds = dataset()
     g = ds["grid"]; ny, nx = g["ny"], g["nx"]
@@ -64,7 +69,8 @@ def simulate(core: dict, res: dict) -> dict[str, Any]:
     inl = [(i["iy"], i["ix"], o) for i, o in zip(ds["inlets"], res["inlet_open"])]
     pumps = [(min(ny - 1, int(p["y"] // g["cell_m"])), min(nx - 1, int(p["x"] // g["cell_m"]))) for p in res["pump_sites"]]
     s = VirtualPipeSolver(dem, np.array(g["building_mask"]).reshape(ny, nx), np.array(g["road_mask"]).reshape(ny, nx), g["cell_m"], inl, pumps,
-                          core["rainfall_mm"], core["duration_h"])
+                          core["rainfall_mm"], core["duration_h"],
+                          storm=step_storm(core["hyetograph_mm"], core["step_h"]) if core.get("hyetograph_mm") else None)
     out = s.run()
     return {"status": "uncalibrated_scenario_output", "peak_flooded_ha": round(out["peak_flooded_ha"], 2), "peak_max_depth_m": round(out["peak_max_depth"], 3),
             "rain_m3": round(s.expected_rain_m3()), "drained_m3": round(float(out["drain_m3"])), "outfall_m3": round(float(out["outfall_m3"])),

@@ -62,3 +62,59 @@ def test_blocked_drains_do_not_reduce_peak_flooding():
     open_ = make(block=0.0); open_.run()
     blocked = make(block=0.75); blocked.run()
     assert (blocked.peak >= 0.15).sum() >= (open_.peak >= 0.15).sum()
+
+
+# ---- step hyetographs (forecast / replay storms) ----
+from simulation import StepStorm, TriangleStorm, step_storm  # noqa: E402
+from simulation.storm import cumulative_mm, rate_mm_h, total_mm, duration_h  # noqa: E402
+
+IRREGULAR = [0, 4, 18, 35, 9, 0, 12, 2]  # mm per hour: two bursts with a lull
+
+
+def make_storm(storm, block=0.25, tail=0.5):
+    res = evaluate(DS, {"rainfall_mm": total_mm(storm), "duration_h": duration_h(storm), "blockage_fraction": block})
+    inl = [(i["iy"], i["ix"], o) for i, o in zip(DS["inlets"], res["inlet_open"])]
+    return VirtualPipeSolver(np.array(G["dem"]).reshape(NY, NX), np.array(G["building_mask"]).reshape(NY, NX), np.array(G["road_mask"]).reshape(NY, NX),
+                             G["cell_m"], inl, [], 0, 1, tail, storm=storm)
+
+
+def test_step_storm_integrates_and_is_piecewise_constant():
+    s = step_storm(IRREGULAR)
+    assert duration_h(s) == len(IRREGULAR) and total_mm(s) == sum(IRREGULAR)
+    assert abs(cumulative_mm(s, len(IRREGULAR) * 3600) - sum(IRREGULAR)) < 1e-9
+    assert rate_mm_h(s, 3 * 3600 + 10) == 35 and rate_mm_h(s, 5 * 3600) == 0
+    assert abs(cumulative_mm(s, 3.5 * 3600) - (0 + 4 + 18 + 17.5)) < 1e-9
+    half = step_storm([10, 20], step_h=0.5)
+    assert rate_mm_h(half, 0.6 * 3600) == 40 and duration_h(half) == 1.0
+
+
+def test_step_storm_validation():
+    import pytest
+    for bad in ([], [-1], [400], [float("nan")]):
+        with pytest.raises(ValueError):
+            step_storm(bad)
+
+
+def test_triangle_storm_reproduces_the_old_solver_exactly():
+    a = make(mm=60, hrs=1.0)
+    b = make_storm(TriangleStorm(60, 1.0))
+    a.run(); b.run()
+    assert np.array_equal(a.h, b.h) and np.array_equal(a.peak, b.peak)
+
+
+def test_mass_is_conserved_for_an_irregular_hyetograph():
+    s = make_storm(step_storm(IRREGULAR))
+    s.run()
+    st = s.stats()
+    err = abs(s.expected_rain_m3() - (st["stored_m3"] + st["drain_m3"] + st["outfall_m3"])) / s.expected_rain_m3()
+    assert err < 1e-6
+
+
+def test_lull_lets_water_drain_between_bursts():
+    s = make_storm(step_storm(IRREGULAR), tail=0.0)
+    stored = {}
+    while s.t < s.total_seconds - 1e-9:
+        s.step()
+        if s.t % 3600 == 0:
+            stored[int(s.t // 3600)] = s.stats()["stored_m3"]
+    assert stored[6] < stored[4]          # two dry-ish hours after the 35 mm burst: less water standing
