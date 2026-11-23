@@ -1,4 +1,4 @@
-import { Component, useEffect, useRef, type ReactNode } from "react";
+import { Component, Suspense, lazy, useEffect, useRef, type ReactNode } from "react";
 import { loadDataset } from "./scenarios/engine/dataset";
 import { useStore } from "./store";
 import { Header } from "./components/Header";
@@ -6,12 +6,16 @@ import { ScenarioPanel } from "./scenarios/ScenarioPanel";
 import { Twin3D } from "./maps/twin3d/Twin3D";
 import { Timeline } from "./dashboard/timeline/Timeline";
 import { RightPanel } from "./dashboard/risk/RightPanel";
-import { MapView } from "./maps/map2d/MapView";
 import { CompareView } from "./maps/map2d/CompareView";
 import { advance, depthAtPlayhead, statsAtPlayhead } from "./maps/twin3d/sim/simController";
 import { computeLive } from "./maps/twin3d/sim/liveStats";
 import { api } from "./components/api/client";
 import { useT } from "./components/i18n/i18n";
+
+// The 2D map is the only code that needs maplibre-gl (a large library), and the app opens on the 3D view, so the map
+// loads on demand. Once the app is up it is fetched quietly in the background, so switching views is still instant.
+const loadMapView = () => import("./maps/map2d/MapView").then((m) => ({ default: m.MapView }));
+const MapView = lazy(loadMapView);
 
 /** a crash in one view (e.g. WebGL unavailable) shows a message instead of a blank page */
 class ViewBoundary extends Component<{ children: ReactNode; resetKey: string }, { err: Error | null }> {
@@ -34,6 +38,15 @@ export function App() {
     loadDataset().then((d) => useStore.getState().init(d)).catch((e) => useStore.setState({ error: String(e.message ?? e) }));
     api.health().then(() => useStore.getState().setApiOnline(true)).catch(() => useStore.getState().setApiOnline(false));
   }, []);
+
+  // warm the 2D map chunk once the app is showing, off the critical path
+  useEffect(() => {
+    if (!ds) return;
+    const warm = () => { void loadMapView().catch(() => undefined); };
+    const idle = (window as unknown as { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number }).requestIdleCallback;
+    const id = idle ? idle(warm, { timeout: 5000 }) : window.setTimeout(warm, 3000);
+    return () => { if (idle) (window as unknown as { cancelIdleCallback: (n: number) => void }).cancelIdleCallback(id); else clearTimeout(id); };
+  }, [ds]);
 
   // one global loop: playback + live stats (4 Hz)
   const raf = useRef(0);
@@ -66,7 +79,11 @@ export function App() {
         <ScenarioPanel />
         <section className="center">
           <div className="stage">
-            <ViewBoundary resetKey={view}>{view === "3d" ? <Twin3D /> : view === "map" ? <MapView /> : <CompareView />}</ViewBoundary>
+            <ViewBoundary resetKey={view}>
+              <Suspense fallback={<div className="boot"><div className="spinner" /></div>}>
+                {view === "3d" ? <Twin3D /> : view === "map" ? <MapView /> : <CompareView />}
+              </Suspense>
+            </ViewBoundary>
           </div>
           <Timeline />
         </section>
