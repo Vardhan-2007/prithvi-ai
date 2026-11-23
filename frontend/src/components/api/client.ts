@@ -23,5 +23,6 @@ export const api = {
     j<AssistantReply>("/api/v1/assistant/query", { method: "POST", body: JSON.stringify({ query, live_context }) }),
   // Live mode forecast; generous timeout because the free backend may be waking up
   forecast: (hours: number) => j<unknown>(`/api/v1/areas/pilot_kakinada_01/forecast?hours=${hours}`, undefined, 20000),
+  replay: (date: string) => j<unknown>(`/api/v1/areas/pilot_kakinada_01/replay?date=${date}`, undefined, 25000),
   scenario: (body: unknown) => j<{ scenario_id: string; summary: Record<string, number>; mean_index: number }>("/api/v1/scenarios", { method: "POST", body: JSON.stringify(body) }, 8000),
 };

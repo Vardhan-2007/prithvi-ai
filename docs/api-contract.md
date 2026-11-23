@@ -10,6 +10,7 @@ The machine-readable contract is [`docs/contracts/openapi.json`](contracts/opena
 | GET | `/api/v1/scenarios/{id}` · `/geojson` · `/compare` | stored scenario, zone GeoJSON, baseline-vs-scenario comparison |
 | GET | `/api/v1/zones/{zone_id}/explanation` | factor breakdown + sentences |
 | GET | `/api/v1/areas/{id}/forecast?hours=24\|48\|72` | Live mode: next N h of hourly rain from the Open-Meteo ECMWF ensemble as low / likely / high storms (cached 1 h; 503 if the service is unreachable) |
+| GET | `/api/v1/areas/{id}/replay?date=YYYY-MM-DD` | Storm replay: hourly rain for one past local day, as the day-ahead forecast (from 2024) and as reanalysis (about 5 days behind); notes explain any missing series |
 | POST | `/api/v1/assistant/query` | cited, extractive answer or an explicit abstain |
 
 ### Rainfall input: total or hyetograph

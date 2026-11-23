@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "about": "Observed waterlogging reports used to check PRITHVI AI honestly (Replay tab, docs/validation.md). EMPTY ON PURPOSE: fill it from news, official reports or team site visits, BEFORE looking at model output. Never invent entries. Copy to frontend/public/data/observed_waterlogging.json after editing (make validation).",
+  "fields": {
+    "event_date": "local date of the flooding, YYYY-MM-DD",
+    "place_name": "street / junction / landmark as reported",
+    "lat": "latitude (WGS84, decimal degrees) of the reported spot",
+    "lon": "longitude (WGS84, decimal degrees)",
+    "description": "what was reported, e.g. 'knee-deep water on the main road for 3 hours'",
+    "depth_reported": "optional: ankle | knee | waist | unknown",
+    "source_url": "link to the news story or official document",
+    "source_type": "news | official | team_visit",
+    "collected_by": "team member name",
+    "collected_on": "date the entry was added, YYYY-MM-DD"
+  },
+  "reports": []
+}

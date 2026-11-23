@@ -1,13 +1,14 @@
 from __future__ import annotations
 
 import asyncio
+from datetime import date
 
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.concurrency import run_in_threadpool
 
 from config import AREA_ID, VERSION
 from models.schemas import AssistantRequest, ScenarioRequest
-from services import assistant, forecast, scenarios
+from services import assistant, forecast, replay, scenarios
 from services.data import dataset, zones_geojson
 
 router = APIRouter()
@@ -79,6 +80,25 @@ async def area_forecast(area_id: str, hours: int = Query(default=24)):
     except forecast.ForecastUnavailable as exc:
         raise HTTPException(503, f"live forecast unavailable: {exc}. The what-if mode still works.") from exc
     return {"area_id": area_id, "centre": {"lat": round(lat, 5), "lon": round(lon, 5)}, **out}
+
+
+@router.get("/api/v1/areas/{area_id}/replay")
+async def area_replay(area_id: str, day: str = Query(alias="date", pattern=r"^\d{4}-\d{2}-\d{2}$")):
+    """Storm replay: hourly rain at the pilot for one past local day - the day-ahead forecast as issued and the
+    (model-based) rain that fell - to run through the flood model and compare with observed reports."""
+    ds = _area(area_id)
+    try:
+        d = date.fromisoformat(day)
+    except ValueError as exc:
+        raise HTTPException(422, "date must be YYYY-MM-DD") from exc
+    lat, lon = pilot_centre(ds)
+    try:
+        out = await run_in_threadpool(replay.replay_rain, lat, lon, d, date.today())
+    except ValueError as exc:
+        raise HTTPException(422, str(exc)) from exc
+    except replay.ReplayUnavailable as exc:
+        raise HTTPException(503, f"replay unavailable: {exc}") from exc
+    return {"area_id": area_id, **out}
 
 
 @router.post("/api/v1/scenarios", status_code=201)

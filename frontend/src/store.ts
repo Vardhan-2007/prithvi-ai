@@ -4,11 +4,11 @@ import { BASELINE, evaluate, resolveInletOpen, zoneWater, type PumpSite } from "
 import { simData, startSim, seek, stopSim, scenarioStorm, onSimUpdate, peakAtPlayhead } from "./maps/twin3d/sim/simController";
 import type { Lang } from "./components/i18n/i18n";
 import { getForecast, type CaseKey, type ForecastHours, type ForecastResult } from "./scenarios/engine/forecast";
-import { stepStorm } from "./maps/twin3d/sim/storm";
+import { stepStorm, type StepStorm } from "./maps/twin3d/sim/storm";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
 
-export type RightTab = "overview" | "zone" | "priority" | "routes" | "assistant" | "data";
+export type RightTab = "overview" | "zone" | "priority" | "routes" | "replay" | "assistant" | "data";
 export type MainView = "3d" | "map" | "compare";
 export type RiskLayer = "off" | "index" | "delta";
 
@@ -64,6 +64,7 @@ interface State {
   setLiveHours(h: ForecastHours): void;
   setLiveCase(c: CaseKey): void;
   refreshForecast(): Promise<void>;
+  runStorm(storm: StepStorm, name: string): void;
   init(ds: Dataset, baselineWater?: number[] | null): void;
   finalizeFromSim(): void;
   setLang(l: Lang): void;
@@ -112,6 +113,11 @@ export const useStore = create<State>((set, get) => ({
       name: `Live forecast · ${caseKey} · ${c.total_mm} mm / ${f.data.hours} h`,
       storm: stepStorm(c.hyetograph_mm, 1, { startIso: f.data.start_utc + "Z", label: `${f.data.source.name}, ${caseKey} member` }),
     });
+  },
+  /** Run an explicit hour-by-hour storm (e.g. a replayed day). Leaves Live mode without resetting the scenario. */
+  runStorm(storm, name) {
+    if (get().liveMode.on) set({ liveMode: { ...get().liveMode, on: false } });
+    get().applyScenario({ name, storm });
   },
   async refreshForecast() {
     const { ds, liveMode } = get(); if (!ds) return;

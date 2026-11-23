@@ -277,5 +277,41 @@
   "url": "docs/live-mode.md",
   "kind": "project",
   "text": "The forecast grid is about 25 km, so the whole pilot area sits inside one grid cell and the forecast rain is the same everywhere in it. Thunderstorm timing and location are uncertain. The flood model underneath is still uncalibrated, so Live mode shows what a forecast could mean for the streets, not what will happen."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 0,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "The Replay tab replays a past day's storm through the flood model and compares the result with waterlogging that was actually reported, such as news reports with a location. This is the project's check of accuracy against the real world, separate from its internal consistency tests."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 1,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "For a chosen date, PRITHVI loads two rain series: the forecast issued the day before, from the Open-Meteo Previous Runs archive (available from January 2024), and the rain that fell, from the ECMWF and ERA5 reanalysis archive. Both are model products, not rain-gauge records."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 2,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "A reported spot counts as a hit if a zone flagged Higher or Highest by the final score lies within 150 metres of it. Flagged zones with no report nearby are not called false alarms, because a missing news report does not mean there was no flooding."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 3,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "The team chooses the event and collects the reports before looking at the model output, and reports the result whatever it shows. How accurate is PRITHVI AI? The honest answer is the hit rate from these replays. Until replays are recorded in docs/validation.md, no accuracy figure is claimed."
  }
 ]

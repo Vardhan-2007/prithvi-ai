@@ -142,3 +142,4 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .pill.live { background: rgba(14, 116, 144, .25); border-color: #0e7490; color: #a5f3fc; }
 .warn-text { color: #fbbf24; }
 .chips.dim { opacity: .45; }
+.ok-text { color: #5eead4; }

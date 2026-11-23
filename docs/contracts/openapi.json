@@ -197,6 +197,54 @@
     }
    }
   },
+  "/api/v1/areas/{area_id}/replay": {
+   "get": {
+    "summary": "Area Replay",
+    "description": "Storm replay: hourly rain at the pilot for one past local day - the day-ahead forecast as issued and the\n(model-based) rain that fell - to run through the flood model and compare with observed reports.",
+    "operationId": "area_replay_api_v1_areas__area_id__replay_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     },
+     {
+      "name": "date",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "title": "Date"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/scenarios": {
    "post": {
     "summary": "Create Scenario",
