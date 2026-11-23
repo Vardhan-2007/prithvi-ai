@@ -72,3 +72,13 @@ def test_solver_endpoint_is_single_flight(monkeypatch):
     r = c.post("/api/v1/scenarios", json={**BODY, "simulate": True})
     assert r.status_code == 429 and r.headers["retry-after"] == "10"
     assert c.post("/api/v1/scenarios", json=BODY).status_code == 201  # plain scenarios are unaffected
+
+
+def test_simulation_with_pumps_returns_finite_numbers():
+    """Regression: pumps + simulate=true used to return 500 because the solver produced NaN."""
+    body = {**BODY, "rainfall_scenario": {**BODY["rainfall_scenario"], "duration_hours": 1, "value": 40}, "pumps": True, "simulate": True}
+    r = c.post("/api/v1/scenarios", json=body, timeout=120)
+    assert r.status_code == 201
+    sim = r.json()["simulation"]
+    for k in ("peak_flooded_ha", "peak_max_depth_m", "rain_m3", "drained_m3", "outfall_m3", "stored_m3"):
+        assert isinstance(sim[k], (int, float)) and sim[k] == sim[k] and sim[k] >= 0, k
