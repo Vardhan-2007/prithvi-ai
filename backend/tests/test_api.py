@@ -72,3 +72,9 @@ def test_solver_endpoint_is_single_flight(monkeypatch):
     r = c.post("/api/v1/scenarios", json={**BODY, "simulate": True})
     assert r.status_code == 429 and r.headers["retry-after"] == "10"
     assert c.post("/api/v1/scenarios", json=BODY).status_code == 201  # plain scenarios are unaffected
+
+
+def test_unknown_inlet_overrides_are_rejected():
+    r = c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_does_not_exist": "blocked"}})
+    assert r.status_code == 422 and "inlet_does_not_exist" in r.json()["detail"]
+    assert c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_01": "blocked"}}).status_code == 201

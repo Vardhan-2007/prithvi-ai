@@ -5,8 +5,8 @@ import type { Band, Dataset, Scenario, ScenarioResult, Zone, ZoneResult, Road, F
 
 export const WEIGHTS = { terrain: 0.30, rainfall: 0.25, drainage: 0.25, exposure: 0.20 } as const;
 export const BAND_THRESHOLDS = { moderate: 35, higher: 48, highest: 60 } as const;
-export const RAIN_DEPTH_REF_MM = 250;      // depth that maps to 1.0
-export const RAIN_INTENSITY_REF_MMH = 100; // intensity that maps to 1.0
+export const RAIN_DEPTH_REF_MM = 250;      // depth scale of the saturation curve (not a hard cap)
+export const RAIN_INTENSITY_REF_MMH = 100; // intensity scale of the saturation curve (not a hard cap)
 export const INLET_KERNEL_M = 90;
 export const PUMP_COUNT = 6;
 
@@ -25,7 +25,9 @@ export function bandOf(index: number): Band {
 
 export function rainfallFactor(totalMm: number, durationH: number) {
   const intensity = totalMm / Math.max(0.25, durationH);
-  const r = clamp01(0.5 * clamp01(totalMm / RAIN_DEPTH_REF_MM) + 0.5 * clamp01(intensity / RAIN_INTENSITY_REF_MMH));
+  // Smooth saturation (1 - e^-x) instead of two hard clamps, so very large or very intense rain stays distinguishable.
+  const x = 0.5 * (totalMm / RAIN_DEPTH_REF_MM) + 0.5 * (intensity / RAIN_INTENSITY_REF_MMH);
+  const r = clamp01(1 - Math.exp(-x));
   return { r, intensity };
 }
 
@@ -78,7 +80,8 @@ function compute(ds: Dataset, sc: Scenario, pumps: PumpSite[]): ScenarioResult {
   const open = resolveInletOpen(ds, sc);
   const zones: ZoneResult[] = ds.zones.zones.map((z) => {
     const { cap, openN } = zoneCapacity(z, ds, open, pumps);
-    const D = clamp01(0.6 * (1 - cap) + 0.4 * z.imperv);
+    // drainage vulnerability = stress on the drains, so it scales with rainfall demand (x0.5 in light rain, x1.0 in extreme rain)
+    const D = clamp01((0.6 * (1 - cap) + 0.4 * z.imperv) * (0.5 + 0.5 * r));
     const contrib = {
       terrain: 100 * WEIGHTS.terrain * z.terrain,
       rainfall: 100 * WEIGHTS.rainfall * r,

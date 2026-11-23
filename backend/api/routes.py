@@ -62,7 +62,11 @@ def facilities(area_id: str):
 
 @router.post("/api/v1/scenarios", status_code=201)
 async def create_scenario(req: ScenarioRequest):
-    _area(req.area_id)
+    ds = _area(req.area_id)
+    known = {i["id"] for i in ds["inlets"]}
+    unknown = sorted(set(req.overrides) - known)
+    if unknown:
+        raise HTTPException(422, f"unknown inlet id(s) in overrides: {', '.join(unknown[:5])}")
     if req.simulate and req.rainfall_scenario.duration_hours > 12:
         raise HTTPException(422, "simulate=true supports durations up to 12 h")
     rec = scenarios.create(req)

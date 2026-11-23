@@ -32,8 +32,10 @@ def band_of(index: float) -> str:
 
 def rainfall_factor(total_mm: float, duration_h: float) -> tuple[float, float]:
     intensity = total_mm / max(0.25, duration_h)
-    r = clamp01(0.5 * clamp01(total_mm / RAIN_DEPTH_REF_MM) + 0.5 * clamp01(intensity / RAIN_INTENSITY_REF_MMH))
-    return r, intensity
+    # Smooth saturation (1 - e^-x) instead of two hard clamps: a hard clamp made 600 mm in 6 h and 600 mm in 15 min
+    # indistinguishable, and any rain above the reference values changed nothing.
+    x = 0.5 * total_mm / RAIN_DEPTH_REF_MM + 0.5 * intensity / RAIN_INTENSITY_REF_MMH
+    return clamp01(1.0 - math.exp(-x)), intensity
 
 
 def _imul(a: int, b: int) -> int:
@@ -92,7 +94,10 @@ def _compute(ds: dict, sc: dict, pumps: list[dict]) -> dict[str, Any]:
             if d <= 250:
                 s += math.exp(-d / INLET_KERNEL_M)
         cap = clamp01(s / wref)
-        d_f = clamp01(0.6 * (1 - cap) + 0.4 * z["imperv"])
+        # Drainage vulnerability is the stress on the drains, so it scales with the rainfall demand: in light rain even
+        # a poorly drained zone copes (x0.5); in extreme rain the full weak-capacity / runoff penalty applies (x1.0).
+        # This is what lets the rainfall amount change which zones rank worst, not only how high everything scores.
+        d_f = clamp01((0.6 * (1 - cap) + 0.4 * z["imperv"]) * (0.5 + 0.5 * r))
         contrib = {
             "terrain": 100 * WEIGHTS["terrain"] * z["terrain"], "rainfall": 100 * WEIGHTS["rainfall"] * r,
             "drainage": 100 * WEIGHTS["drainage"] * d_f, "exposure": 100 * WEIGHTS["exposure"] * z["exposure"],

@@ -73,3 +73,27 @@ def test_bands():
     assert [band_of(v) for v in (0, 34.9, 35, 48, 60, 100)] == ["lower", "lower", "moderate", "higher", "highest", "highest"]
     r, i = rainfall_factor(100, 6)
     assert i == pytest.approx(100 / 6) and 0 < r < 1
+
+
+def _rank(values):
+    order = sorted(range(len(values)), key=lambda i: values[i])
+    ranks = [0] * len(values)
+    for pos, i in enumerate(order):
+        ranks[i] = pos
+    return ranks
+
+
+def test_rainfall_amount_changes_the_zone_ranking():
+    """Regression: rainfall used to add one constant to every zone, so the ranking never depended on it."""
+    light = [z["risk_index"] for z in evaluate(DS, scn(rainfall_mm=20, duration_h=6))["zones"]]
+    heavy = [z["risk_index"] for z in evaluate(DS, scn(rainfall_mm=400, duration_h=6))["zones"]]
+    a, b = _rank(light), _rank(heavy)
+    assert a != b
+
+
+def test_extreme_rain_is_still_distinguishable():
+    """Regression: hard clamps made 600 mm/6 h and 600 mm/15 min score identically."""
+    slow, _ = rainfall_factor(600, 6)
+    fast, _ = rainfall_factor(600, 0.25)
+    assert slow < fast <= 1.0
+    assert rainfall_factor(300, 6)[0] < rainfall_factor(600, 6)[0]

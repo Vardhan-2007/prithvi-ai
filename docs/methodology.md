@@ -10,8 +10,8 @@ nothing is trained, and **no accuracy figure is claimed** because no ground-trut
 | Factor | Definition (all clipped to 0–1) | Status |
 |---|---|---|
 | **T** terrain | `0.65·norm(−mean elevation) + 0.35·norm(mean of 8 neighbours − own mean)` — low and/or below its surroundings. Uses the *unfilled* smoothed DEM. | derived |
-| **R** rainfall | `0.5·min(1, total_mm/250) + 0.5·min(1, (total_mm/duration_h)/100)` — user-defined scenario, uniform in space | simulated |
-| **D** drainage vulnerability | `0.6·(1 − C) + 0.4·imperv`, where `C = min(1, Σ_open w / w_ref)`, `w = exp(−d/90 m)` over proxy inlets within 250 m (plus pumps) | proxy |
+| **R** rainfall | `1 − exp(−(0.5·total_mm/250 + 0.5·(total_mm/duration_h)/100))` — saturating, so very heavy or very intense rain stays distinguishable; user-defined scenario, uniform in space | simulated |
+| **D** drainage vulnerability | `(0.6·(1 − C) + 0.4·imperv) · (0.5 + 0.5·R)` — the drainage penalty scales with the rainfall demand R, so the rainfall amount can change *which* zones rank worst; where `C = min(1, Σ_open w / w_ref)`, `w = exp(−d/90 m)` over proxy inlets within 250 m (plus pumps) | proxy |
 | **E** exposure | `0.5·norm(building area) + 0.3·norm(road length) + 0.2·min(1, (health + emergency + ½·shelter)/2)` | derived |
 
 * Weights are provisional design assumptions, not calibrated coefficients.
