@@ -106,8 +106,23 @@ Cyclone Montha (night of 28–29 Oct **2025**) is not included: no street-level 
 
 | Event date | Why chosen | Reports in pilot | Day-ahead forecast: hits | Actual rain: hits | Notes |
 |---|---|---|---|---|---|
-| 2026-11-02 | Cyclone Murasu rain; four pilot streets named | 4 (+9 outside) | (run and fill in) | (run and fill in) | replay both days |
-| 2026-11-03 | same storm, second day | 4 (+9 outside) | (run and fill in) | (run and fill in) | |
-| 2026-10-28 | Cyclone Arnab, the year's biggest event | 0 (+1 outside) | n/a | n/a | nothing inside the pilot to score; record the model rain only |
+| 2026-11-02 | Cyclone Murasu rain; four pilot streets named | 4 (+9 outside) | 0 of 4 (12 mm) | 0 of 4 (20.6 mm) | same 4-5 zones flagged in every run, 558 m or more from the reports |
+| 2026-11-03 | same storm, second day | 4 (+9 outside) | 0 of 4 (19.1 mm) | 0 of 4 (54.6 mm) | also 0 of 4 with 75 % of drains blocked: blockage is not the cause |
+| 2026-10-28 | Cyclone Arnab, the year's biggest event | 0 (+1 outside) | n/a (79.1 mm) | n/a (50 mm) | nothing inside the pilot to score |
 | 2026-09-24 | only report with a depth | 0 (+1 outside) | n/a | n/a | nothing inside the pilot to score |
-| 2026-06-28 | thunderstorm downpour | 3 (+1 outside) | (run and fill in) | (run and fill in) | model rain only 13.8 / 7.3 mm: expect misses from the rain input |
+| 2026-06-28 | thunderstorm downpour | 3 (+1 outside) | 0 of 3 (13.8 mm) | 0 of 3 (7.3 mm) | model rain far too low for a local thunderstorm |
+
+Run on the live site on 24 Nov 2026, with 25 % drain blockage unless noted.
+
+**What the misses say.** Every run flags the same few low-lying zones, 558–1,540 m from the reported streets, whatever
+the rain or the blockage. Three causes, most important first:
+
+1. **Ground heights are too coarse.** The terrain comes from 441 height points on a ~90 m grid, so the low spots of
+   individual town-core streets (Main Road, Temple Street, Cinema Road) are not in the data. This is the main limit.
+2. **Model rain is smoothed.** The 9–25 km rain products spread a storm over the day (54.6 mm in 24 h is about
+   2 mm/h), while street flooding comes from short, intense bursts.
+3. **Drain capacity is assumed.** The inlets are proxies with a fixed capacity; real clogging is not known.
+
+Next steps that address these, in order: finer ground data (FABDEM or a 30 m DEM), real drain locations, and rain-gauge
+or radar rain for replays. The point of this check is that it is now possible to measure, and it shows exactly where
+the model needs work.
