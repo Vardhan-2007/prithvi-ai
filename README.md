@@ -40,8 +40,10 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 | | |
 |---|---|
 | **Real-time 3D simulation** | Rain falls, water flows downhill around real building footprints, pools in low ground and drains through (proxy) storm-drain inlets. Play, pause and scrub the timeline; buildings and roads turn amber/red as water reaches them. |
+| **Live mode** | Drive the scenario from the real hourly rain forecast for the next 24–72 h (ECMWF ensemble via Open-Meteo), shown as a range with low / likely / high cases. A forecast-driven planning scenario, labelled as not an official warning. Falls back to a direct browser call or a cached copy if the API is asleep. |
+| **Storm replay** | Pick a past day: run the flood model on the forecast issued the day before and on the rain that fell, then check the result against reported waterlogging (hit rate, misses, sources). Protocol in [`docs/validation.md`](docs/validation.md). |
 | **Scenario what-ifs** | Set rainfall depth, duration and drainage blockage, add temporary pumps, or **click a single drain inlet** to block or clear it and watch nearby zones change. 4 presets plus a 16-scenario grid. |
-| **Explainable risk index** | `RiskIndex = 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)` per 100 m zone. Click any zone to see each factor's weighted contribution, the baseline marker and plain-language reasons (English / Telugu). |
+| **Explainable risk index** | Per 100 m zone: an instant provisional score `100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)`, replaced by the final score `100 × (0.20·T + 0.15·D + 0.20·E + 0.45·W)` once the flood run finishes (W = simulated water in the zone), so the colours match the water. Click any zone to see each factor's weighted contribution, the baseline marker and plain-language reasons (English / Telugu). |
 | **Baseline vs scenario** | 3-panel **Compare** view (baseline · scenario · change), band counts, zones that moved up, and a live exposure overlay of roads and critical facilities. |
 | **Decision support** | Inspection **priority ranking**, an indicative **"drains most likely to block"** ranking (terrain and surroundings, not a prediction), graph-based **road-route analysis** (hospital → fire station, dry vs flooded network), CSV / JSON export. |
 | **Evidence assistant** | Answers only from cited documents and says so when it cannot — no invented advice. |
@@ -108,7 +110,7 @@ flowchart LR
 ```
 
 1. **Data pipeline** (`gis-engine`) downloads OpenStreetMap buildings, roads and facilities plus a coarse elevation model, rasterises them to a 12.5 m grid, fills spurious pits in the terrain, and derives per-zone indicators.
-2. **Risk index** (`ai-engine/risk_scoring`, mirrored in TypeScript) combines terrain, rainfall, drainage vulnerability and exposure with transparent, provisional weights.
+2. **Risk index** (`ai-engine/risk_scoring`, mirrored in TypeScript) combines terrain, rainfall, drainage vulnerability and exposure with transparent weights; once the flood simulation finishes, the simulated water in each zone (W) becomes the largest factor.
 3. **Flood solver** is a mass-conserving 2-D *virtual-pipe* shallow-water model. It runs in a Web Worker for the live 3D view; an independent NumPy implementation (`backend/simulation`) is used as a reference, and a test checks the two agree.
 4. **Assistant** (`ai-engine/rag`) is extractive BM25 retrieval: it quotes cited sentences from a small document set, or abstains. No generative model is involved.
 
@@ -204,7 +206,7 @@ cd frontend && npm test   # solver tests (mass conservation, determinism, monoto
 make data                 # re-download OSM + DEM and rebuild data/processed (cached in data/raw)
 ```
 
-* **Keep the two risk engines in sync.** After changing `frontend/src/scenarios/engine/risk.ts` or `ai-engine/risk_scoring/engine.py`, run `cd frontend && npx vite-node scripts/export-reference.ts`, then `python3 -m pytest` — the parity test fails if they disagree.
+* **Keep the two risk engines in sync.** After changing `frontend/src/scenarios/engine/risk.ts` or `ai-engine/risk_scoring/engine.py`, run `cd frontend && npx vite-node scripts/export-reference.ts`, then `python3 -m pytest` — the parity test fails if they disagree. If you change the solver, the dataset or `zoneWater()`, also regenerate the baseline water file: `npx vite-node scripts/export-baseline-water.ts`. The two flood solvers are checked the same way: after changing `floodSolver.ts`, `storm.ts` or `backend/simulation/`, run `cd frontend && npx vite-node scripts/export-solver-reference.ts`.
 * **Changing the pilot area:** edit the bounding box in `gis-engine/gis_config.py` and run `make data`. Check that DEM, roads, buildings and facilities exist for the new area first.
 * `docker-compose.yml` is provided for the API and web dev server; it has not been verified yet.
 * CI (GitHub Actions) runs the Python tests, the web typecheck, tests and production build on every push and pull request.

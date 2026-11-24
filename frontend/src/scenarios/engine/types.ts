@@ -52,6 +52,8 @@ export interface Dataset {
   layers: LayerMeta[];
 }
 
+import type { StepStorm } from "../../maps/twin3d/sim/storm";
+
 export type InletOverride = "blocked" | "cleared";
 
 export interface Scenario {
@@ -61,6 +63,9 @@ export interface Scenario {
   blockageFrac: number;     // 0..1 of inlets assumed unavailable (deterministic order)
   overrides: Record<string, InletOverride>; // per-inlet manual state
   pumps: boolean;           // mitigation: temporary pumps at top-priority zones
+  // Optional step hyetograph (forecast / replay). When set, rainfallMm and durationH are its total and length,
+  // and the flood solver uses the hour-by-hour shape instead of the triangle.
+  storm?: StepStorm;
 }
 
 export type Band = "lower" | "moderate" | "higher" | "highest";
@@ -69,15 +74,20 @@ export interface ZoneResult {
   id: string;
   index: number;            // 0..100
   band: Band;
-  factors: { terrain: number; rainfall: number; drainage: number; exposure: number }; // normalised 0..1
-  contrib: { terrain: number; rainfall: number; drainage: number; exposure: number }; // weighted points
+  // normalised 0..1 / weighted points. `water` (simulated water, W) is 0 in the provisional stage.
+  factors: { terrain: number; rainfall: number; drainage: number; exposure: number; water: number };
+  contrib: { terrain: number; rainfall: number; drainage: number; exposure: number; water: number };
   drainCapacity: number;    // 0..1 effective local inlet capacity
   openInlets: number;
   totalInlets: number;
 }
 
+/** provisional = instant formula (terrain, rain, drainage, exposure); final = includes the simulated-water factor W. */
+export type ScoreStage = "provisional" | "final";
+
 export interface ScenarioResult {
   scenario: Scenario;
+  stage: ScoreStage;
   rainfallFactor: number;
   intensityMmH: number;
   zones: ZoneResult[];

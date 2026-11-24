@@ -1,4 +1,4 @@
-.PHONY: data web api test
+.PHONY: data web api test validation
 data:            ## fetch OSM + DEM (cached in data/raw) and rebuild data/processed + the frontend copy
 	python3 gis-engine/processing/build_pilot_dataset.py
 	PYTHONPATH=ai-engine python3 -m rag.ingest.build
@@ -9,3 +9,5 @@ api:             ## FastAPI on http://127.0.0.1:8000  (docs at /docs)
 test:
 	python3 -m pytest -q
 	cd frontend && npm test && npm run typecheck
+validation:      ## copy the observed-waterlogging reports into the web app after editing data/validation/
+	cp data/validation/observed_waterlogging.json frontend/public/data/observed_waterlogging.json

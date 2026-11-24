@@ -1,24 +1,117 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "ScenarioRequest",
-  "description": "Inputs are demo/scenario values, not a weather forecast.",
+  "description": "Inputs are scenario values (a total depth, or an hour-by-hour hyetograph such as a forecast or a replayed storm), not an official forecast.",
   "type": "object",
-  "required": ["rainfall_scenario"],
+  "required": [
+    "rainfall_scenario"
+  ],
   "properties": {
-    "area_id": { "type": "string", "default": "pilot_kakinada_01" },
-    "name": { "type": "string", "maxLength": 120 },
-    "rainfall_scenario": {
-      "type": "object", "required": ["value", "duration_hours"],
-      "properties": {
-        "kind": { "const": "user_defined" },
-        "value": { "type": "number", "minimum": 1, "maximum": 600 },
-        "unit": { "const": "mm" },
-        "duration_hours": { "type": "number", "minimum": 0.25, "maximum": 72 }
-      }
+    "area_id": {
+      "type": "string",
+      "default": "pilot_kakinada_01"
     },
-    "drainage_blockage_fraction": { "type": "number", "minimum": 0, "maximum": 1, "default": 0 },
-    "overrides": { "type": "object", "additionalProperties": { "enum": ["blocked", "cleared"] }, "description": "per proxy-inlet manual state" },
-    "pumps": { "type": "boolean", "default": false },
-    "simulate": { "type": "boolean", "default": false }
+    "name": {
+      "type": "string",
+      "maxLength": 120
+    },
+    "rainfall_scenario": {
+      "type": "object",
+      "description": "kind=user_defined: value + duration_hours, simulated as a symmetric triangular storm. kind=hyetograph: hyetograph_mm (+ step_hours); value and duration_hours are derived.",
+      "properties": {
+        "kind": {
+          "enum": [
+            "user_defined",
+            "hyetograph"
+          ],
+          "default": "user_defined"
+        },
+        "value": {
+          "type": "number",
+          "minimum": 1,
+          "maximum": 600,
+          "description": "total depth (mm); required for user_defined, derived for hyetograph"
+        },
+        "unit": {
+          "const": "mm"
+        },
+        "duration_hours": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 72,
+          "description": "required for user_defined, derived for hyetograph"
+        },
+        "hyetograph_mm": {
+          "type": "array",
+          "items": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 300
+          },
+          "minItems": 1,
+          "maxItems": 168,
+          "description": "rain depth per step (mm)"
+        },
+        "step_hours": {
+          "type": "number",
+          "minimum": 0.25,
+          "maximum": 6,
+          "default": 1
+        }
+      },
+      "oneOf": [
+        {
+          "properties": {
+            "kind": {
+              "const": "user_defined"
+            }
+          },
+          "required": [
+            "value",
+            "duration_hours"
+          ],
+          "not": {
+            "required": [
+              "hyetograph_mm"
+            ]
+          }
+        },
+        {
+          "properties": {
+            "kind": {
+              "const": "hyetograph"
+            }
+          },
+          "required": [
+            "kind",
+            "hyetograph_mm"
+          ]
+        }
+      ]
+    },
+    "drainage_blockage_fraction": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "default": 0
+    },
+    "overrides": {
+      "type": "object",
+      "additionalProperties": {
+        "enum": [
+          "blocked",
+          "cleared"
+        ]
+      },
+      "description": "per proxy-inlet manual state"
+    },
+    "pumps": {
+      "type": "boolean",
+      "default": false
+    },
+    "simulate": {
+      "type": "boolean",
+      "default": false
+    }
   }
 }

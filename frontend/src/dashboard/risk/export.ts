@@ -11,12 +11,13 @@ const NOTE = "PRITHVI AI is an experimental planning and visualisation prototype
 export function exportCsv(ds: Dataset, res: ScenarioResult, base: ScenarioResult) {
   const sc = res.scenario;
   const head = [`# ${NOTE}`, `# scenario: ${sc.name}; rainfall_mm=${sc.rainfallMm}; duration_h=${sc.durationH}; blockage_fraction=${sc.blockageFrac}; pumps=${sc.pumps}; manual_inlet_overrides=${JSON.stringify(sc.overrides)}`,
+    `# score_stage: ${res.stage} (provisional = instant formula; final = includes the simulated-water factor W from this scenario's flood run)`,
     `# data_status: simulated_scenario (rainfall + drainage are assumptions); terrain/facilities derived from Copernicus GLO-90 and OpenStreetMap (c) contributors, ODbL`,
-    "zone_id,band,risk_index,baseline_index,delta,terrain,rainfall,drainage,exposure,open_inlets,total_inlets,buildings,road_m,health,emergency,shelter"];
+    "zone_id,band,risk_index,baseline_index,delta,terrain,rainfall,drainage,exposure,water,open_inlets,total_inlets,buildings,road_m,health,emergency,shelter"];
   const rows = res.zones.map((z, i) => {
     const zz = ds.zones.zones[i];
     return [z.id, z.band, z.index.toFixed(2), base.zones[i].index.toFixed(2), (z.index - base.zones[i].index).toFixed(2),
-      z.factors.terrain.toFixed(3), z.factors.rainfall.toFixed(3), z.factors.drainage.toFixed(3), z.factors.exposure.toFixed(3),
+      z.factors.terrain.toFixed(3), z.factors.rainfall.toFixed(3), z.factors.drainage.toFixed(3), z.factors.exposure.toFixed(3), z.factors.water.toFixed(3),
       z.openInlets, z.totalInlets, zz.n_buildings, zz.road_m, zz.facilities.health, zz.facilities.emergency, zz.facilities.shelter].join(",");
   });
   download(`prithvi_${ds.meta.area_id}_scenario.csv`, "text/csv", [...head, ...rows].join("\n"));
@@ -24,7 +25,7 @@ export function exportCsv(ds: Dataset, res: ScenarioResult, base: ScenarioResult
 
 export function exportJson(ds: Dataset, res: ScenarioResult, base: ScenarioResult) {
   download(`prithvi_${ds.meta.area_id}_scenario.json`, "application/json", JSON.stringify({
-    status: "simulated_scenario", statement: NOTE, area_id: ds.meta.area_id, scenario: res.scenario,
+    status: "simulated_scenario", score_stage: res.stage, statement: NOTE, area_id: ds.meta.area_id, scenario: res.scenario,
     summary: { mean_index: res.meanIndex, baseline_mean_index: base.meanIndex, band_counts: res.bandCounts, baseline_band_counts: base.bandCounts },
     assumptions: ["Rainfall input is user-defined", "Drainage inlets are proxy points; blockage is a sensitivity assumption", "Risk index is not a flood probability or depth estimate"],
     zones: res.zones.map((z, i) => ({ zone_id: z.id, risk_index: +z.index.toFixed(2), band: z.band, delta_from_baseline: +(z.index - base.zones[i].index).toFixed(2), factors: z.factors })),

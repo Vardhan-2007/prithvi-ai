@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useStore } from "../../store";
-import { simData, seek, totalSeconds, frontierSeconds, onSimUpdate } from "../../maps/twin3d/sim/simController";
-import { rainRateMmH } from "../../maps/twin3d/sim/floodSolver";
+import { simData, seek, totalSeconds, frontierSeconds, onSimUpdate, scenarioStorm } from "../../maps/twin3d/sim/simController";
+import { stormPeakMmH, stormRateMmH } from "../../maps/twin3d/sim/storm";
 import { useT } from "../../components/i18n/i18n";
 import type { LiveStats } from "../../maps/twin3d/sim/liveStats";
 
@@ -24,9 +24,10 @@ export function Timeline() {
     if (c.width !== w * dpr) { c.width = w * dpr; c.height = h * dpr; }
     const g = c.getContext("2d")!; g.setTransform(dpr, 0, 0, dpr, 0, 0); g.clearRect(0, 0, w, h);
     const total = totalSeconds() || 1, front = frontierSeconds(), head = simData.playhead;
-    const n = Math.floor(w / 5), peak = (2 * scenario.rainfallMm) / scenario.durationH;
+    const storm = scenarioStorm(scenario);
+    const n = Math.floor(w / 5), peak = stormPeakMmH(storm);
     for (let i = 0; i < n; i++) {
-      const ts = ((i + 0.5) / n) * total, r = rainRateMmH(ts, scenario.rainfallMm, scenario.durationH);
+      const ts = ((i + 0.5) / n) * total, r = stormRateMmH(storm, ts);
       const bh = 6 + (r / Math.max(peak, 1)) * (h - 26);
       g.fillStyle = ts <= head ? "#ef4444" : ts <= front ? "#566079" : "#2a3246";
       g.fillRect(i * 5, h - 14 - bh, 2.4, bh);

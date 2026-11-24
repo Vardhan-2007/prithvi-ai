@@ -88,3 +88,55 @@ def test_unknown_inlet_overrides_are_rejected():
     r = c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_does_not_exist": "blocked"}})
     assert r.status_code == 422 and "inlet_does_not_exist" in r.json()["detail"]
     assert c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_01": "blocked"}}).status_code == 201
+
+
+def test_hyetograph_scenario_derives_total_and_duration():
+    hy = {"kind": "hyetograph", "hyetograph_mm": [0, 5, 20, 40, 10, 0], "step_hours": 1}
+    r = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": hy})
+    assert r.status_code == 201
+    req = c.get(f"/api/v1/scenarios/{r.json()['scenario_id']}").json()["request"]["rainfall_scenario"]
+    assert req["value"] == 75 and req["duration_hours"] == 6
+    # same total/duration as a triangle storm -> same risk index (the index uses totals; the solver uses the shape)
+    tri = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": {"kind": "user_defined", "value": 75, "duration_hours": 6}}).json()
+    assert r.json()["mean_index"] == tri["mean_index"]
+
+
+def test_hyetograph_validation():
+    bad = [{"kind": "hyetograph"}, {"kind": "hyetograph", "hyetograph_mm": [500]}, {"kind": "hyetograph", "hyetograph_mm": [-1]},
+           {"kind": "user_defined", "value": 50, "duration_hours": 2, "hyetograph_mm": [5]}, {"kind": "user_defined", "value": 50},
+           {"kind": "hyetograph", "hyetograph_mm": [1] * 169}]
+    for rs in bad:
+        assert c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": rs}).status_code == 422, rs
+
+
+def test_simulate_accepts_a_hyetograph():
+    hy = {"kind": "hyetograph", "hyetograph_mm": [5, 25, 10], "step_hours": 0.25}
+    r = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": hy, "simulate": True}, timeout=120)
+    assert r.status_code == 201
+    sim = r.json()["simulation"]
+    assert sim["status"] == "uncalibrated_scenario_output" and sim["rain_m3"] > 0
+
+
+def test_simulate_returns_final_scores_that_follow_the_water():
+    body = {**BODY, "rainfall_scenario": {"kind": "user_defined", "value": 120, "duration_hours": 2}, "drainage_blockage_fraction": 0.5, "simulate": True}
+    r = c.post("/api/v1/scenarios", json=body, timeout=180)
+    assert r.status_code == 201
+    j = r.json()
+    assert j["score_stage"] == "final" and len(j["zones"]) == 272
+    assert "_zone_water" not in j["simulation"]
+    flagged = [z for z in j["zones"] if z["band"] in ("higher", "highest")]
+    assert all(z["water"] > 0 for z in flagged if z["band"] == "highest")
+    stored = c.get(f"/api/v1/scenarios/{j['scenario_id']}").json()
+    assert stored["score_stage"] == "final" and stored["mean_index"] == j["mean_index"]
+    cmp_ = c.get(f"/api/v1/scenarios/{j['scenario_id']}/compare").json()
+    assert cmp_["score_stage"] == "final"
+    zid = max(j["zones"], key=lambda z: z["risk_index"])["zone_id"]
+    e = c.get(f"/api/v1/zones/{zid}/explanation", params={"scenario_id": j["scenario_id"]}).json()
+    assert e["score_stage"] == "final" and "water" in e["contributions"]
+    assert abs(sum(e["contributions"].values()) - e["risk_index"]) < 0.05
+    assert any("Simulated water factor" in s for s in e["explanation"])
+
+
+def test_without_simulate_the_score_is_provisional():
+    j = c.post("/api/v1/scenarios", json=BODY).json()
+    assert j["score_stage"] == "provisional"

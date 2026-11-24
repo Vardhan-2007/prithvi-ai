@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useStore, PRESETS, DEFAULT_SCENARIO, type RiskLayer } from "../store";
 import { useT } from "../components/i18n/i18n";
+import { LivePanel } from "./LivePanel";
 
 function Slider({ label, value, min, max, step, unit, onChange, hint }: {
   label: string; value: number; min: number; max: number; step: number; unit: string; hint?: string; onChange: (v: number) => void;
@@ -25,6 +26,7 @@ export function ScenarioPanel() {
   const applyScenario = useStore((s) => s.applyScenario);
   const clear = useStore((s) => s.clearOverrides);
   const timer = useRef<number | undefined>(undefined);
+  const live = useStore((s) => s.liveMode.on);
   useEffect(() => () => window.clearTimeout(timer.current), []);
 
   const change = (p: Partial<typeof sc>) => {
@@ -45,7 +47,8 @@ export function ScenarioPanel() {
   return (
     <aside className="panel left">
       <div className="panel-head"><h2>{t("sc.title")}</h2><span className="tag sim">{t("tag.simulated")}</span></div>
-      <div className="chips">
+      <LivePanel />
+      <div className={"chips" + (live ? " dim" : "")}>
         {PRESETS.map((p) => (
           <button key={p.id} className={"chip" + (isPreset(p) ? " on" : "")}
             onClick={() => { applyScenario({ rainfallMm: p.rainfallMm, durationH: p.durationH, blockageFrac: p.blockageFrac, overrides: {}, name: t(`preset.${p.id}`) }); }}>
@@ -54,7 +57,9 @@ export function ScenarioPanel() {
         ))}
       </div>
       <Slider label={t("sc.rain")} value={sc.rainfallMm} min={10} max={350} step={5} unit=" mm" onChange={(v) => change({ rainfallMm: v })}
-        hint={t("sc.intensity", { v: (sc.rainfallMm / sc.durationH).toFixed(0) })} />
+        hint={sc.storm
+          ? t("sc.intensityStorm", { v: (sc.rainfallMm / sc.durationH).toFixed(1), peak: Math.max(...sc.storm.mm).toFixed(1), src: sc.storm.label ?? "" })
+          : t("sc.intensity", { v: (sc.rainfallMm / sc.durationH).toFixed(0) })} />
       <Slider label={t("sc.duration")} value={sc.durationH} min={1} max={24} step={1} unit=" h" onChange={(v) => change({ durationH: v })} />
       <Slider label={t("sc.blockage")} value={Math.round(sc.blockageFrac * 100)} min={0} max={100} step={5} unit=" %" onChange={(v) => change({ blockageFrac: v / 100 })}
         hint={t("sc.blockedCount", { n: nBlocked, total: result.inletOpen.length })} />

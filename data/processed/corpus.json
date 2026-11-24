@@ -24,11 +24,20 @@
   "publisher": "PRITHVI AI team (project documentation)",
   "url": "docs/methodology.md",
   "kind": "project",
-  "text": "The index is not a flood probability and not a flood depth. It only ranks zones relative to each other under the selected assumptions. A higher index means the terrain, rainfall input, drainage assumption and mapped assets together make the zone a stronger candidate for attention."
+  "text": "When the flood simulation for a scenario finishes, the score switches from provisional to final. The final index adds a simulated water factor W, which measures how much water the scenario's own flood run put into the zone. The final weights are 0.45 for simulated water, 0.20 for terrain, 0.15 for drainage and 0.20 for exposure. Rainfall drops out of the final formula because it is the same in every zone and reaches the score through the simulated water instead. This keeps the zone colours consistent with the 3D water: a zone that stays dry in the simulation cannot reach the highest band. Consistency is not accuracy; the simulation itself is uncalibrated."
  },
  {
   "doc_id": "doc-index",
   "chunk": 3,
+  "title": "How the PRITHVI AI risk index works",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/methodology.md",
+  "kind": "project",
+  "text": "The index is not a flood probability and not a flood depth. It only ranks zones relative to each other under the selected assumptions. A higher index means the terrain, rainfall input, drainage assumption and mapped assets together make the zone a stronger candidate for attention."
+ },
+ {
+  "doc_id": "doc-index",
+  "chunk": 4,
   "title": "How the PRITHVI AI risk index works",
   "publisher": "PRITHVI AI team (project documentation)",
   "url": "docs/methodology.md",
@@ -241,5 +250,77 @@
   "url": "docs/methodology.md",
   "kind": "project",
   "text": "It is not an instruction to evacuate, a dispatch order or a statement that any location is safe. Each entry shows the main driver of its score so that a person can judge whether the reasoning makes sense."
+ },
+ {
+  "doc_id": "doc-live",
+  "chunk": 0,
+  "title": "Live mode and forecast-driven scenarios",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/live-mode.md",
+  "kind": "project",
+  "text": "Live mode drives the scenario from the real hourly rain forecast for the next 24, 48 or 72 hours instead of the rain sliders. The forecast is the ECMWF IFS 0.25 degree ensemble from the Open-Meteo Ensemble API, which has 51 members."
+ },
+ {
+  "doc_id": "doc-live",
+  "chunk": 1,
+  "title": "Live mode and forecast-driven scenarios",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/live-mode.md",
+  "kind": "project",
+  "text": "Live mode is a forecast-driven planning scenario. It is not an official forecast and not a flood warning. Official weather and flood warnings come from the India Meteorological Department, NDMA and the district administration."
+ },
+ {
+  "doc_id": "doc-live",
+  "chunk": 2,
+  "title": "Live mode and forecast-driven scenarios",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/live-mode.md",
+  "kind": "project",
+  "text": "The low, likely and high cases are the ensemble members at the 10th, 50th and 90th percentile of total rain over the chosen window. Whole members are used so that each case is a storm shape the model actually produced. The panel also shows the full range of rain across all members."
+ },
+ {
+  "doc_id": "doc-live",
+  "chunk": 3,
+  "title": "Live mode and forecast-driven scenarios",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/live-mode.md",
+  "kind": "project",
+  "text": "The forecast grid is about 25 km, so the whole pilot area sits inside one grid cell and the forecast rain is the same everywhere in it. Thunderstorm timing and location are uncertain. The flood model underneath is still uncalibrated, so Live mode shows what a forecast could mean for the streets, not what will happen."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 0,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "The Replay tab replays a past day's storm through the flood model and compares the result with waterlogging that was actually reported, such as news reports with a location. This is the project's check of accuracy against the real world, separate from its internal consistency tests."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 1,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "For a chosen date, PRITHVI loads two rain series: the forecast issued the day before, from the Open-Meteo Previous Runs archive (available from January 2024), and the rain that fell, from the ECMWF and ERA5 reanalysis archive. Both are model products, not rain-gauge records."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 2,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "A reported spot counts as a hit if a zone flagged Higher or Highest by the final score lies within 150 metres of it. Flagged zones with no report nearby are not called false alarms, because a missing news report does not mean there was no flooding."
+ },
+ {
+  "doc_id": "doc-validation",
+  "chunk": 3,
+  "title": "How PRITHVI AI is checked against real flooding",
+  "publisher": "PRITHVI AI team (project documentation)",
+  "url": "docs/validation.md",
+  "kind": "project",
+  "text": "The team chooses the event and collects the reports before looking at the model output, and reports the result whatever it shows. How accurate is PRITHVI AI? The honest answer is the hit rate from these replays. Until replays are recorded in docs/validation.md, no accuracy figure is claimed."
  }
 ]

@@ -149,6 +149,102 @@
     }
    }
   },
+  "/api/v1/areas/{area_id}/forecast": {
+   "get": {
+    "summary": "Area Forecast",
+    "description": "Live mode: next `hours` of hourly rain for the pilot from the Open-Meteo ensemble, as three storms\n(low / likely / high = ensemble members at the 10th / 50th / 90th percentile of total rain). Cached for 1 h.\nA forecast-driven SCENARIO input - not an official forecast or warning.",
+    "operationId": "area_forecast_api_v1_areas__area_id__forecast_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     },
+     {
+      "name": "hours",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 24,
+       "title": "Hours"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/v1/areas/{area_id}/replay": {
+   "get": {
+    "summary": "Area Replay",
+    "description": "Storm replay: hourly rain at the pilot for one past local day - the day-ahead forecast as issued and the\n(model-based) rain that fell - to run through the flood model and compare with observed reports.",
+    "operationId": "area_replay_api_v1_areas__area_id__replay_get",
+    "parameters": [
+     {
+      "name": "area_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Area Id"
+      }
+     },
+     {
+      "name": "date",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+       "title": "Date"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/v1/scenarios": {
    "post": {
     "summary": "Create Scenario",
@@ -432,16 +528,26 @@
     "properties": {
      "kind": {
       "type": "string",
-      "const": "user_defined",
+      "enum": [
+       "user_defined",
+       "hyetograph"
+      ],
       "title": "Kind",
       "default": "user_defined"
      },
      "value": {
-      "type": "number",
-      "maximum": 600.0,
-      "minimum": 1.0,
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 1000.0,
+        "minimum": 0.0
+       },
+       {
+        "type": "null"
+       }
+      ],
       "title": "Value",
-      "description": "total depth"
+      "description": "total depth (mm); derived for a hyetograph"
      },
      "unit": {
       "type": "string",
@@ -450,18 +556,46 @@
       "default": "mm"
      },
      "duration_hours": {
-      "type": "number",
-      "maximum": 72.0,
-      "minimum": 0.25,
+      "anyOf": [
+       {
+        "type": "number",
+        "maximum": 168.0,
+        "minimum": 0.25
+       },
+       {
+        "type": "null"
+       }
+      ],
       "title": "Duration Hours"
+     },
+     "hyetograph_mm": {
+      "anyOf": [
+       {
+        "items": {
+         "type": "number"
+        },
+        "type": "array",
+        "maxItems": 168,
+        "minItems": 1
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Hyetograph Mm",
+      "description": "rain depth per step (mm), steps of step_hours"
+     },
+     "step_hours": {
+      "type": "number",
+      "maximum": 6.0,
+      "minimum": 0.25,
+      "title": "Step Hours",
+      "default": 1.0
      }
     },
     "type": "object",
-    "required": [
-     "value",
-     "duration_hours"
-    ],
-    "title": "RainfallScenario"
+    "title": "RainfallScenario",
+    "description": "Either a total depth + duration (kind=user_defined, triangular storm) or an hour-by-hour\nhyetograph (kind=hyetograph, e.g. a forecast or a replayed storm). For a hyetograph, value and\nduration_hours are derived from it and must not be sent."
    },
    "ScenarioRequest": {
     "properties": {

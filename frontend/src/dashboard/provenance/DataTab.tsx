@@ -1,9 +1,12 @@
 import { useStore } from "../../store";
 import { useT } from "../../components/i18n/i18n";
+import { forecastLayer } from "../../scenarios/engine/forecast";
 
 export function DataTab() {
   const t = useT();
   const ds = useStore((s) => s.ds)!;
+  const liveF = useStore((s) => (s.liveMode.on ? s.liveMode.forecast?.data ?? null : null));
+  const layers = liveF ? [...ds.layers, forecastLayer(liveF)] : ds.layers;
   return (
     <div className="stack">
       <section className="card warn-card">
@@ -15,7 +18,7 @@ export function DataTab() {
       </section>
       <section className="card">
         <div className="card-kicker">{t("dt.layers")} — {ds.meta.name}</div>
-        {ds.layers.map((l) => (
+        {layers.map((l) => (
           <details key={l.id} className="layer">
             <summary><b>{l.title}</b><span className={`tag st-${l.data_status}`}>{t(`status.${l.data_status}`)}</span></summary>
             <dl>
@@ -32,7 +35,8 @@ export function DataTab() {
       </section>
       <section className="card">
         <div className="card-kicker">{t("dt.method.title")}</div>
-        <code className="formula">RiskIndex = 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)</code>
+        <code className="formula">provisional: 100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)</code>
+        <code className="formula">final: 100 × (0.20·T + 0.15·D + 0.20·E + 0.45·W)</code>
         <ul className="why">{["m1", "m2", "m3", "m4"].map((k) => <li key={k}>{t(`dt.${k}`)}</li>)}</ul>
         <p className="fineprint">{t("dt.ai")}</p>
       </section>

@@ -38,6 +38,7 @@ export function OverviewTab() {
       <section className="card advisory">
         <div className="card-kicker">{t("ov.advisory")}<span className="tag sim">{t("tag.simulated")}</span></div>
         <h3>{sc.name}</h3>
+        <div className={`stage-line ${res.stage}`} title={t("stage.note")}>{t(`stage.${res.stage}`)}</div>
         <div className="kv"><span>{t("sc.rain")}</span><b>{sc.rainfallMm} mm / {sc.durationH} h</b></div>
         <div className="kv"><span>{t("sc.blockage")}</span><b>{Math.round(sc.blockageFrac * 100)} %{Object.keys(sc.overrides).length ? ` (+${Object.keys(sc.overrides).length} manual)` : ""}{sc.pumps ? " · pumps" : ""}</b></div>
         <div className="big-row">

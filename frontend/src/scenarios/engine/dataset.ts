@@ -6,6 +6,19 @@ export async function loadDataset(): Promise<Dataset> {
   return (await res.json()) as Dataset;
 }
 
+/** Precomputed simulated-water factor W for the baseline scenario (see scripts/export-baseline-water.ts).
+ * Optional: without it the app compares provisional scores only. */
+export async function loadBaselineWater(): Promise<number[] | null> {
+  try {
+    const res = await fetch(`${import.meta.env.BASE_URL}data/baseline_water.json`);
+    if (!res.ok) return null;
+    const j = (await res.json()) as { water?: number[] };
+    return Array.isArray(j.water) ? j.water : null;
+  } catch {
+    return null;
+  }
+}
+
 export function cellIndex(ds: Dataset, x: number, y: number): number {
   const { nx, ny, cell_m } = ds.grid;
   const ix = Math.min(nx - 1, Math.max(0, Math.floor(x / cell_m)));

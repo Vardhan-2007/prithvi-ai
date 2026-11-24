@@ -1,13 +1,15 @@
 import { create } from "zustand";
 import type { Dataset, Scenario, ScenarioResult } from "./scenarios/engine/types";
-import { BASELINE, evaluate, resolveInletOpen, type PumpSite } from "./scenarios/engine/risk";
-import { simData, startSim, seek, stopSim } from "./maps/twin3d/sim/simController";
+import { BASELINE, evaluate, resolveInletOpen, zoneWater, type PumpSite } from "./scenarios/engine/risk";
+import { simData, startSim, seek, stopSim, scenarioStorm, onSimUpdate, peakAtPlayhead } from "./maps/twin3d/sim/simController";
 import type { Lang } from "./components/i18n/i18n";
+import { getForecast, type CaseKey, type ForecastHours, type ForecastResult } from "./scenarios/engine/forecast";
+import { stepStorm, type StepStorm } from "./maps/twin3d/sim/storm";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
 import { likeliestBlocked } from "./scenarios/engine/drains";
 
-export type RightTab = "overview" | "zone" | "priority" | "drains" | "routes" | "assistant" | "data";
+export type RightTab = "overview" | "zone" | "priority" | "drains" | "routes" | "replay" | "assistant" | "data";
 export type MainView = "3d" | "map" | "compare";
 export type RiskLayer = "off" | "index" | "delta";
 
@@ -29,13 +31,25 @@ export const DEFAULT_SCENARIO: Scenario = {
 
 type Result = ScenarioResult & { pumpSites: PumpSite[] };
 
+/** Live mode: the scenario's rain comes from the latest ensemble forecast instead of the sliders. */
+export interface LiveMode {
+  on: boolean;
+  hours: ForecastHours;
+  status: "idle" | "loading" | "ok" | "error";
+  forecast: ForecastResult | null;
+  caseKey: CaseKey;
+  error: string | null;
+}
+
 interface State {
   ds: Dataset | null;
   error: string | null;
   lang: Lang;
   scenario: Scenario;
-  baseline: Result | null;
-  result: Result | null;
+  baseline: Result | null;          // the baseline at the same stage as `result` (provisional or final)
+  baselineProvisional: Result | null;
+  baselineFinal: Result | null;     // needs data/baseline_water.json
+  result: Result | null;            // provisional while the flood run is going, final (with W) once it finishes
   selectedZoneId: string | null;
   selectedInletId: string | null;
   tab: RightTab;
@@ -48,7 +62,14 @@ interface State {
   simRunKey: number;
   live: LiveStats | null;
   setLive(l: LiveStats): void;
-  init(ds: Dataset): void;
+  liveMode: LiveMode;
+  setLiveOn(on: boolean): void;
+  setLiveHours(h: ForecastHours): void;
+  setLiveCase(c: CaseKey): void;
+  refreshForecast(): Promise<void>;
+  runStorm(storm: StepStorm, name: string): void;
+  init(ds: Dataset, baselineWater?: number[] | null): void;
+  finalizeFromSim(): void;
   setLang(l: Lang): void;
   patchScenario(p: Partial<Scenario>): void;
   applyScenario(p: Partial<Scenario>, opts?: { restart?: boolean }): void;
@@ -67,15 +88,60 @@ interface State {
   restart(): void;
 }
 
+let unsubFinal: (() => void) | null = null;
+let pendingRun = -1;    // sim run whose finish should finalize the score
+let finalizedRun = -1;
+
 export const useStore = create<State>((set, get) => ({
-  ds: null, error: null, lang: "en", scenario: DEFAULT_SCENARIO, baseline: null, result: null,
+  ds: null, error: null, lang: "en", scenario: DEFAULT_SCENARIO, baseline: null, baselineProvisional: null, baselineFinal: null, result: null,
   selectedZoneId: null, selectedInletId: null, tab: "overview", view: "3d",
   layers: { risk: "off", peak: false, trees: true, buildings: true, roads: true, drains: true, facilities: true, water: true, rain: true, pumps: true, drainRisk: false },
   playing: true, speed: 600, routeFrom: null, routeTo: null, routeThreshold: 0.25, apiOnline: null, simRunKey: 0, live: null,
   setLive: (live) => set({ live }),
+  liveMode: { on: false, hours: 24, status: "idle", forecast: null, caseKey: "likely", error: null },
 
-  init(ds) {
+  setLiveOn(on) {
+    set({ liveMode: { ...get().liveMode, on } });
+    if (on) void get().refreshForecast();
+    else get().applyScenario({ ...DEFAULT_SCENARIO });   // back to what-if mode (drops the forecast storm)
+  },
+  setLiveHours(hours) {
+    set({ liveMode: { ...get().liveMode, hours } });
+    if (get().liveMode.on) void get().refreshForecast();
+  },
+  setLiveCase(caseKey) {
+    set({ liveMode: { ...get().liveMode, caseKey } });
+    const f = get().liveMode.forecast;
+    if (!get().liveMode.on || !f) return;
+    const c = f.data.cases[caseKey];
+    get().applyScenario({
+      name: `Live forecast · ${caseKey} · ${c.total_mm} mm / ${f.data.hours} h`,
+      storm: stepStorm(c.hyetograph_mm, 1, { startIso: f.data.start_utc + "Z", label: `${f.data.source.name}, ${caseKey} member` }),
+    });
+  },
+  /** Run an explicit hour-by-hour storm (e.g. a replayed day). Leaves Live mode without resetting the scenario. */
+  runStorm(storm, name) {
+    if (get().liveMode.on) set({ liveMode: { ...get().liveMode, on: false } });
+    get().applyScenario({ name, storm });
+  },
+  async refreshForecast() {
+    const { ds, liveMode } = get(); if (!ds) return;
+    set({ liveMode: { ...liveMode, status: "loading", error: null } });
+    const [w, s, e, n] = ds.meta.bbox;
+    try {
+      const forecast = await getForecast((s + n) / 2, (w + e) / 2, liveMode.hours);
+      if (!get().liveMode.on) return;   // switched off while loading
+      set({ liveMode: { ...get().liveMode, status: "ok", forecast, error: null } });
+      get().setLiveCase(get().liveMode.caseKey);
+    } catch (err) {
+      set({ liveMode: { ...get().liveMode, status: "error", error: err instanceof Error ? err.message : String(err) } });
+    }
+  },
+
+  init(ds, baselineWater) {
     const baseline = evaluate(ds, BASELINE);
+    let baselineFinal: Result | null = null;
+    if (baselineWater && baselineWater.length === ds.zones.zones.length) baselineFinal = evaluate(ds, BASELINE, { water: baselineWater });
     const result = evaluate(ds, get().scenario);
     // default route demo: the farthest-apart connected (health -> emergency/shelter) pair
     const g = graphFor(ds);
@@ -87,15 +153,38 @@ export const useStore = create<State>((set, get) => ({
       const na = facilityNode(g, p.a), nb = facilityNode(g, p.b);
       if (na && nb && shortestPath(g, na, nb).found) { routeFrom = p.a.id; routeTo = p.b.id; break; }
     }
-    set({ ds, baseline, result, routeFrom, routeTo });
+    set({ ds, baseline, baselineProvisional: baseline, baselineFinal, result, routeFrom, routeTo });
+    if (!unsubFinal) unsubFinal = onSimUpdate(() => { if (simData.done) get().finalizeFromSim(); });
     get().restart();
   },
   setLang: (lang) => set({ lang }),
 
   patchScenario(p) {
     const ds = get().ds; if (!ds) return;
-    const scenario = { ...get().scenario, ...p };
-    set({ scenario, result: evaluate(ds, scenario) });
+    const scenario: Scenario = { ...get().scenario, ...p };
+    // Moving the rain or duration sliders leaves forecast / replay mode: drop the hyetograph.
+    if (!("storm" in p) && ("rainfallMm" in p || "durationH" in p)) {
+      delete scenario.storm;
+      if (get().liveMode.on) set({ liveMode: { ...get().liveMode, on: false } });   // manual rain = what-if mode
+    }
+    // A hyetograph fixes the total depth and duration used by the risk index.
+    if (scenario.storm) {
+      scenario.rainfallMm = Math.round(scenario.storm.mm.reduce((a, b) => a + b, 0) * 10) / 10;
+      scenario.durationH = scenario.storm.mm.length * scenario.storm.stepH;
+    }
+    pendingRun = -1; // the running simulation no longer matches the scenario: never finalize from it
+    set({ scenario, result: evaluate(ds, scenario), baseline: get().baselineProvisional });
+  },
+  /** When the current flood run has finished, rescore with the simulated-water factor W (FINAL stage). */
+  finalizeFromSim() {
+    const { ds, scenario, result } = get();
+    if (!ds || !result || result.stage === "final" || !simData.done || finalizedRun === simData.runId || pendingRun !== simData.runId) return;
+    const peak = new Float32Array(ds.grid.nx * ds.grid.ny);
+    if (!peakAtPlayhead(peak, true)) return;
+    finalizedRun = simData.runId;
+    const final = evaluate(ds, scenario, { water: zoneWater(ds, peak) });
+    const { baselineFinal, baselineProvisional } = get();
+    set({ result: final, baseline: baselineFinal ?? baselineProvisional });
   },
   applyScenario(p, opts) {
     get().patchScenario(p);
@@ -133,10 +222,14 @@ export const useStore = create<State>((set, get) => ({
   setApiOnline: (b) => set({ apiOnline: b }),
 
   restart() {
-    const { ds, result, scenario } = get(); if (!ds || !result) return;
+    const { ds, scenario } = get(); if (!ds || !get().result) return;
+    // a new run always starts from the provisional score of the CURRENT scenario
+    const result = evaluate(ds, scenario);
+    set({ result, baseline: get().baselineProvisional });
     const nx = ds.grid.nx;
     const pumpCells = result.pumpSites.map((p) => Math.min(ds.grid.ny - 1, Math.floor(p.y / ds.grid.cell_m)) * nx + Math.min(nx - 1, Math.floor(p.x / ds.grid.cell_m)));
-    startSim(ds, result.inletOpen, pumpCells, scenario.rainfallMm, scenario.durationH);
+    startSim(ds, result.inletOpen, pumpCells, scenarioStorm(scenario));
+    pendingRun = simData.runId;
     seek(0);
     set({ playing: true, simRunKey: get().simRunKey + 1 });
     simData.playing = true;
