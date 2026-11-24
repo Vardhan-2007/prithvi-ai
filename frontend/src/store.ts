@@ -5,13 +5,15 @@ import { simData, startSim, seek, stopSim } from "./maps/twin3d/sim/simControlle
 import type { Lang } from "./components/i18n/i18n";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
+import { likeliestBlocked } from "./scenarios/engine/drains";
 
-export type RightTab = "overview" | "zone" | "priority" | "routes" | "assistant" | "data";
+export type RightTab = "overview" | "zone" | "priority" | "drains" | "routes" | "assistant" | "data";
 export type MainView = "3d" | "map" | "compare";
 export type RiskLayer = "off" | "index" | "delta";
 
 export interface Layers {
   risk: RiskLayer; peak: boolean; trees: boolean; buildings: boolean; roads: boolean; drains: boolean; facilities: boolean; water: boolean; rain: boolean; pumps: boolean;
+  drainRisk: boolean;   // colour drains by how likely they are to block (set while the Drains tab is open)
 }
 
 export const PRESETS: { id: string; rainfallMm: number; durationH: number; blockageFrac: number }[] = [
@@ -35,6 +37,7 @@ interface State {
   baseline: Result | null;
   result: Result | null;
   selectedZoneId: string | null;
+  selectedInletId: string | null;
   tab: RightTab;
   view: MainView;
   layers: Layers;
@@ -52,6 +55,8 @@ interface State {
   toggleInlet(id: string): void;
   clearOverrides(): void;
   selectZone(id: string | null, openTab?: boolean): void;
+  setSelectedInlet(id: string | null): void;
+  assumeLikeliestBlocked(k: number): void;
   setTab(t: RightTab): void;
   setView(v: MainView): void;
   setLayers(p: Partial<Layers>): void;
@@ -64,8 +69,8 @@ interface State {
 
 export const useStore = create<State>((set, get) => ({
   ds: null, error: null, lang: "en", scenario: DEFAULT_SCENARIO, baseline: null, result: null,
-  selectedZoneId: null, tab: "overview", view: "3d",
-  layers: { risk: "off", peak: false, trees: true, buildings: true, roads: true, drains: true, facilities: true, water: true, rain: true, pumps: true },
+  selectedZoneId: null, selectedInletId: null, tab: "overview", view: "3d",
+  layers: { risk: "off", peak: false, trees: true, buildings: true, roads: true, drains: true, facilities: true, water: true, rain: true, pumps: true, drainRisk: false },
   playing: true, speed: 600, routeFrom: null, routeTo: null, routeThreshold: 0.25, apiOnline: null, simRunKey: 0, live: null,
   setLive: (live) => set({ live }),
 
@@ -106,6 +111,14 @@ export const useStore = create<State>((set, get) => ({
     const want = !open;
     if (want !== autoOpen) overrides[id] = want ? "cleared" : "blocked";
     get().patchScenario({ overrides });
+    get().restart();
+  },
+  setSelectedInlet(id) { set({ selectedInletId: id }); },
+  /** replace the random blockage pattern by "the k drains most likely to block (indicative)" */
+  assumeLikeliestBlocked(k) {
+    const ds = get().ds; if (!ds) return;
+    const overrides: Record<string, "blocked"> = Object.fromEntries(likeliestBlocked(ds, k).map((id) => [id, "blocked" as const]));
+    get().patchScenario({ blockageFrac: 0, overrides });
     get().restart();
   },
   clearOverrides() { get().applyScenario({ overrides: {}, blockageFrac: 0 }); },

@@ -7,6 +7,7 @@ import { peakAtPlayhead } from "../twin3d/sim/simController";
 import type { Dataset, ScenarioResult } from "../../scenarios/engine/types";
 import type { FeatureCollection, Feature } from "geojson";
 import { NavPad, type NavApi } from "../../components/NavPad";
+import { drainStatics } from "../../scenarios/engine/drains";
 
 type Mode = "baseline" | "scenario" | "delta";
 
@@ -39,6 +40,7 @@ export function MapView() {
   const el = useRef<HTMLDivElement>(null); const map = useRef<MLMap | null>(null);
   const ds = useStore((s) => s.ds)!; const res = useStore((s) => s.result)!; const base = useStore((s) => s.baseline)!;
   const live = useStore((s) => s.live);
+  const drainRisk = useStore((s) => s.layers.drainRisk); const selInlet = useStore((s) => s.selectedInletId);
   const [mode, setMode] = useState<Mode>("scenario"); const [ready, setReady] = useState(false);
   const [showFlood, setShowFlood] = useState(true);
 
@@ -64,7 +66,7 @@ export function MapView() {
       m.addLayer({ id: "buildings-fill", type: "fill-extrusion", source: "buildings", paint: { "fill-extrusion-color": "#a3afc4", "fill-extrusion-height": ["get", "h"], "fill-extrusion-base": 0, "fill-extrusion-opacity": 0.72 } });
       m.addLayer({ id: "flood-fill", type: "fill", source: "flood", paint: { "fill-color": ["interpolate", ["linear"], ["get", "d"], 0.15, "#38bdf8", 0.5, "#2563eb", 1, "#9333ea"], "fill-opacity": 0.7 } });
       m.addLayer({ id: "roads-line", type: "line", source: "roads", paint: { "line-color": "#e2e8f0", "line-opacity": 0.5, "line-width": ["interpolate", ["linear"], ["zoom"], 14, 0.6, 18, 3] } });
-      m.addLayer({ id: "inlets-c", type: "circle", source: "inlets", paint: { "circle-radius": 4, "circle-color": ["case", ["get", "open"], "#22d3ee", "#ef4444"], "circle-stroke-color": "#0b1220", "circle-stroke-width": 1 } });
+      m.addLayer({ id: "inlets-c", type: "circle", source: "inlets", paint: { "circle-radius": ["case", ["get", "sel"], 9, 4], "circle-color": ["case", ["!", ["get", "open"]], "#ef4444", ["==", ["get", "lvl"], "high"], "#f97316", ["==", ["get", "lvl"], "medium"], "#fbbf24", "#22d3ee"], "circle-stroke-color": ["case", ["get", "sel"], "#ffffff", "#0b1220"], "circle-stroke-width": ["case", ["get", "sel"], 3, 1] } });
       m.addLayer({ id: "fac-c", type: "circle", source: "facilities", paint: { "circle-radius": 6, "circle-color": ["match", ["get", "cat"], "health", "#ef4444", "emergency", "#f59e0b", "shelter", "#22c55e", "#94a3b8"], "circle-stroke-color": "#fff", "circle-stroke-width": 1.5 } });
       m.on("click", "inlets-c", (ev) => { const id = ev.features?.[0]?.properties?.id as string; if (id) { ev.originalEvent.stopPropagation(); useStore.getState().toggleInlet(id); } });
       m.on("click", "zones-fill", (ev) => { const id = ev.features?.[0]?.properties?.id as string; if (id && !ev.defaultPrevented) useStore.getState().selectZone(id); });
@@ -108,10 +110,17 @@ export function MapView() {
   }, [ds]);
 
   useEffect(() => { if (ready) (map.current!.getSource("zones") as GeoJSONSource).setData(zonesGeo(ds, res, base, mode)); }, [ready, ds, res, base, mode]);
+  const statics = useMemo(() => drainStatics(ds), [ds]);
   useEffect(() => {
     if (!ready) return;
-    (map.current!.getSource("inlets") as GeoJSONSource).setData({ type: "FeatureCollection", features: ds.inlets.map((inl, i) => ({ type: "Feature", properties: { id: inl.id, open: res.inletOpen[i] }, geometry: { type: "Point", coordinates: xyToLonLat(ds, inl.x, inl.y) } })) });
-  }, [ready, ds, res.inletOpen]);
+    (map.current!.getSource("inlets") as GeoJSONSource).setData({ type: "FeatureCollection", features: ds.inlets.map((inl, i) => ({ type: "Feature", properties: { id: inl.id, open: res.inletOpen[i], lvl: drainRisk ? statics[i].level : "", sel: inl.id === selInlet }, geometry: { type: "Point", coordinates: xyToLonLat(ds, inl.x, inl.y) } })) });
+  }, [ready, ds, res.inletOpen, drainRisk, selInlet, statics]);
+  useEffect(() => {   // centre the map on the drain picked in the Drains tab
+    if (!ready || !selInlet) return;
+    const inl = ds.inlets.find((q) => q.id === selInlet); if (!inl) return;
+    const [lon, lat] = xyToLonLat(ds, inl.x, inl.y);
+    map.current!.easeTo({ center: [lon, lat], zoom: Math.max(map.current!.getZoom(), 17.5), duration: 600 });
+  }, [ready, ds, selInlet]);
   const bucket = Math.floor((live?.t ?? 0) / 600);
   useEffect(() => {
     if (!ready) return;

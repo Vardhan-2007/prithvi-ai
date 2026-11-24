@@ -61,8 +61,7 @@ input[type="range"] { width: 100%; accent-color: var(--accent); }
 .depth-pin { transform: translate(-50%, -100%); background: #0a1226e6; border: 1px solid #ef4444; border-radius: 6px; padding: 1px 7px; color: #fff; font-size: 11px; box-shadow: 0 0 12px #ef444466; } .depth-pin b { font-size: 15px; margin-right: 2px; } .depth-pin span { color: var(--muted); }
 
 .timeline { background: #080d1a; border-top: 1px solid var(--line); padding: 8px 14px 10px; }
-.tl-stats { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 8px; margin-bottom: 8px; }
-.stat { border-left: 2px solid #2a3d68; padding-left: 8px; } .stat-v { font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums; } .stat-v small { font-size: 10px; color: var(--muted); margin-left: 3px; font-weight: 400; } .stat-l { color: var(--muted); font-size: 10px; line-height: 1.15; min-height: 23px; }
+.tl-status { font-size: 14px; line-height: 1.35; color: #e5ecff; margin-bottom: 8px; min-height: 20px; }
 .tl-main { display: flex; gap: 12px; align-items: center; }
 .play { width: 44px; height: 44px; border-radius: 50%; border: none; background: #ef4444; color: #fff; font-size: 14px; box-shadow: 0 0 16px #ef444466; flex: none; }
 .tl-scrub { flex: 1; min-width: 0; } .tl-scrub canvas { width: 100%; height: 58px; display: block; cursor: ew-resize; touch-action: none; }
@@ -111,7 +110,7 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .boot { height: 100%; display: grid; place-content: center; text-align: center; gap: 12px; color: var(--muted); } .boot.error { color: #fca5a5; } .spinner { width: 34px; height: 34px; border: 3px solid #1d2a45; border-top-color: var(--accent); border-radius: 50%; animation: sp 1s linear infinite; margin: 0 auto; } @keyframes sp { to { transform: rotate(360deg); } }
 .disclaimer { background: #190f06; border-top: 1px solid #4b3410; color: #e9c98a; font-size: 11px; padding: 4px 14px; text-align: center; }
 
-@media (max-width: 1280px) { .main { grid-template-columns: 250px minmax(0, 1fr) 340px; } .tl-stats { grid-template-columns: repeat(4, 1fr); } .hud-title { font-size: 18px; } }
+@media (max-width: 1280px) { .main { grid-template-columns: 250px minmax(0, 1fr) 340px; } .hud-title { font-size: 18px; } }
 @media (max-width: 960px) {
   body { overflow: auto; } .app { height: auto; min-height: 100%; } .main { display: flex; flex-direction: column; }
   .center { order: 1; } .panel.left { order: 2; border-right: 0; } .panel.right { order: 3; border-left: 0; } .stage { height: 62vh; }
@@ -131,3 +130,11 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .map-nav { position: absolute; right: 12px; top: 12px; z-index: 3; }
 .hint-bar { position: absolute; left: 50%; bottom: 10px; transform: translateX(-50%); font-size: 11px; color: #c0cde6; background: #0a1226cc; border: 1px solid var(--line); border-radius: 999px; padding: 4px 12px; pointer-events: none; opacity: .0; transition: opacity .4s; max-width: 92%; text-align: center; }
 .twin:hover .hint-bar, .mapwrap:hover .hint-bar { opacity: .9; }
+
+/* Drains tab */
+.dr-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; margin: 8px 0; font-size: 11px; color: var(--muted); } .dr-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+.dr-sort { display: flex; gap: 6px; margin: 8px 0; } .dr-sort button { flex: 1; background: #0e1830; border: 1px solid #1d2a45; border-radius: 8px; padding: 6px 8px; font-size: 12px; } .dr-sort button.on { border-color: var(--accent2); color: #fff; }
+.dr-list li { list-style: none; } .dr-chip { font-size: 11px; font-weight: 600; border: 1px solid; border-radius: 999px; padding: 2px 8px; white-space: nowrap; } .dr-chip small { font-weight: 400; color: var(--muted); }
+.dr-detail { margin: 4px 0 6px; padding: 8px 10px; background: #0b1426; border: 1px solid #1d2a45; border-radius: 8px; display: grid; gap: 8px; }
+.dr-bars { display: grid; gap: 5px; } .dr-bar { display: grid; grid-template-columns: 76px 1fr; gap: 8px; align-items: center; font-size: 11px; color: var(--muted); } .dr-bar > div { height: 6px; background: #1b2a47; border-radius: 3px; overflow: hidden; } .dr-bar i { display: block; height: 100%; background: #f97316; }
+.dr-apply { margin-top: 10px; display: grid; gap: 4px; } .dr-apply .btn { width: 100%; }
