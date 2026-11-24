@@ -60,12 +60,13 @@ export function MapView() {
     if (import.meta.env.DEV) (window as unknown as { __map: MLMap }).__map = m; // dev-only debugging handle
     m.on("load", () => {
       const empty: FeatureCollection = { type: "FeatureCollection", features: [] };
-      for (const id of ["zones", "flood", "roads", "facilities", "inlets", "buildings"]) m.addSource(id, { type: "geojson", data: empty });
+      for (const id of ["zones", "flood", "roads", "drains", "facilities", "inlets", "buildings"]) m.addSource(id, { type: "geojson", data: empty });
       m.addLayer({ id: "zones-fill", type: "fill", source: "zones", paint: { "fill-color": ["interpolate", ["linear"], ["get", "v"], -10, "#14b8a6", 0, "#0e3a4a", 35, "#2dd4bf", 48, "#facc15", 60, "#fb923c", 80, "#ef4444"], "fill-opacity": 0.55 } });
       m.addLayer({ id: "zones-line", type: "line", source: "zones", paint: { "line-color": "#0b1220", "line-width": 0.6, "line-opacity": 0.6 } });
       m.addLayer({ id: "buildings-fill", type: "fill-extrusion", source: "buildings", paint: { "fill-extrusion-color": "#a3afc4", "fill-extrusion-height": ["get", "h"], "fill-extrusion-base": 0, "fill-extrusion-opacity": 0.72 } });
       m.addLayer({ id: "flood-fill", type: "fill", source: "flood", paint: { "fill-color": ["interpolate", ["linear"], ["get", "d"], 0.15, "#38bdf8", 0.5, "#2563eb", 1, "#9333ea"], "fill-opacity": 0.7 } });
       m.addLayer({ id: "roads-line", type: "line", source: "roads", paint: { "line-color": "#e2e8f0", "line-opacity": 0.5, "line-width": ["interpolate", ["linear"], ["zoom"], 14, 0.6, 18, 3] } });
+      m.addLayer({ id: "drains-line", type: "line", source: "drains", paint: { "line-color": "#22d3ee", "line-opacity": 0.85, "line-width": ["interpolate", ["linear"], ["zoom"], 14, 1.2, 18, 4], "line-dasharray": ["case", ["get", "covered"], ["literal", [2, 2]], ["literal", [1, 0]]] } });
       m.addLayer({ id: "inlets-c", type: "circle", source: "inlets", paint: { "circle-radius": ["case", ["get", "sel"], 9, 4], "circle-color": ["case", ["!", ["get", "open"]], "#ef4444", ["==", ["get", "lvl"], "high"], "#f97316", ["==", ["get", "lvl"], "medium"], "#fbbf24", "#22d3ee"], "circle-stroke-color": ["case", ["get", "sel"], "#ffffff", "#0b1220"], "circle-stroke-width": ["case", ["get", "sel"], 3, 1] } });
       m.addLayer({ id: "fac-c", type: "circle", source: "facilities", paint: { "circle-radius": 6, "circle-color": ["match", ["get", "cat"], "health", "#ef4444", "emergency", "#f59e0b", "shelter", "#22c55e", "#94a3b8"], "circle-stroke-color": "#fff", "circle-stroke-width": 1.5 } });
       m.on("click", "inlets-c", (ev) => { const id = ev.features?.[0]?.properties?.id as string; if (id) { ev.originalEvent.stopPropagation(); useStore.getState().toggleInlet(id); } });
@@ -76,6 +77,7 @@ export function MapView() {
       m.on("mouseleave", "fac-c", () => pop.remove());
       // static layers
       (m.getSource("roads") as GeoJSONSource).setData({ type: "FeatureCollection", features: ds.roads.map((r) => ({ type: "Feature", properties: { id: r.id }, geometry: { type: "LineString", coordinates: r.pts.map(([x, y]) => xyToLonLat(ds, x, y)) } })) });
+      (m.getSource("drains") as GeoJSONSource).setData({ type: "FeatureCollection", features: (ds.drains ?? []).map((d) => ({ type: "Feature", properties: { id: d.id, kind: d.kind, name: d.name ?? "", covered: d.covered }, geometry: { type: "LineString", coordinates: d.pts.map(([x, y]) => xyToLonLat(ds, x, y)) } })) });
       (m.getSource("buildings") as GeoJSONSource).setData({ type: "FeatureCollection", features: ds.buildings.map((b) => ({ type: "Feature", properties: { h: b.h }, geometry: { type: "Polygon", coordinates: [[...b.ring, b.ring[0]].map(([x, y]) => xyToLonLat(ds, x, y))] } })) });
       (m.getSource("facilities") as GeoJSONSource).setData({ type: "FeatureCollection", features: ds.facilities.map((f) => ({ type: "Feature", properties: { name: f.name, type: f.amenity.replace(/_/g, " "), cat: f.category }, geometry: { type: "Point", coordinates: xyToLonLat(ds, f.x, f.y) } })) });
       m.addControl(new maplibregl.ScaleControl({ unit: "metric" }), "bottom-right");
