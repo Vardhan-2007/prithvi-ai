@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../../store";
 import { useT } from "../../components/i18n/i18n";
+import { MoneyCard } from "./MoneyCard";
 import { drainWatchList, type DrainInfo, type Level } from "../../scenarios/engine/drains";
 
 const LEVEL_COLOR: Record<Level, string> = { high: "#f97316", medium: "#fbbf24", low: "#22d3ee" };
@@ -70,6 +71,7 @@ export function DrainsTab() {
         </div>
         <p className="fineprint">{t("dr.disclaimer")}</p>
       </section>
+      <MoneyCard />
     </div>
   );
 }

@@ -179,3 +179,15 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
   body.printing-brief .brief-sheet { width: 100%; border-radius: 0; padding: 0; }
   body.printing-brief .brief-tools { display: none; }
 }
+
+/* money-to-safety chart */
+.money-chart { width: 100%; height: auto; margin: 6px 0 2px; }
+.money-chart .axis { stroke: #2a3d68; stroke-width: 1; }
+.money-chart .tick { fill: var(--muted); font-size: 9px; }
+.money-chart .line { fill: none; stroke: var(--accent2); stroke-width: 2; }
+.money-chart .pt { fill: var(--panel); stroke: var(--accent2); stroke-width: 1.5; cursor: pointer; }
+.money-chart .pt.on { fill: var(--accent2); }
+.money-costs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 6px 0; }
+.money-costs label { display: flex; flex-direction: column; gap: 2px; font-size: 11px; color: var(--muted); }
+.money-costs input { background: var(--bg2); border: 1px solid var(--line); border-radius: 6px; padding: 4px 6px; }
+.card input[type=range] { width: 100%; }
