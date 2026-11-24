@@ -2,7 +2,7 @@
 
 **Status: a plan, not a result.** Nothing in this file has been run. It says how we could test the flood model against a real event, which events and data look usable, what is missing, and what has to change in the app first. Written 2026-11-23.
 
-Until this plan has been carried out, every claim about the model stays as the app says now: *a scenario, not a forecast; uncalibrated depths; indicative index.* See [limitations](limitations.md) and the data-quality report (`docs/data-quality.md`, proposed on its own branch and not merged yet).
+Until this plan has been carried out, every claim about the model stays as the app says now: *a scenario, not a forecast; uncalibrated depths; indicative index.* See [limitations](limitations.md) and the data-quality report (`docs/data-quality.md`).
 
 ## 1. The problem in plain words
 

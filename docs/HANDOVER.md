@@ -7,19 +7,19 @@ Written 2026-11-23 for whoever continues development (human or Claude Code). Rea
 | | |
 |---|---|
 | Repo | https://github.com/Vardhan-2007/prithvi-ai · branch `main` |
-| Last pushed commit | `312b90c` "Simulation: symmetric storm peak and post-rain water recession" |
+| Last pushed commit | `312b90c` on GitHub. Local `main` is **ahead of GitHub and not pushed yet** (see below) |
 | Live site | https://prithvi-ai-psi.vercel.app (Vercel, static) |
 | Live API | https://prithvi-ai-api.onrender.com (Render, Docker, free tier; docs at `/docs`) |
-| Tests | 32 Python + 9 web, all passing; typecheck clean (verified 2026-11-23) |
+| Tests | 73 Python + 63 web, all passing; typecheck and build clean (verified 2026-11-24) |
 | Licence | none chosen yet (the owner said "no licence yet") |
 
-### Uncommitted work in the owner's working tree (review with `git status` / `git diff`)
-These were done after the last push and are **not on GitHub yet**. Suggested split into commits:
+### Merged locally, not yet pushed (as of 2026-11-24)
+Local `main` contains everything below on top of GitHub's `312b90c`. **Pushing `main` publishes all of it** (and closes PR #2 as merged). Ask the owner before pushing.
 
-1. **Drains tab + drain-likelihood engine** — `frontend/src/scenarios/engine/drains.ts` (+ `drains.test.ts`), `frontend/src/dashboard/risk/DrainsTab.tsx`, edits to `RightPanel.tsx`, `store.ts`, `TwinScene.ts`, `Twin3D.tsx`, `MapView.tsx`, `strings.ts`, `app.css`.
-2. **Timeline: status sentence replaces the eight number boxes** — `frontend/src/dashboard/timeline/Timeline.tsx`, `strings.ts`, `app.css`.
-3. **Docs/corpus** — `README.md`, `CHANGELOG.md`, `docs/methodology.md`, `docs/prototype-guide.md`, `ai-engine/rag/corpus/02_drainage_blockage_meaning.md`, rebuilt `data/processed/corpus.json` and `frontend/public/data/corpus.json`.
-4. **Film script/measurements** — `video/script.mjs`, `video/measures.json` (see section 6).
+1. **Owner's work, committed:** the Drains tab and drain-likelihood engine; the timeline status sentence replacing the eight number boxes; docs and assistant corpus updates; `CLAUDE.md` + this handover; the film-script update for the new storm timeline.
+2. **Six branches by Sushanth-Kilari, reviewed and merged** (each tested alone and together):
+   `fix/solver-numpy-warning` (NaN with pumps), `fix/assistant-and-api-validation` (PR #2: safety answers, stricter abstention, 422 on unknown drain ids), `test/engine-and-data-coverage` (~70 tests), `docs/data-quality-report` (`docs/data-quality.md`), `docs/validation-plan` (`docs/validation-plan.md`), `perf/bundle-split` (lazy 2D map, smaller first load). One conflict (`backend/tests/test_api.py`, both sides appended tests) was resolved by keeping both.
+3. The remote branches still exist on GitHub; they can be deleted after the push.
 
 ## 2. What the project is
 A real-time 3D flood-scenario twin of central Kakinada. The user picks rainfall, duration, drain blockage and pumps; the app simulates water moving through real streets, scores every 100 m zone (0–100), ranks inspection priority, checks hospital→shelter routes, explains every score, and has a cited retrieval assistant (English / Telugu UI). Honest by design: scenario, not forecast.
@@ -51,7 +51,7 @@ Risk weights 0.30/0.25/0.25/0.20; bands 35/48/60; storm = symmetric triangle pea
 
 ## 6. Unfinished work (in priority order)
 
-### A. Commit and push the uncommitted work (section 1). Ask the owner before pushing.
+### A. Push `main` (owner decides), then delete the merged remote branches and check Vercel/Render redeploy.
 
 ### B. Re-render the three films (stale)
 The films in `docs/demo/` (git-ignored, local to the owner's Mac) were rendered with the old storm (peak at 40 %, water never receding). They quote old numbers (e.g. "the rain peaks at one thirty six", "ten hectares at one o'clock"). A re-render was started and **paused**:

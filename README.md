@@ -12,7 +12,7 @@ A real-time **3D flood-scenario twin** of a city neighbourhood: change the rain 
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000?logo=threedotjs&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-32%20Python%20%2B%209%20web-brightgreen)
+![Tests](https://img.shields.io/badge/tests-73%20Python%20%2B%2063%20web-brightgreen)
 
 ![PRITHVI AI — 3D flood twin of central Kakinada](docs/images/01-overview-3d.jpg)
 
@@ -198,7 +198,7 @@ prithvi-ai/
 ## Development
 
 ```bash
-make test                 # 32 Python tests + 9 web tests + typecheck
+make test                 # 73 Python tests + 63 web tests + typecheck
 python3 -m pytest -q      # Python only (risk index, parity with TypeScript, solver, RAG, API)
 cd frontend && npm test   # solver tests (mass conservation, determinism, monotonicity)
 make data                 # re-download OSM + DEM and rebuild data/processed (cached in data/raw)
