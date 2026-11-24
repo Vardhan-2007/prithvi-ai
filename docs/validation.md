@@ -67,35 +67,47 @@ for street-level reports) and `location_method` (how the location was chosen).
 `source_type` is one of `news`, `official`, `team_visit`. Every entry needs a link or, for a team visit, a dated photo
 kept by the team. Never add an entry you cannot source.
 
-## Reports collected so far (23 Nov 2026)
+## Reports collected so far (24 Nov 2026)
 
-Collected from news before running the model on these dates. Each was located with the pilot's own OpenStreetMap
-street data. No Google Maps lookup and no guessed coordinates were used.
+19 reports from 4 events, all collected from news before running the model on these dates. Locations come from the
+pilot's OpenStreetMap streets, Google Maps place pins (looked up 24 Nov 2026) or, for Indrapalem, Wikipedia. Each
+entry's `location_method` says which, and flags approximate ones. Only **7 of the 19 are inside the 1.6 km pilot**.
+The rest are counted as *outside* by the app: they show where Kakinada floods beyond the pilot, which is the case for
+growing the area.
 
-| Event | Source | Places in the pilot (in the file) |
-|---|---|---|
-| Sun 28 Jun 2026, thunderstorm downpour | [Deccan Chronicle, 29 Jun 2026](https://www.deccanchronicle.com/southern-states/andhra-pradesh/downpour-floods-low-lying-areas-in-kakinada-rajamahendravaram-1966950) | Main Road; Sambamurthy Nagar |
-| Mon–Tue 2–3 Nov 2026, rain from Cyclone Murasu | [Deccan Chronicle, 3 Nov 2026](https://www.deccanchronicle.com/southern-states/andhra-pradesh/rains-due-to-cyclone-murasu-inundate-godavari-districts-disrupt-power-supply-2001473) | Temple Street; Main Road; Sambamurthy Nagar |
+| Event | Source | Inside the pilot | Outside the pilot |
+|---|---|---|---|
+| Mon–Tue 2–3 Nov 2026, rain from Cyclone Murasu | [Deccan Chronicle, 3 Nov 2026](https://www.deccanchronicle.com/southern-states/andhra-pradesh/rains-due-to-cyclone-murasu-inundate-godavari-districts-disrupt-power-supply-2001473) | Temple Street, Main Road, Sambamurthy Nagar, Cinema Street | RTC Complex, 100 Buildings, Dairy Farm, Jayendra Nagar, Mootha Nagar, Sashikanth Nagar, Mahalakshmi Nagar, Turangi, Indrapalem |
+| Wed 28 Oct 2026, Cyclone Arnab | [Myanmar ITV, 28 Oct 2026](https://www.myanmaritv.com/news/floods-hit-streets-indias-kakinada-after-cyclone-arnab-makes-landfall) | none | Kakinada Anchorage Port (likely storm surge, not modelled) |
+| 24 Sep 2026, heavy rain | [ETV Bharat, 24 Sep 2026](https://www.etvbharat.com/en/state/heavy-rains-wreak-havoc-across-coastal-andhra-as-floodwater-inundates-roads-homes-and-farmland-enn26092406582) | none | RTC Complex (knee-deep, the only report with a depth) |
+| Sun 28 Jun 2026, thunderstorm downpour | [Deccan Chronicle, 29 Jun 2026](https://www.deccanchronicle.com/southern-states/andhra-pradesh/downpour-floods-low-lying-areas-in-kakinada-rajamahendravaram-1966950) | Main Road, Sambamurthy Nagar, Cinema Road | Jagannadhapuram (Jagannaickpur) |
 
-Neither article gives a depth for these places. Both list several more places, which are **not in the file yet**
-because their location could not be checked here. The team should look each one up in Google Maps and add it with its
-lat/lon. Places outside the pilot are fine: the app counts them as *outside*.
+Judgement calls (also written in each entry):
 
-* 28 Jun 2026: Municipal Office Road, Cinema Road, Jagannadhapuram.
-* 2–3 Nov 2026: Cinema Street, RTC Complex, 100 Buildings, Dairy Farm, Jayendranagar, Mootha Nagar, Sashikanth Nagar,
-  Mahalakshmi Nagar, Turangi, parts of Indrapalem. Also, from
-  [UNI, 3 Nov 2026](https://www.uniindia.com/south-india/ap-kakinada-drain-destilting/235013): roads in Durga Nagar
-  and the Narayana School area, after rainwater overflowed.
-* 24 Sep 2026: [ETV Bharat](https://www.etvbharat.com/en/state/heavy-rains-wreak-havoc-across-coastal-andhra-as-floodwater-inundates-roads-homes-and-farmland-enn26092406582)
-  reports water at about knee level around the **RTC Complex**, the only report found with a depth. It is worth
-  adding once located.
+* **Cinema Street (3 Nov)**: Google Maps has no road by that name in Kakinada, so it is placed on Cinema Road, the
+  name the same paper used in June. Assumed, not certain.
+* **100 Buildings, Mootha Nagar, Mahalakshmi Nagar**: two nearby pins or a single user-added pin. Approximate.
+* **Indrapalem**: village centre; the report says only "parts of Indrapalem".
 
-Cyclone Montha (landfall near Kakinada on the night of 28–29 Oct **2025**) is the biggest recent event, but no report
-naming streets inside the pilot was found, so it is not in the file.
+Not added, and why:
+
+* **Municipal Office Road (28 Jun)**: no road by that name in Google Maps, and several different municipal offices.
+  Ambiguous.
+* **Bombay Katta (28 Oct)**: not found in Google Maps.
+* **Pagadala Peta (28 Oct)**: found (Pagadalapeta, 16.9193, 82.2381), but the source ([ANI via the Daily Pioneer live
+  blog](https://dailypioneer.com/india/cyclone-arnab-live-very-severe-storm-set-to-cross-andhra-coast-near-yanam-on-october-28))
+  calls it "worst-affected" without saying it was waterlogged.
+* **Durga Nagar, Narayana School area (3 Nov)**, from
+  [UNI](https://www.uniindia.com/south-india/ap-kakinada-drain-destilting/235013): not yet checked against the article.
+
+Cyclone Montha (night of 28–29 Oct **2025**) is not included: no street-level report was found.
 
 ## Results
 
 | Event date | Why chosen | Reports in pilot | Day-ahead forecast: hits | Actual rain: hits | Notes |
 |---|---|---|---|---|---|
-| 2026-06-28 | Most recent heavy downpour with named streets in the pilot | 2 | (run and fill in) | (run and fill in) | street-level reports |
-| 2026-11-02 / 03 | Cyclone Murasu rain; three pilot streets named | 3 | (run and fill in) | (run and fill in) | street-level reports; replay both days |
+| 2026-11-02 | Cyclone Murasu rain; four pilot streets named | 4 (+9 outside) | (run and fill in) | (run and fill in) | replay both days |
+| 2026-11-03 | same storm, second day | 4 (+9 outside) | (run and fill in) | (run and fill in) | |
+| 2026-10-28 | Cyclone Arnab, the year's biggest event | 0 (+1 outside) | n/a | n/a | nothing inside the pilot to score; record the model rain only |
+| 2026-09-24 | only report with a depth | 0 (+1 outside) | n/a | n/a | nothing inside the pilot to score |
+| 2026-06-28 | thunderstorm downpour | 3 (+1 outside) | (run and fill in) | (run and fill in) | model rain only 13.8 / 7.3 mm: expect misses from the rain input |

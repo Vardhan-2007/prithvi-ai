@@ -69,8 +69,13 @@ describe("scoring against observed reports", () => {
       expect(r.source_url).toMatch(/^https:\/\//);
       for (const id of r.osm_way_ids ?? []) expect(ids.has(id)).toBe(true);
     }
+    // every report covering the day is either scored or counted as outside the pilot - none is silently dropped
     const v = scoreReports(ds, res, j.reports, "2026-11-03");
-    expect(v.checks.length).toBe((j.reports as ObservedReport[]).filter((r) => reportCovers(r, "2026-11-03")).length);
-    expect(v.outside).toBe(0);
+    expect(v.checks.length + v.outside).toBe((j.reports as ObservedReport[]).filter((r) => reportCovers(r, "2026-11-03")).length);
+    expect(v.checks.length).toBeGreaterThan(0);
+    for (const r of j.reports as ObservedReport[]) {
+      expect(r.lat).toBeGreaterThan(16.85); expect(r.lat).toBeLessThan(17.1);   // all Kakinada: catches swapped or mistyped coordinates
+      expect(r.lon).toBeGreaterThan(82.15); expect(r.lon).toBeLessThan(82.35);
+    }
   });
 });
