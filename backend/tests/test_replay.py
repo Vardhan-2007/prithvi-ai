@@ -74,8 +74,8 @@ def test_route_validation(monkeypatch):
 
 def test_observed_template_is_valid_empty_and_in_sync():
     root = Path(__file__).resolve().parents[2]
-    a = json.loads((root / "data" / "validation" / "observed_waterlogging.json").read_text())
-    b = json.loads((root / "frontend" / "public" / "data" / "observed_waterlogging.json").read_text())
+    a = json.loads((root / "data" / "validation" / "observed_waterlogging.json").read_text(encoding="utf-8"))
+    b = json.loads((root / "frontend" / "public" / "data" / "observed_waterlogging.json").read_text(encoding="utf-8"))
     assert a == b, "run: make validation"
     assert isinstance(a["reports"], list)
     for r in a["reports"]:
@@ -85,7 +85,7 @@ def test_observed_template_is_valid_empty_and_in_sync():
         assert r["source_url"].startswith("https://")
         assert date.fromisoformat(r["event_date"]) <= date.fromisoformat(r.get("event_end_date", r["event_date"]))
     # every street a report points at must exist in the pilot dataset
-    ds = json.loads((root / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+    ds = json.loads((root / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
     ways = {w["id"] for w in ds["roads"]}
     for r in a["reports"]:
         assert set(r.get("osm_way_ids", [])) <= ways, r["place_name"]

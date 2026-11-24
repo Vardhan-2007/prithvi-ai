@@ -35,7 +35,7 @@ def baseline(stage: str = "provisional") -> dict[str, Any]:
     if stage != "final":
         return _BASE
     if _BASE_FINAL is None and BASELINE_WATER.exists():
-        w = json.loads(BASELINE_WATER.read_text())["water"]
+        w = json.loads(BASELINE_WATER.read_text(encoding="utf-8"))["water"]
         _BASE_FINAL = evaluate(dataset(), BASELINE, water=w)
     return _BASE_FINAL or _BASE
 

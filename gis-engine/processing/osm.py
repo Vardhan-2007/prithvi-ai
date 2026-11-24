@@ -16,7 +16,7 @@ from gis_config import *  # noqa: F401,F403  (constants + projection helpers)
 def fetch_osm(refresh: bool) -> dict:
     cache = RAW / "osm_kakinada.json"
     if cache.exists() and not refresh:
-        return json.loads(cache.read_text())
+        return json.loads(cache.read_text(encoding="utf-8"))
     bb = f"({S - 0.001},{W - 0.001},{N + 0.001},{E + 0.001})"
     q = (
         "[out:json][timeout:90];("

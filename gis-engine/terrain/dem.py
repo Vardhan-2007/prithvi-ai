@@ -17,7 +17,7 @@ def fetch_dem_samples(refresh: bool) -> dict:
     """Sample Copernicus GLO-90 on a regular lon/lat lattice through Open-Meteo."""
     cache = RAW / "dem_samples_glo90.json"
     if cache.exists() and not refresh:
-        return json.loads(cache.read_text())
+        return json.loads(cache.read_text(encoding="utf-8"))
     n = 21
     lons = [W + (EAST - W) * j / (n - 1) for j in range(n)]
     lats = [S + (NORTH - S) * i / (n - 1) for i in range(n)]
@@ -42,7 +42,7 @@ def fetch_dem_samples(refresh: bool) -> dict:
          "retrieved_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
          "source": "Copernicus GLO-90 DSM via Open-Meteo elevation API"}
     RAW.mkdir(parents=True, exist_ok=True)
-    cache.write_text(json.dumps(d))
+    cache.write_text(json.dumps(d), encoding="utf-8")
     return d
 
 

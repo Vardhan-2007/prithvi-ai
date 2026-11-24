@@ -5,7 +5,7 @@ import pytest
 from risk_scoring import BASELINE, WEIGHTS, band_of, evaluate, inlet_order, rainfall_factor
 
 ROOT = Path(__file__).resolve().parents[3]
-DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
 
 
 def scn(**kw):
@@ -82,7 +82,7 @@ from risk_scoring import WEIGHTS_FINAL, zone_water  # noqa: E402
 def _ds():
     import json
     from pathlib import Path
-    return json.loads((Path(__file__).resolve().parents[3] / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+    return json.loads((Path(__file__).resolve().parents[3] / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
 
 
 def test_final_weights_sum_to_one_and_drop_uniform_rain():

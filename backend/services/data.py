@@ -12,7 +12,7 @@ def dataset() -> dict[str, Any]:
     path = DATA_DIR / f"{AREA_ID}.json"
     if not path.exists():
         raise RuntimeError(f"{path} missing - run: python3 gis-engine/processing/build_pilot_dataset.py")
-    return json.loads(path.read_text())
+    return json.loads(path.read_text(encoding="utf-8"))
 
 
 def xy_to_lonlat(ds: dict, x: float, y: float) -> list[float]:

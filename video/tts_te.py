@@ -7,8 +7,8 @@ LENGTH = float(os.environ.get("LENGTH", "1.12"))   # >1 = slower, clearer
 voice = PiperVoice.load("models/te_IN-padmavathi-medium.onnx")
 cfg = SynthesisConfig(length_scale=LENGTH, noise_scale=0.55, noise_w_scale=0.65)
 os.makedirs("audio/cache", exist_ok=True)
-beats = json.load(open("te_sentences.json"))
-manifest = json.load(open("manifest.json")) if os.path.exists("manifest.json") else {"sr": 24000}
+beats = json.load(open("te_sentences.json", encoding="utf-8"))
+manifest = json.load(open("manifest.json", encoding="utf-8")) if os.path.exists("manifest.json") else {"sr": 24000}
 manifest["te"] = {}
 n = 0
 for b in beats:
@@ -29,6 +29,6 @@ for b in beats:
         n += 1
         if n % 10 == 0: print(n, "sentences", flush=True)
     manifest["te"][b["id"]] = out
-tmp = "manifest.json.tmp"; json.dump(manifest, open(tmp, "w"), indent=1); os.replace(tmp, "manifest.json")
+tmp = "manifest.json.tmp"; json.dump(manifest, open(tmp, "w", encoding="utf-8"), indent=1); os.replace(tmp, "manifest.json")
 tot = sum(s["dur"] + 0.14 for v in manifest["te"].values() for s in v)
 print("DONE te | sentences:", n, "| narration seconds:", round(tot))

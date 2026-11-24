@@ -71,8 +71,8 @@ def main() -> None:
     PROCESSED.mkdir(parents=True, exist_ok=True)
     WEB_PUBLIC.mkdir(parents=True, exist_ok=True)
     txt = json.dumps(out, separators=(",", ":"))
-    (PROCESSED / f"{AREA_ID}.json").write_text(txt)
-    (WEB_PUBLIC / f"{AREA_ID}.json").write_text(txt)
+    (PROCESSED / f"{AREA_ID}.json").write_text(txt, encoding="utf-8")
+    (WEB_PUBLIC / f"{AREA_ID}.json").write_text(txt, encoding="utf-8")
     print(f"Grid {NX}x{NY} @ {CELL} m  ({WIDTH_M:.0f} x {HEIGHT_M:.0f} m)  zones={len(zones['zones'])}")
     print(f"DEM range {dem.min():.2f}..{dem.max():.2f} m | building cells {int(bmask.sum())} | road cells {int(rmask.sum())}")
     print(f"Wrote {PROCESSED / (AREA_ID + '.json')} ({len(txt) / 1024:.0f} KB) and copy in frontend/public/data/")
@@ -84,7 +84,7 @@ def main() -> None:
         for k, v in L.items():
             if k != "id":
                 lines.append(f"    {k}: {json.dumps(v, ensure_ascii=False)}")
-    (PROCESSED / "layers.yaml").write_text("\n".join(lines) + "\n")
+    (PROCESSED / "layers.yaml").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

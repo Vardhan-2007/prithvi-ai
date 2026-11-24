@@ -8,8 +8,8 @@ from risk_scoring import evaluate
 from simulation import VirtualPipeSolver, step_storm
 
 ROOT = Path(__file__).resolve().parents[2]
-DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text())
-REF = json.loads((Path(__file__).parent / "ts_solver_reference.json").read_text())
+DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
+REF = json.loads((Path(__file__).parent / "ts_solver_reference.json").read_text(encoding="utf-8"))
 
 
 def test_numpy_solver_matches_browser_solver_on_an_irregular_hyetograph():

@@ -45,14 +45,14 @@ def build_chunks(corpus_dir: Path = CORPUS_DIR) -> list[dict]:
 
 def load_corpus() -> list[dict]:
     cached = ROOT / "data" / "processed" / "corpus.json"
-    return json.loads(cached.read_text()) if cached.exists() else build_chunks()
+    return json.loads(cached.read_text(encoding="utf-8")) if cached.exists() else build_chunks()
 
 
 if __name__ == "__main__":
     chunks = build_chunks()
     out = ROOT / "data" / "processed" / "corpus.json"
-    out.write_text(json.dumps(chunks, indent=1, ensure_ascii=False))
+    out.write_text(json.dumps(chunks, indent=1, ensure_ascii=False), encoding="utf-8")
     web = ROOT / "frontend" / "public" / "data" / "corpus.json"
     web.parent.mkdir(parents=True, exist_ok=True)
-    web.write_text(json.dumps(chunks, ensure_ascii=False))
+    web.write_text(json.dumps(chunks, ensure_ascii=False), encoding="utf-8")
     print(f"{len(chunks)} chunks from {len({c['doc_id'] for c in chunks})} documents -> {out}", file=sys.stderr)

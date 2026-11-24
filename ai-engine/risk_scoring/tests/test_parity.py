@@ -7,8 +7,8 @@ import pytest
 from risk_scoring import evaluate, zone_water
 
 ROOT = Path(__file__).resolve().parents[3]
-DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text())
-REF = json.loads((Path(__file__).parent / "ts_reference.json").read_text())
+DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
+REF = json.loads((Path(__file__).parent / "ts_reference.json").read_text(encoding="utf-8"))
 
 
 def test_zone_water_matches_typescript():

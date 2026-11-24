@@ -6,7 +6,7 @@ from simulation import VirtualPipeSolver, cumulative_rain_mm, rain_rate_mm_h
 from risk_scoring import evaluate
 
 ROOT = Path(__file__).resolve().parents[2]
-DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+DS = json.loads((ROOT / "data" / "processed" / "pilot_kakinada_01.json").read_text(encoding="utf-8"))
 G = DS["grid"]; NY, NX = G["ny"], G["nx"]
 
 
