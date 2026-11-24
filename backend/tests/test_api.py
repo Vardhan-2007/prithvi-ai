@@ -82,3 +82,9 @@ def test_simulation_with_pumps_returns_finite_numbers():
     sim = r.json()["simulation"]
     for k in ("peak_flooded_ha", "peak_max_depth_m", "rain_m3", "drained_m3", "outfall_m3", "stored_m3"):
         assert isinstance(sim[k], (int, float)) and sim[k] == sim[k] and sim[k] >= 0, k
+
+
+def test_unknown_inlet_overrides_are_rejected():
+    r = c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_does_not_exist": "blocked"}})
+    assert r.status_code == 422 and "inlet_does_not_exist" in r.json()["detail"]
+    assert c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_01": "blocked"}}).status_code == 201
