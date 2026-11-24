@@ -17,11 +17,11 @@
    },
    "peakHa": 3,
    "peakDepth": 0.4,
-   "peakBuildings": 26,
+   "peakBuildings": 28,
    "peakFacilities": 1,
-   "totalDrainedK": 28,
-   "totalOutK": 11,
-   "storedEndK": 13,
+   "totalDrainedK": 41,
+   "totalOutK": 10,
+   "storedEndK": 1,
    "flaggedZones": 0,
    "flaggedRoadKm": 0,
    "flaggedFacilities": [],
@@ -29,12 +29,12 @@
     {
      "t": 900,
      "ha": 0,
-     "maxDepth": 0.04
+     "maxDepth": 0.03
     },
     {
      "t": 1800,
      "ha": 0,
-     "maxDepth": 0.08
+     "maxDepth": 0.06
     },
     {
      "t": 3600,
@@ -43,28 +43,28 @@
     },
     {
      "t": 5760,
-     "ha": 0.4,
-     "maxDepth": 0.22
+     "ha": 0.2,
+     "maxDepth": 0.18
     },
     {
      "t": 7200,
-     "ha": 0.9,
-     "maxDepth": 0.29
+     "ha": 0.6,
+     "maxDepth": 0.25
     },
     {
      "t": 9000,
-     "ha": 1.9,
-     "maxDepth": 0.37
+     "ha": 1.3,
+     "maxDepth": 0.33
     },
     {
      "t": 14400,
-     "ha": 2.5,
-     "maxDepth": 0.39
+     "ha": 2.9,
+     "maxDepth": 0.4
     },
     {
      "t": 25200,
-     "ha": 1.9,
-     "maxDepth": 0.33
+     "ha": 0.5,
+     "maxDepth": 0.24
     }
    ],
    "zonesMovedUp": 0
@@ -84,13 +84,13 @@
     "higher": 0,
     "highest": 0
    },
-   "peakHa": 24.2,
-   "peakDepth": 0.73,
+   "peakHa": 24.4,
+   "peakDepth": 0.74,
    "peakBuildings": 114,
    "peakFacilities": 4,
-   "totalDrainedK": 41,
-   "totalOutK": 283,
-   "storedEndK": 18,
+   "totalDrainedK": 70,
+   "totalOutK": 271,
+   "storedEndK": 1,
    "flaggedZones": 80,
    "flaggedRoadKm": 9.5,
    "flaggedFacilities": [
@@ -111,38 +111,38 @@
     },
     {
      "t": 1800,
-     "ha": 1,
-     "maxDepth": 0.26
+     "ha": 0.6,
+     "maxDepth": 0.23
     },
     {
      "t": 3600,
-     "ha": 10.7,
-     "maxDepth": 0.51
+     "ha": 6.1,
+     "maxDepth": 0.47
     },
     {
      "t": 5760,
-     "ha": 21.3,
-     "maxDepth": 0.67
+     "ha": 17.2,
+     "maxDepth": 0.62
     },
     {
      "t": 7200,
-     "ha": 23.6,
-     "maxDepth": 0.73
+     "ha": 22.6,
+     "maxDepth": 0.7
     },
     {
      "t": 9000,
-     "ha": 21.8,
-     "maxDepth": 0.73
+     "ha": 23.4,
+     "maxDepth": 0.74
     },
     {
      "t": 14400,
-     "ha": 10.6,
+     "ha": 11.5,
      "maxDepth": 0.7
     },
     {
      "t": 25200,
-     "ha": 2.9,
-     "maxDepth": 0.7
+     "ha": 0,
+     "maxDepth": 0.15
     }
    ],
    "zonesMovedUp": 244
@@ -162,13 +162,13 @@
     "higher": 0,
     "highest": 0
    },
-   "peakHa": 22.5,
-   "peakDepth": 0.71,
+   "peakHa": 22.8,
+   "peakDepth": 0.72,
    "peakBuildings": 110,
    "peakFacilities": 4,
-   "totalDrainedK": 83,
-   "totalOutK": 243,
-   "storedEndK": 16,
+   "totalDrainedK": 107,
+   "totalOutK": 234,
+   "storedEndK": 1,
    "flaggedZones": 38,
    "flaggedRoadKm": 1.9,
    "flaggedFacilities": [],
@@ -180,38 +180,38 @@
     },
     {
      "t": 1800,
-     "ha": 0.8,
-     "maxDepth": 0.25
+     "ha": 0.5,
+     "maxDepth": 0.22
     },
     {
      "t": 3600,
-     "ha": 9.5,
-     "maxDepth": 0.49
+     "ha": 5,
+     "maxDepth": 0.45
     },
     {
      "t": 5760,
-     "ha": 19.7,
-     "maxDepth": 0.65
+     "ha": 15,
+     "maxDepth": 0.6
     },
     {
      "t": 7200,
-     "ha": 21.9,
-     "maxDepth": 0.71
+     "ha": 21.1,
+     "maxDepth": 0.67
     },
     {
      "t": 9000,
-     "ha": 20,
-     "maxDepth": 0.7
+     "ha": 21.8,
+     "maxDepth": 0.72
     },
     {
      "t": 14400,
-     "ha": 9.5,
+     "ha": 10.2,
      "maxDepth": 0.7
     },
     {
      "t": 25200,
-     "ha": 2.6,
-     "maxDepth": 0.7
+     "ha": 0,
+     "maxDepth": 0.15
     }
    ],
    "zonesMovedUp": 197
@@ -231,13 +231,13 @@
     "higher": 0,
     "highest": 0
    },
-   "peakHa": 25.3,
-   "peakDepth": 0.75,
+   "peakHa": 25.4,
+   "peakDepth": 0.76,
    "peakBuildings": 114,
    "peakFacilities": 4,
-   "totalDrainedK": 0,
-   "totalOutK": 322,
-   "storedEndK": 20,
+   "totalDrainedK": 35,
+   "totalOutK": 305,
+   "storedEndK": 2,
    "flaggedZones": 171,
    "flaggedRoadKm": 28.2,
    "flaggedFacilities": [
@@ -265,38 +265,38 @@
     },
     {
      "t": 1800,
-     "ha": 1.4,
-     "maxDepth": 0.26
+     "ha": 0.8,
+     "maxDepth": 0.24
     },
     {
      "t": 3600,
-     "ha": 11.6,
-     "maxDepth": 0.52
+     "ha": 9.3,
+     "maxDepth": 0.49
     },
     {
      "t": 5760,
-     "ha": 22.6,
-     "maxDepth": 0.69
+     "ha": 19.1,
+     "maxDepth": 0.64
     },
     {
      "t": 7200,
-     "ha": 24.8,
-     "maxDepth": 0.75
+     "ha": 23.9,
+     "maxDepth": 0.72
     },
     {
      "t": 9000,
-     "ha": 23.1,
-     "maxDepth": 0.74
+     "ha": 24.7,
+     "maxDepth": 0.76
     },
     {
      "t": 14400,
-     "ha": 11.4,
+     "ha": 12.1,
      "maxDepth": 0.7
     },
     {
      "t": 25200,
-     "ha": 3.1,
-     "maxDepth": 0.7
+     "ha": 0.1,
+     "maxDepth": 0.16
     }
    ],
    "zonesMovedUp": 271
@@ -316,13 +316,13 @@
     "higher": 0,
     "highest": 0
    },
-   "peakHa": 24.2,
-   "peakDepth": 0.73,
+   "peakHa": 24.3,
+   "peakDepth": 0.74,
    "peakBuildings": 114,
    "peakFacilities": 4,
-   "totalDrainedK": 46,
-   "totalOutK": 278,
-   "storedEndK": 18,
+   "totalDrainedK": 74,
+   "totalOutK": 267,
+   "storedEndK": 1,
    "flaggedZones": 68,
    "flaggedRoadKm": 8.1,
    "flaggedFacilities": [
@@ -338,38 +338,38 @@
     },
     {
      "t": 1800,
-     "ha": 1,
-     "maxDepth": 0.25
+     "ha": 0.6,
+     "maxDepth": 0.22
     },
     {
      "t": 3600,
-     "ha": 10.6,
-     "maxDepth": 0.5
+     "ha": 6,
+     "maxDepth": 0.47
     },
     {
      "t": 5760,
-     "ha": 21.3,
-     "maxDepth": 0.66
+     "ha": 17,
+     "maxDepth": 0.62
     },
     {
      "t": 7200,
-     "ha": 23.5,
-     "maxDepth": 0.73
+     "ha": 22.5,
+     "maxDepth": 0.7
     },
     {
      "t": 9000,
-     "ha": 21.7,
-     "maxDepth": 0.72
+     "ha": 23.3,
+     "maxDepth": 0.74
     },
     {
      "t": 14400,
-     "ha": 10.5,
+     "ha": 11.2,
      "maxDepth": 0.7
     },
     {
      "t": 25200,
-     "ha": 2.8,
-     "maxDepth": 0.7
+     "ha": 0,
+     "maxDepth": 0.15
     }
    ],
    "zonesMovedUp": 235
