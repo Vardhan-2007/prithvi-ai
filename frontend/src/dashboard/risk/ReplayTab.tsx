@@ -12,6 +12,7 @@ export function ReplayTab() {
   const t = useT();
   const ds = useStore((s) => s.ds)!; const res = useStore((s) => s.result)!; const sc = useStore((s) => s.scenario);
   const runStorm = useStore((s) => s.runStorm);
+  const loadConditions = useStore((s) => s.loadConditions);
   const [day, setDay] = useState(() => new Date(Date.now() - 10 * 86400_000).toISOString().slice(0, 10));
   const [rain, setRain] = useState<ReplayRain | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
@@ -44,7 +45,7 @@ export function ReplayTab() {
             {KEYS.map((k) => rain.series[k] ? (
               <div className="kv" key={k}>
                 <span>{t(`rp.series.${k}`)}: <b>{rain.totals_mm[k]} mm</b></span>
-                <button className="btn" onClick={() => runStorm(stepStorm(rain.series[k]!, 1, { startIso: `${rain.date}T00:00+05:30`, label: t(`rp.series.${k}`) }), nameFor(k))}>{t("rp.run")}</button>
+                <button className="btn" onClick={() => { runStorm(stepStorm(rain.series[k]!, 1, { startIso: `${rain.date}T00:00+05:30`, label: t(`rp.series.${k}`) }), nameFor(k)); void loadConditions(rain.date); }}>{t("rp.run")}</button>
               </div>
             ) : null)}
             {rain.notes.map((n, i) => <p key={i} className="hint">{n}</p>)}

@@ -66,6 +66,10 @@ export interface Scenario {
   // Optional step hyetograph (forecast / replay). When set, rainfallMm and durationH are its total and length,
   // and the flood solver uses the hour-by-hour shape instead of the triangle.
   storm?: StepStorm;
+  // Ground and sea conditions (optional; 0 = the original model). soilWetness 0 (dry) .. 1 (saturated);
+  // seaLevelM = tide + storm surge at the coast, metres above mean sea level. Both ASSUMED effects, see floodSolver.ts.
+  soilWetness?: number;
+  seaLevelM?: number;
 }
 
 export type Band = "lower" | "moderate" | "higher" | "highest";

@@ -1,7 +1,7 @@
 // Owns the flood Web Worker + the growing list of snapshots, and the playhead.
 // Kept outside React state: snapshots are large and the playhead changes every frame.
 import FloodWorker from "./floodWorker?worker";
-import { buildSolverInit, SNAP_S, type SnapStats } from "./floodSolver";
+import { buildSolverInit, SNAP_S, type Conditions, type SnapStats } from "./floodSolver";
 import { stormDurationH, triangleStorm, type Storm } from "./storm";
 import type { WorkerOut } from "./floodWorker";
 import type { Dataset, Scenario } from "../../../scenarios/engine/types";
@@ -33,7 +33,7 @@ export function scenarioStorm(sc: Pick<Scenario, "rainfallMm" | "durationH" | "s
   return sc.storm ?? triangleStorm(sc.rainfallMm, sc.durationH);
 }
 
-export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[], storm: Storm, opts?: { autoplay?: boolean }) {
+export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[], storm: Storm, opts?: { autoplay?: boolean; conditions?: Conditions }) {
   worker?.postMessage({ type: "stop" });
   worker?.terminate();
   worker = new FloodWorker();
@@ -50,7 +50,7 @@ export function startSim(ds: Dataset, inletOpen: boolean[], pumpCells: number[],
     else if (m.type === "done") simData.done = true;
     notify();
   };
-  const init = buildSolverInit(ds, inletOpen, pumpCells, storm, 0, simData.tailH);
+  const init = buildSolverInit(ds, inletOpen, pumpCells, storm, 0, simData.tailH, opts?.conditions);
   worker.postMessage({ type: "init", runId, init });
   notify();
 }

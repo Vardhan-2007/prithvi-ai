@@ -140,3 +140,11 @@ def test_simulate_returns_final_scores_that_follow_the_water():
 def test_without_simulate_the_score_is_provisional():
     j = c.post("/api/v1/scenarios", json=BODY).json()
     assert j["score_stage"] == "provisional"
+
+
+def test_high_sea_level_raises_the_index_and_bad_conditions_are_rejected():
+    calm = c.post("/api/v1/scenarios", json=BODY).json()
+    tide = c.post("/api/v1/scenarios", json={**BODY, "sea_level_m": 2.0, "soil_wetness": 0.8}).json()
+    assert tide["mean_index"] > calm["mean_index"]
+    assert c.post("/api/v1/scenarios", json={**BODY, "soil_wetness": 1.5}).status_code == 422
+    assert c.post("/api/v1/scenarios", json={**BODY, "sea_level_m": 9}).status_code == 422

@@ -150,3 +150,7 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .warn-text { color: #fbbf24; }
 .chips.dim { opacity: .45; }
 .ok-text { color: #5eead4; }
+
+/* ground and sea conditions */
+.cond-box { border: 1px solid #2a3d68; border-radius: 10px; padding: 8px 10px; margin: 8px 0; }
+.cond-box .card-kicker { margin-bottom: 4px; }

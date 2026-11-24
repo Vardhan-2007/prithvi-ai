@@ -48,6 +48,8 @@ class ScenarioRequest(BaseModel):
     drainage_blockage_fraction: float = Field(default=0.0, ge=0, le=1)
     overrides: dict[str, Literal["blocked", "cleared"]] = Field(default_factory=dict, max_length=200)
     pumps: bool = False
+    soil_wetness: float = Field(default=0.0, ge=0, le=1, description="0 dry .. 1 saturated ground (assumed runoff effect)")
+    sea_level_m: float = Field(default=0.0, ge=-1, le=5, description="tide + storm surge at the coast, m above mean sea level")
     simulate: bool = Field(default=False, description="also run the reference flood solver (slow, <= 12 h)")
 
 

@@ -14,5 +14,15 @@
  "outfall_m3": 28087.733009620093,
  "expected_rain_m3": 87241.87566733919,
  "peak_flooded_cells": 889,
- "peak_max_depth": 0.5650597214698792
+ "peak_max_depth": 0.5650597214698792,
+ "conditioned": {
+  "soil_wetness": 0.7,
+  "sea_level_m": 1.4,
+  "stored_m3": 41305.05188904191,
+  "drain_m3": 24073.86484037745,
+  "outfall_m3": 46259.854547506606,
+  "expected_rain_m3": 111638.36361651307,
+  "peak_flooded_cells": 1186,
+  "peak_max_depth": 0.6230347752571106
+ }
 }

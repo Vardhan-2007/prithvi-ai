@@ -12,6 +12,7 @@ const cases: Scenario[] = [
   { ...BASELINE, name: "extreme", rainfallMm: 300, durationH: 4, blockageFrac: 0.6, pumps: true },
   { ...BASELINE, name: "overrides", rainfallMm: 180, durationH: 6, blockageFrac: 0.35, overrides: { [ids[3]]: "cleared", [ids[7]]: "blocked", [ids[11]]: "blocked" } },
   { ...BASELINE, name: "odd rounding", rainfallMm: 75, durationH: 2.5, blockageFrac: 0.1 },
+  { ...BASELINE, name: "high tide + surge", rainfallMm: 120, durationH: 6, blockageFrac: 0.25, seaLevelM: 1.37, soilWetness: 0.8 },
 ];
 // A deterministic synthetic peak-depth grid (metres) so both engines can be checked on the simulated-water factor W
 // and the FINAL index without running the flood solver. Values are rounded to whole mm, like the app's snapshots.
@@ -21,7 +22,7 @@ const water = zoneWater(ds, synthPeak);
 const row = (sc: Scenario, w?: number[]) => {
   const r = evaluate(ds, sc, w ? { water: w } : undefined);
   return {
-    scenario: { name: sc.name + (w ? " [final]" : ""), rainfall_mm: sc.rainfallMm, duration_h: sc.durationH, blockage_fraction: sc.blockageFrac, overrides: sc.overrides, pumps: sc.pumps },
+    scenario: { name: sc.name + (w ? " [final]" : ""), rainfall_mm: sc.rainfallMm, duration_h: sc.durationH, blockage_fraction: sc.blockageFrac, overrides: sc.overrides, pumps: sc.pumps, sea_level_m: sc.seaLevelM ?? 0, soil_wetness: sc.soilWetness ?? 0 },
     stage: r.stage, final: !!w,
     mean_index: r.meanIndex, inlet_open: r.inletOpen, band_counts: r.bandCounts, indices: r.zones.map((z) => z.index),
   };
@@ -29,7 +30,7 @@ const row = (sc: Scenario, w?: number[]) => {
 const out = {
   synthetic_peak_m: synthPeak,
   water,
-  cases: [...cases.map((sc) => row(sc)), ...cases.slice(1, 4).map((sc) => row(sc, water))],
+  cases: [...cases.map((sc) => row(sc)), ...cases.slice(1, 4).map((sc) => row(sc, water)), row(cases[5], water)],
 };
 writeFileSync(new URL("../../ai-engine/risk_scoring/tests/ts_reference.json", import.meta.url), JSON.stringify(out));
 console.log(`wrote ${out.cases.length} reference scenarios (+ W for ${water.length} zones)`);

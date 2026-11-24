@@ -34,6 +34,10 @@ The score is provisional while the run is going and final (with simulated water 
 If none works, the panel says Live mode is unavailable and the what-if controls keep working. While Live mode is on,
 the forecast refreshes every hour. Moving the rain or duration slider switches back to what-if mode.
 
+## Ground and sea
+
+When the forecast loads, Live mode also fills *Ground already wet* (soil moisture now) and *Sea level* (highest tide in the forecast window, Kakinada Bay) from Open-Meteo, and reruns. Replay does the same for the replayed day. If either cannot be loaded, the panel says so; in Replay the missing value is set to 0 rather than kept from another day. See `docs/methodology.md` §2 for the assumed effects.
+
 ## Limits
 
 * A model forecast is not an observation. Thunderstorm rain in particular is uncertain in timing and place.

@@ -3,6 +3,7 @@
 // Final (after the flood simulation finishes): RiskIndex = 100 * (wT*T + wD*D + wE*E + wW*W), W = simulated water in the zone.
 // Either way it is an INDEX, not a probability or depth.
 // The Python twin lives in ai-engine/risk_scoring and is checked against this by tests.
+import { drainFactor } from "../../maps/twin3d/sim/floodSolver";
 import type { Band, Dataset, Scenario, ScenarioResult, ScoreStage, Zone, ZoneResult, Road, Facility } from "./types";
 
 export type FactorKey = "terrain" | "rainfall" | "drainage" | "exposure" | "water";
@@ -116,11 +117,13 @@ export function zoneWater(ds: Dataset, peak: ArrayLike<number>): number[] {
 
 function compute(ds: Dataset, sc: Scenario, pumps: PumpSite[], water?: number[]): ScenarioResult {
   const { r, intensity } = rainfallFactor(sc.rainfallMm, sc.durationH);
+  const seaF = drainFactor(sc.seaLevelM ?? 0);   // high tide / surge backs up the drains
   const open = resolveInletOpen(ds, sc);
   const stage: ScoreStage = water ? "final" : "provisional";
   const Wt = weightsFor(stage);
   const zones: ZoneResult[] = ds.zones.zones.map((z, k) => {
-    const { cap, openN } = zoneCapacity(z, ds, open, pumps);
+    const { cap: rawCap, openN } = zoneCapacity(z, ds, open, pumps);
+    const cap = rawCap * seaF;
     const D = clamp01(0.6 * (1 - cap) + 0.4 * z.imperv);
     const W = water ? clamp01(water[k]) : 0;
     const contrib = {

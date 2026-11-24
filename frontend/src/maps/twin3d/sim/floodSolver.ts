@@ -18,6 +18,24 @@ export const FLOOD_DEPTH_M = 0.15;        // "flooded" threshold used for statis
 // 12.5 m grid cannot resolve: water trapped behind building footprints leaking out through gaps and gutters, infiltration,
 // evaporation and informal pumping. Without it, pockets walled in by buildings would hold water for ever. ASSUMED, not calibrated.
 export const RECESSION_TAU_H = 1.0;
+// Ground and sea conditions (optional; the neutral default reproduces the original model exactly). ASSUMED, not calibrated.
+//  * wet ground: pervious runoff rises linearly from RUNOFF_PERVIOUS (dry, wetness 0) to RUNOFF_PERVIOUS_WET (saturated, 1)
+//  * high sea level (tide + storm surge, metres above mean sea level at the coast): the town drains empty into tidal
+//    channels, so drain capacity falls linearly from 100 % at TIDE_FREE_M to (1 - TIDE_MAX_LOSS) at TIDE_FULL_M and above
+export const RUNOFF_PERVIOUS_WET = 0.9;
+export const TIDE_FREE_M = 0.5;
+export const TIDE_FULL_M = 2.0;
+export const TIDE_MAX_LOSS = 0.7;
+export interface Conditions { soilWetness: number; seaLevelM: number }
+export const NEUTRAL_CONDITIONS: Conditions = { soilWetness: 0, seaLevelM: 0 };
+const clamp01 = (v: number) => (Number.isFinite(v) ? Math.min(1, Math.max(0, v)) : 0);
+export function perviousRunoff(soilWetness: number): number {
+  return RUNOFF_PERVIOUS + (RUNOFF_PERVIOUS_WET - RUNOFF_PERVIOUS) * clamp01(soilWetness);
+}
+/** share of drain capacity left at a given sea level (1 = unaffected) */
+export function drainFactor(seaLevelM: number): number {
+  return 1 - TIDE_MAX_LOSS * clamp01((seaLevelM - TIDE_FREE_M) / (TIDE_FULL_M - TIDE_FREE_M));
+}
 export const DT = 2;                      // seconds per solver step
 export const SNAP_S = 120;                // snapshot interval (simulated seconds)
 
@@ -30,6 +48,7 @@ export interface SolverInit {
   pumps: { cell: number }[];
   storm: Storm;                           // rain input: triangle (what-if) or step hyetograph (forecast / replay)
   tailH: number;                          // hours simulated after the rain ends
+  conditions?: Conditions;                // wet ground / high sea; omitted = neutral (original model)
 }
 
 export interface SnapStats {
@@ -59,6 +78,7 @@ export class FloodSolver {
   t = 0;
   rainM3 = 0; drainM3 = 0; outfallM3 = 0;
   private readonly A: number; private readonly pipeA: number; private readonly damp = 0.93;
+  private readonly inletCap: number;
 
   constructor(init: SolverInit) {
     this.init = init;
@@ -66,6 +86,9 @@ export class FloodSolver {
     this.nx = nx; this.ny = ny; this.n = nx * ny; this.cell = cell;
     this.A = cell * cell; this.pipeA = 0.4 * cell;
     const n = this.n;
+    const cond = init.conditions ?? NEUTRAL_CONDITIONS;
+    const pervious = perviousRunoff(cond.soilWetness);
+    this.inletCap = INLET_CAPACITY_M3S * drainFactor(cond.seaLevelM);
     this.h = new Float32Array(n); this.hn = new Float32Array(n); this.peak = new Float32Array(n);
     this.f = [new Float32Array(n), new Float32Array(n), new Float32Array(n), new Float32Array(n)];
     this.z = new Float32Array(n); this.wall = init.obstacle;
@@ -82,7 +105,7 @@ export class FloodSolver {
       for (const j of nb) if (j >= 0 && target[j] < 0) { target[j] = target[i]; q.push(j); }
     }
     for (let i = 0; i < n; i++) {
-      const c = this.wall[i] || init.road[i] ? RUNOFF_IMPERVIOUS : RUNOFF_PERVIOUS;
+      const c = this.wall[i] || init.road[i] ? RUNOFF_IMPERVIOUS : pervious;
       const tgt = target[i] >= 0 ? target[i] : i;
       this.rainW[tgt] += c;
     }
@@ -128,7 +151,7 @@ export class FloodSolver {
       if (!this.inletOpen[k]) continue;
       const i = this.inletCells[k], d = h[i];
       if (d <= 0) continue;
-      const cap = INLET_CAPACITY_M3S * Math.min(1, d / 0.03) * dt;
+      const cap = this.inletCap * Math.min(1, d / 0.03) * dt;
       const vol = Math.min(d * A, cap);
       h[i] -= vol / A; this.drainM3 += vol;
     }
@@ -214,7 +237,7 @@ export class FloodSolver {
 
 export function buildSolverInit(
   ds: { grid: { nx: number; ny: number; cell_m: number; dem: number[]; building_mask: number[]; road_mask: number[] }; inlets: { ix: number; iy: number }[] },
-  open: boolean[], pumpCells: number[], rain: number | Storm, durationH = 0, tailH = 3,
+  open: boolean[], pumpCells: number[], rain: number | Storm, durationH = 0, tailH = 3, conditions?: Conditions,
 ): SolverInit {
   // `rain` is either a Storm, or a total depth (mm) that is turned into the classic triangle storm over `durationH`.
   const storm: Storm = typeof rain === "number" ? triangleStorm(rain, durationH) : rain;
@@ -224,5 +247,6 @@ export function buildSolverInit(
     dem: Float32Array.from(ds.grid.dem), obstacle: Uint8Array.from(ds.grid.building_mask), road: Uint8Array.from(ds.grid.road_mask),
     inlets: ds.inlets.map((inl, i) => ({ cell: inl.iy * nx + inl.ix, open: open[i] })),
     pumps: pumpCells.map((cell) => ({ cell })), storm, tailH,
+    ...(conditions ? { conditions } : {}),
   };
 }

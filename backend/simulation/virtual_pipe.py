@@ -25,6 +25,25 @@ FLOOD_DEPTH_M = 0.15
 # ASSUMED, not calibrated. Mirrors RECESSION_TAU_H in the browser solver.
 RECESSION_TAU_H = 1.0
 DT = 2.0
+# Ground and sea conditions (optional; neutral = original model). ASSUMED. Mirrors floodSolver.ts.
+RUNOFF_PERVIOUS_WET = 0.9
+TIDE_FREE_M = 0.5
+TIDE_FULL_M = 2.0
+TIDE_MAX_LOSS = 0.7
+
+
+def _clamp01(v: float) -> float:
+    v = float(v)
+    return 0.0 if v != v else min(1.0, max(0.0, v))
+
+
+def pervious_runoff(soil_wetness: float) -> float:
+    return RUNOFF_PERVIOUS + (RUNOFF_PERVIOUS_WET - RUNOFF_PERVIOUS) * _clamp01(soil_wetness)
+
+
+def drain_factor(sea_level_m: float) -> float:
+    """Share of drain capacity left at a given sea level (tide + surge, m above MSL)."""
+    return 1.0 - TIDE_MAX_LOSS * _clamp01((sea_level_m - TIDE_FREE_M) / (TIDE_FULL_M - TIDE_FREE_M))
 
 
 def rain_rate_mm_h(t: float, total_mm: float, duration_h: float) -> float:
@@ -39,7 +58,8 @@ def cumulative_rain_mm(t: float, total_mm: float, duration_h: float) -> float:
 class VirtualPipeSolver:
     def __init__(self, dem: np.ndarray, obstacle: np.ndarray, road: np.ndarray, cell: float,
                  inlets: list[tuple[int, int, bool]], pump_cells: list[tuple[int, int]],
-                 rain_mm: float, duration_h: float, tail_h: float = 3.0, storm: Storm | None = None):
+                 rain_mm: float, duration_h: float, tail_h: float = 3.0, storm: Storm | None = None,
+                 soil_wetness: float = 0.0, sea_level_m: float = 0.0):
         # `storm` (triangle or step hyetograph) overrides rain_mm / duration_h, which then describe the classic triangle.
         self.ny, self.nx = dem.shape
         self.cell, self.A, self.pipe_a, self.damp = cell, cell * cell, 0.4 * cell, 0.93
@@ -54,6 +74,8 @@ class VirtualPipeSolver:
         self.rain_m3 = self.drain_m3 = self.outfall_m3 = 0.0
         self.inlets = [(iy, ix) for iy, ix, op in inlets if op]
         self.pumps = list(pump_cells)
+        self.pervious = pervious_runoff(soil_wetness)
+        self.inlet_cap = INLET_CAPACITY_M3S * drain_factor(sea_level_m)
         self.rain_w = self._rain_weights(road)
         edges = {"W": dem[:, 0], "E": dem[:, -1], "S": dem[0, :], "N": dem[-1, :]}
         low = min(edges, key=lambda k: float(np.mean(edges[k])))
@@ -83,7 +105,7 @@ class VirtualPipeSolver:
                     target[yy, xx] = target[y, x]
                     q.append((yy, xx))
         w = np.zeros(ny * nx)
-        coef = np.where(self.wall | (road > 0), RUNOFF_IMPERVIOUS, RUNOFF_PERVIOUS)
+        coef = np.where(self.wall | (road > 0), RUNOFF_IMPERVIOUS, self.pervious)
         tgt = np.where(target >= 0, target, np.arange(ny * nx).reshape(ny, nx))
         np.add.at(w, tgt.ravel(), coef.ravel())
         return w.reshape(ny, nx)
@@ -99,7 +121,7 @@ class VirtualPipeSolver:
         for iy, ix in self.inlets:
             d = h[iy, ix]
             if d > 0:
-                vol = min(d * A, INLET_CAPACITY_M3S * min(1.0, d / 0.03) * dt)
+                vol = min(d * A, self.inlet_cap * min(1.0, d / 0.03) * dt)
                 h[iy, ix] -= vol / A; self.drain_m3 += vol
         for iy, ix in self.pumps:
             d = h[iy, ix]
