@@ -5,12 +5,14 @@ All notable changes to this project are documented here. The format follows [Kee
 ## [Unreleased]
 
 ### Changed
+- **Timeline:** the row of eight number boxes is replaced by one plain sentence about what is happening (English / Telugu).
 - **Storm shape:** the rain is now a symmetric triangle that peaks at the midpoint of the duration (previously at 40 %) and falls to zero at the end.
 - **Flood recession:** after the rain stops, standing water recedes with a 1 h time constant (assumed; counted as drained volume). Previously, pockets walled in by building footprints held water for ever (about 2.5 ha still flooded three hours after the rain). Peak depths and peak flooded areas during the rain are unchanged in kind (e.g. 200 mm / 4 h / 50 % blocked: peak 24.0 ha at T+2:14).
-- Browser and NumPy solvers updated together; tests now require the peak at the midpoint, a symmetric curve, receding water and a closed mass balance (32 Python + 5 web tests).
+- Browser and NumPy solvers updated together; tests now require the peak at the midpoint, a symmetric curve, receding water and a closed mass balance (32 Python + 9 web tests).
 - Assistant corpus and methodology updated to describe both changes.
 
 ### Added
+- **Drains tab:** an indicative ranking of which drains are most likely to block (terrain, built-up surroundings, spacing; assumed weights) and which matter most if they do. Colours the drains on the 3D and 2D maps, flies to a selected drain, and can assume the k likeliest drains block. Not a prediction: no real drain or blockage records exist for the area.
 - Deployment: `Dockerfile`, `render.yaml`, single-flight guard (HTTP 429) on the slow `simulate` endpoint, live demo links.
 - `docs/prototype-guide.md` and the PDF study guide `docs/PRITHVI-AI-study-guide.pdf`.
 

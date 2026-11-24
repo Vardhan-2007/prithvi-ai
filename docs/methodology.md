@@ -49,3 +49,6 @@ Extractive BM25 retrieval over `ai-engine/rag/corpus/*.md`. Answers are built fr
 
 ## 5. Validation path (not done in this prototype)
 Pick a documented historical event, hold it out, compare simulated extent with observed extent (IoU / precision / recall), and report uncertainty. Until then: repeatability, monotonicity, mass-balance and parity tests only.
+
+## Drain blockage likelihood (indicative)
+The model cannot predict which real drains will block: there is no drain inventory, inspection or blockage history for the pilot, and the 56 inlets are proxy points. The **Drains** tab therefore gives a transparent, *assumed* ranking: `S = 0.40·low-lying + 0.30·built-up + 0.30·spacing` (each factor min–max scaled over the 56 inlets), plus the **impact** of a blockage at each drain (re-score the scenario with that drain blocked vs cleared). Both are relative rankings, not probabilities, and are not validated against real blockages. See `frontend/src/scenarios/engine/drains.ts`. To predict real blockages you would need the municipal drain map, cleaning and inspection records and past flood complaints.
