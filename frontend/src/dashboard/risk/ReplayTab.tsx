@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../../store";
 import { useT } from "../../components/i18n/i18n";
 import { stepStorm } from "../../maps/twin3d/sim/storm";
+import { FieldReportsCard } from "./FieldReportsCard";
+import { loadFieldReports } from "../../scenarios/engine/fieldReports";
 import { getReplay, loadObserved, scoreReports, type ObservedReport, type ReplayRain, type ReplaySeriesKey } from "../../scenarios/engine/replay";
 
 const KEYS: ReplaySeriesKey[] = ["forecast_day_ahead", "actual"];
@@ -19,6 +21,7 @@ export function ReplayTab() {
   const [err, setErr] = useState<string>("");
   const [reports, setReports] = useState<ObservedReport[]>([]);
   useEffect(() => { void loadObserved().then(setReports); }, []);
+  const [field, setField] = useState<ObservedReport[]>(() => loadFieldReports());
 
   const load = async () => {
     setStatus("loading"); setErr("");
@@ -28,7 +31,7 @@ export function ReplayTab() {
   };
   const nameFor = (k: ReplaySeriesKey) => `Replay ${rain!.date} · ${t(`rp.series.${k}`)}`;
   const replaying = rain && KEYS.some((k) => sc.name === nameFor(k));
-  const check = useMemo(() => (replaying && res.stage === "final" ? scoreReports(ds, res, reports, rain!.date) : null), [replaying, res, reports, rain, ds]);
+  const check = useMemo(() => (replaying && res.stage === "final" ? scoreReports(ds, res, [...reports, ...field], rain!.date) : null), [replaying, res, reports, field, rain, ds]);
 
   return (
     <div className="stack">
@@ -72,7 +75,7 @@ export function ReplayTab() {
                     <li key={i}>
                       <b className={c.hit ? "ok-text" : "warn-text"}>{t(c.hit ? "rp.hit" : "rp.miss")}</b> · {c.report.place_name}{c.street ? ` (${t("rp.street")})` : ""}
                       {" · "}{c.nearestFlaggedM === null ? t("rp.noFlag") : t("rp.nearest", { d: c.nearestFlaggedM })}
-                      {" · "}<a href={c.report.source_url} target="_blank" rel="noreferrer">{c.report.source_type}</a>
+                      {" · "}{c.report.source_url.startsWith("field-report:") ? t("fr.tag") : <a href={c.report.source_url} target="_blank" rel="noreferrer">{c.report.source_type}</a>}
                     </li>
                   ))}
                 </ul>
@@ -82,6 +85,7 @@ export function ReplayTab() {
             )}
         </section>
       ) : null}
+      <FieldReportsCard list={field} setList={setField} />
     </div>
   );
 }
