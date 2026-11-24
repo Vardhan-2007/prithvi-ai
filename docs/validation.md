@@ -2,6 +2,8 @@
 
 Until now the project only tested **internal consistency** (mass conservation, determinism, the two engines agreeing).
 The Replay tab adds the first check against the real world. This page sets out how to do that honestly.
+A first diagnosis of why the early replays missed (where the reported streets sit in the terrain data, and a comparison
+with blind guessing) is in [validation-diagnosis.md](validation-diagnosis.md).
 
 ## The protocol (follow it in this order)
 
