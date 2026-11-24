@@ -5,6 +5,7 @@ import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { mergeGeometries } from "three/examples/jsm/utils/BufferGeometryUtils.js";
 import { CSS2DRenderer, CSS2DObject } from "three/examples/jsm/renderers/CSS2DRenderer.js";
+import type { Level } from "../../../scenarios/engine/drains";
 import type { Dataset, ScenarioResult, Zone } from "../../../scenarios/engine/types";
 import { demAt, demRange } from "../../../scenarios/engine/dataset";
 import { indexColor } from "../../../scenarios/engine/risk";
@@ -131,6 +132,7 @@ export class TwinScene {
   private roadSets: { mesh: THREE.Mesh; colors: Float32Array; cells: number[] }[] = [];
   private walkMesh!: THREE.Mesh; private roadMats: THREE.MeshStandardMaterial[] = [];
   private inletMesh!: THREE.InstancedMesh;
+  private inletRing!: THREE.Group;
   private trees = new THREE.Group();
   private facGroup = new THREE.Group();
   private pumpGroup = new THREE.Group();
@@ -447,6 +449,13 @@ export class TwinScene {
       this.inletMesh.setColorAt(i, new THREE.Color(0x22d3ee));
     });
     this.inletMesh.renderOrder = 6; this.world.add(this.inletMesh);
+    // highlight for the drain picked in the Drains tab: a flat ring plus a thin vertical beam
+    this.inletRing = new THREE.Group();
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(10, 1.4, 8, 40), new THREE.MeshBasicMaterial({ color: 0xffffff, depthTest: false }));
+    ring.rotation.x = Math.PI / 2;
+    const beam = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, 60, 8), new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55, depthTest: false }));
+    beam.position.y = 30;
+    this.inletRing.add(ring, beam); this.inletRing.renderOrder = 9; this.inletRing.visible = false; this.world.add(this.inletRing);
   }
 
   private buildFacilities() {
@@ -518,13 +527,27 @@ export class TwinScene {
     (this.terrain.geometry.getAttribute("color") as THREE.BufferAttribute).needsUpdate = true;
   }
 
-  setInlets(open: boolean[], overrides: Record<string, string>) {
+  /** `likelihood` (optional): colour open drains by how likely they are to block: orange = higher, amber = medium, cyan = lower. */
+  setInlets(open: boolean[], overrides: Record<string, string>, likelihood?: Level[] | null) {
     const c = new THREE.Color();
     this.ds.inlets.forEach((inl, i) => {
-      if (!open[i]) c.set(0xef4444); else if (overrides[inl.id] === "cleared") c.set(0x4ade80); else c.set(0x22d3ee);
+      if (!open[i]) c.set(0xef4444);
+      else if (overrides[inl.id] === "cleared") c.set(0x4ade80);
+      else if (likelihood?.[i] === "high") c.set(0xf97316);
+      else if (likelihood?.[i] === "medium") c.set(0xfbbf24);
+      else c.set(0x22d3ee);
       this.inletMesh.setColorAt(i, c);
     });
     if (this.inletMesh.instanceColor) this.inletMesh.instanceColor.needsUpdate = true;
+  }
+
+  /** highlight one drain (and fly the camera to it); null clears the highlight */
+  setSelectedInlet(id: string | null) {
+    const inl = id ? this.ds.inlets.find((q) => q.id === id) : null;
+    if (!inl) { this.inletRing.visible = false; return; }
+    const y = this.gz(inl.x, inl.y);
+    this.inletRing.position.set(inl.x, y + 1.5, -inl.y); this.inletRing.visible = true;
+    this.animateTo({ tg: new THREE.Vector3(inl.x, y, -inl.y), r: 380, ph: 1.05 }, 650);
   }
 
   setPumps(sites: { x: number; y: number }[]) {

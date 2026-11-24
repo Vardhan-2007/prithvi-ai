@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useStore } from "../../store";
 import { TwinScene, VERT_EXAGGERATION, type HoverInfo } from "./scene/TwinScene";
 import { simData, depthAtPlayhead, peakAtPlayhead } from "./sim/simController";
@@ -8,6 +8,7 @@ import { BAND_COLORS } from "../../scenarios/engine/risk";
 import { useT } from "../../components/i18n/i18n";
 import { useRoute } from "../../dashboard/risk/useRoute";
 import { NavPad, type NavApi } from "../../components/NavPad";
+import { drainStatics } from "../../scenarios/engine/drains";
 
 const fmtClock = (s: number) => {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60);
@@ -31,6 +32,8 @@ export function Twin3D() {
   const routeThreshold = useStore((s) => s.routeThreshold);
   const tab = useStore((s) => s.tab);
   const route = useRoute();
+  const selInlet = useStore((s) => s.selectedInletId);
+  const levels = useMemo(() => drainStatics(ds).map((d) => d.level), [ds]);
   const store = useStore;
 
   // refs so the (stable) scene callbacks always see the latest data
@@ -74,7 +77,8 @@ export function Twin3D() {
 
   useEffect(() => { sceneRef.current?.setLayers(layers); }, [layers]);
   useEffect(() => { sceneRef.current?.setRisk(layers.risk, result, baseline); }, [layers.risk, result, baseline]);
-  useEffect(() => { sceneRef.current?.setInlets(result.inletOpen, scenario.overrides); }, [result.inletOpen, scenario.overrides]);
+  useEffect(() => { sceneRef.current?.setInlets(result.inletOpen, scenario.overrides, layers.drainRisk ? levels : null); }, [result.inletOpen, scenario.overrides, layers.drainRisk, levels]);
+  useEffect(() => { sceneRef.current?.setSelectedInlet(selInlet); }, [selInlet]);
   useEffect(() => { sceneRef.current?.setPumps(result.pumpSites); }, [result.pumpSites]);
   useEffect(() => { sceneRef.current?.setSelected(selected ? ds.zones.zones.find((z) => z.id === selected) ?? null : null); }, [selected, ds]);
   useEffect(() => { sceneRef.current?.setRoadThreshold(routeThreshold); }, [routeThreshold]);

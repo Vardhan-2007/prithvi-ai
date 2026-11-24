@@ -12,7 +12,7 @@ A real-time **3D flood-scenario twin** of a city neighbourhood: change the rain 
 ![Three.js](https://img.shields.io/badge/Three.js-WebGL-000000?logo=threedotjs&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/FastAPI-backend-009688?logo=fastapi&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3.10%2B-3776ab?logo=python&logoColor=white)
-![Tests](https://img.shields.io/badge/tests-32%20Python%20%2B%205%20web-brightgreen)
+![Tests](https://img.shields.io/badge/tests-73%20Python%20%2B%2063%20web-brightgreen)
 
 ![PRITHVI AI — 3D flood twin of central Kakinada](docs/images/01-overview-3d.jpg)
 
@@ -45,7 +45,7 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 | **Scenario what-ifs** | Set rainfall depth, duration and drainage blockage, add temporary pumps, or **click a single drain inlet** to block or clear it and watch nearby zones change. 4 presets plus a 16-scenario grid. |
 | **Explainable risk index** | Per 100 m zone: an instant provisional score `100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)`, replaced by the final score `100 × (0.20·T + 0.15·D + 0.20·E + 0.45·W)` once the flood run finishes (W = simulated water in the zone), so the colours match the water. Click any zone to see each factor's weighted contribution, the baseline marker and plain-language reasons (English / Telugu). |
 | **Baseline vs scenario** | 3-panel **Compare** view (baseline · scenario · change), band counts, zones that moved up, and a live exposure overlay of roads and critical facilities. |
-| **Decision support** | Inspection **priority ranking**, graph-based **road-route analysis** (hospital → fire station, dry vs flooded network), CSV / JSON export. |
+| **Decision support** | Inspection **priority ranking**, an indicative **"drains most likely to block"** ranking (terrain and surroundings, not a prediction), graph-based **road-route analysis** (hospital → fire station, dry vs flooded network), CSV / JSON export. |
 | **Evidence assistant** | Answers only from cited documents and says so when it cannot — no invented advice. |
 | **Provenance first** | Every layer shows its source, licence, resolution, processing and a status tag: *observed · derived · proxy · simulated*. A limitations panel is one click away. |
 | **Easy navigation** | Compass, zoom / rotate / tilt pad, keyboard and double-click-to-fly in 3D; rotate and tilt in the 2D map too. |
@@ -200,7 +200,7 @@ prithvi-ai/
 ## Development
 
 ```bash
-make test                 # 32 Python tests + 5 web tests + typecheck
+make test                 # 73 Python tests + 63 web tests + typecheck
 python3 -m pytest -q      # Python only (risk index, parity with TypeScript, solver, RAG, API)
 cd frontend && npm test   # solver tests (mass conservation, determinism, monotonicity)
 make data                 # re-download OSM + DEM and rebuild data/processed (cached in data/raw)

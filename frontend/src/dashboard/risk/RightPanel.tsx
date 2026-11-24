@@ -3,13 +3,14 @@ import { useT } from "../../components/i18n/i18n";
 import { OverviewTab } from "./OverviewTab";
 import { ZoneTab } from "./ZoneTab";
 import { PriorityTab } from "./PriorityTab";
+import { DrainsTab } from "./DrainsTab";
 import { RoutesTab } from "./RoutesTab";
 import { ReplayTab } from "./ReplayTab";
 import { AssistantTab } from "../assistant/AssistantTab";
 import { DataTab } from "../provenance/DataTab";
 
 const TABS: { id: RightTab; k: string }[] = [
-  { id: "overview", k: "tab.overview" }, { id: "zone", k: "tab.zone" }, { id: "priority", k: "tab.priority" },
+  { id: "overview", k: "tab.overview" }, { id: "zone", k: "tab.zone" }, { id: "priority", k: "tab.priority" }, { id: "drains", k: "tab.drains" },
   { id: "routes", k: "tab.routes" }, { id: "replay", k: "tab.replay" }, { id: "assistant", k: "tab.assistant" }, { id: "data", k: "tab.data" },
 ];
 
@@ -25,6 +26,7 @@ export function RightPanel() {
         {tab === "overview" && <OverviewTab />}
         {tab === "zone" && <ZoneTab />}
         {tab === "priority" && <PriorityTab />}
+        {tab === "drains" && <DrainsTab />}
         {tab === "routes" && <RoutesTab />}
         {tab === "replay" && <ReplayTab />}
         {tab === "assistant" && <AssistantTab />}

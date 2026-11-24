@@ -74,6 +74,22 @@ def test_solver_endpoint_is_single_flight(monkeypatch):
     assert c.post("/api/v1/scenarios", json=BODY).status_code == 201  # plain scenarios are unaffected
 
 
+def test_simulation_with_pumps_returns_finite_numbers():
+    """Regression: pumps + simulate=true used to return 500 because the solver produced NaN."""
+    body = {**BODY, "rainfall_scenario": {**BODY["rainfall_scenario"], "duration_hours": 1, "value": 40}, "pumps": True, "simulate": True}
+    r = c.post("/api/v1/scenarios", json=body, timeout=120)
+    assert r.status_code == 201
+    sim = r.json()["simulation"]
+    for k in ("peak_flooded_ha", "peak_max_depth_m", "rain_m3", "drained_m3", "outfall_m3", "stored_m3"):
+        assert isinstance(sim[k], (int, float)) and sim[k] == sim[k] and sim[k] >= 0, k
+
+
+def test_unknown_inlet_overrides_are_rejected():
+    r = c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_does_not_exist": "blocked"}})
+    assert r.status_code == 422 and "inlet_does_not_exist" in r.json()["detail"]
+    assert c.post("/api/v1/scenarios", json={**BODY, "overrides": {"inlet_01": "blocked"}}).status_code == 201
+
+
 def test_hyetograph_scenario_derives_total_and_duration():
     hy = {"kind": "hyetograph", "hyetograph_mm": [0, 5, 20, 40, 10, 0], "step_hours": 1}
     r = c.post("/api/v1/scenarios", json={**BODY, "rainfall_scenario": hy})

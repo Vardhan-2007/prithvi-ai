@@ -18,7 +18,7 @@ Values below were read from the code (`frontend/src/…`, `ai-engine/…`, `gis-
 | Facilities | 14 health (hospitals, clinics), 2 emergency (fire, police), 7 shelter candidates (school, town hall, places of worship) |
 | Terrain | Copernicus GLO-90 (~90 m), 21 × 21 samples → smoothed → 12.5 m grid; range 1.63–8.75 m |
 | Drain inlets | 56 **proxy** points (no real drainage data) |
-| Tests | 32 Python + 5 web = 37 |
+| Tests | 73 Python + 63 web = 136 |
 
 ---
 
@@ -26,9 +26,9 @@ Values below were read from the code (`frontend/src/…`, `ai-engine/…`, `gis-
 
 ```
 ┌ Header: brand · [3D Digital Twin | 2D Map | Compare] · [Simulated · not a forecast] [API online/Local engine] [EN | తె] ┐
-│ Left panel          │  Stage (3D twin / 2D map / Compare)                 │ Right panel (6 tabs)                  │
-│ Scenario controls   │  HUD: title, clock, compass pad, legends            │ Overview · Zone · Priority ·          │
-│ Layers              │  Timeline strip: 8 live stats + play/scrub/speed    │ Routes · Assistant · Data & limits    │
+│ Left panel          │  Stage (3D twin / 2D map / Compare)                 │ Right panel (7 tabs)                  │
+│ Scenario controls   │  HUD: title, clock, compass pad, legends            │ Overview · Zone · Priority · Drains · │
+│ Layers              │  Timeline: status sentence + play/scrub/speed       │ Routes · Assistant · Data & limits    │
 └ Bottom banner: "experimental planning and visualisation prototype… not official forecasts…" ┘
 ```
 
@@ -110,10 +110,11 @@ Limits: distance 50–3600 m; the focus point is clamped to the model so you can
 * **Speed:** 2.5, 5, **10 (default)**, 20, 40 simulated minutes per real second.
 * **"n % computed":** the solver streams snapshots from a Web Worker while you watch; you cannot scrub past what is computed (a full run takes a few seconds).
 
-The 8 stats (all for the current playhead):
+**Status sentence** (above the timeline): one plain sentence about what is happening at the playhead, in English or Telugu, e.g. *"The rain is easing (77 mm/h). About 27.3 ha is under water, up to 0.9 m deep. Mapped facilities reached: 3."* It moves through five phases: *dry → rain building → rain easing → rain stopped, water draining away → almost dry again*. The earlier row of eight number boxes was removed as clutter; the flooded area, deepest water and buildings reached remain in the Overview tab (3D simulation now), and the numbers are still defined by `liveStats.ts`:
 
-| Stat | Definition |
-|---|---|
+* **Flooded area** = cells with depth ≥ 0.15 m × 156.25 m² · **Deepest water** = deepest cell · **Buildings reached** = buildings with ≥ 0.15 m within the 3 × 3 cells around their centroid · **Facilities reached** = facilities with ≥ 0.15 m in the 3 × 3 cells around them.
+
+---|---|
 | **Water ≥ 0.15 m** (ha) | cells with depth ≥ 0.15 m × 156.25 m² |
 | **Max scenario depth** (m) | deepest cell |
 | **Buildings reached** | buildings with ≥ 0.15 m within the 3 × 3 cells around their centroid |
@@ -140,16 +141,29 @@ For the clicked zone: band pill, **risk index (0–100)** and Δ vs baseline; fo
 ### 5.3 Priority
 Top 12 zones by **`priority = index × (0.6 + 0.4·E) + 4 × min(2, facilities in zone)`**, each with rank, main driver (largest weighted contribution *excluding* the uniform rainfall term), facilities, road metres and index. Click to inspect. A planning aid — not an evacuation or dispatch instruction.
 
-### 5.4 Routes
+### 5.4 Drains (`scenarios/engine/drains.ts`, `dashboard/risk/DrainsTab.tsx`)
+**Which drains are most likely to block, and which matter most if they do.** An **indicative ranking, not a prediction**: there is no drain inventory, inspection or blockage record for the pilot, so the 56 proxy inlets are ranked from terrain and surroundings with **assumed** weights:
+
+`susceptibility S = 0.40 × low-lying + 0.30 × built-up + 0.30 × spacing` (each factor min–max scaled over the 56 inlets)
+
+* **Low-lying** = `0.6 × (−ground elevation) + 0.4 × (surrounding mean − own elevation)`, surroundings within 60 m: silt, water and litter collect in low spots.
+* **Built-up** = share of building + road cells within 75 m: heavy runoff and litter load.
+* **Spacing** = mean distance to the 3 nearest other drains: a drain far from its neighbours serves a larger area.
+* **Impact if blocked** = re-score the scenario with that drain blocked vs cleared: the largest rise in a block's index, which block, and how many more blocks become Higher/Highest.
+* **Inspect first** = `S × (mean-index rise ÷ largest rise)`.
+
+The tab lists the top 12 by *Most likely to block* or *Inspect first* (levels: higher ≥ 0.5, medium 0.3–0.5, lower < 0.3), shows each drain's factor bars, lets you mark/clear it, and has **"Assume the k likeliest drains block"**, which replaces the random blockage pattern with these drains and re-runs the simulation. While the tab is open the drains are coloured on the 3D and 2D maps (orange = higher, amber = medium, cyan = lower, red = blocked); selecting a drain flies the camera to it. Not validated against real blockages; use it to decide where to inspect first.
+
+### 5.5 Routes
 Pick **From** and **To** facilities and a **"segment unusable above"** depth (0.10–0.60 m, step 0.05, default 0.25 m). The app builds a graph from OSM road nodes, removes edges whose **peak depth so far** (sampled every 5 m) ≥ threshold, and runs **Dijkstra**. Shows dry-network distance, scenario distance, extra distance (%), network km above threshold, and a verdict (no change / longer / **cut**). The path is drawn in 3D (green = scenario path, yellow = dry path when cut). Default pair: the farthest-apart *connected* health → emergency/shelter pair (Mahaveer Hospital → a place of worship, 2.38 km). It updates as the simulation advances. **Not a certified safe route.**
 
-### 5.5 Assistant (`ai-engine/rag`, `dashboard/assistant`)
+### 5.6 Assistant (`ai-engine/rag`, `dashboard/assistant`)
 * 8 team-written documents → 26 paragraph chunks (index method, drainage meaning, simulation limits, data sources, official sources, general flood preparedness, facilities/road exposure, priority ranking).
-* Retrieval: **BM25** (k₁ = 1.5, b = 0.75) over stemmed tokens. It answers only if the best chunk has **score ≥ 1.6 and ≥ 34 % of the query terms**; otherwise it **abstains** and points to IMD/NDMA/CWC.
+* Retrieval: **BM25** (k₁ = 1.5, b = 0.75) over stemmed tokens. It answers only if the best chunk has **score ≥ 1.6 and ≥ 50 % of the query's content words**; otherwise it **abstains** and points to IMD/NDMA/CWC. **Personal-safety questions** ("should I evacuate?", "will my house flood?", "am I safe?") are never answered from a document fragment: they get a fixed pointer to IMD, NDMA and the district administration. The Python and browser copies use the same rule.
 * The answer = the first 3 sentences of the top 2 chunks, each tagged **[1] [2]** with a citation list. If your question contains *this/current/now/selected*, the live scenario summary is appended.
 * No generative model — it cannot invent advice. Goes via FastAPI when online (4 s timeout), otherwise the same logic runs in the browser. 5 suggested questions.
 
-### 5.6 Data & limits
+### 5.7 Data & limits
 Six limitation bullets, then every layer as an expandable card — **source, retrieved date, licence, resolution, processing, known limitations**, with a status tag: **observed** (OSM buildings/roads/facilities/water) · **derived** (terrain, risk zones) · **proxy** (drain inlets) · **simulated** (rainfall). Then the method in one screen and the AI-tool disclosure.
 
 ---

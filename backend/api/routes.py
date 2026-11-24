@@ -103,7 +103,11 @@ async def area_replay(area_id: str, day: str = Query(alias="date", pattern=r"^\d
 
 @router.post("/api/v1/scenarios", status_code=201)
 async def create_scenario(req: ScenarioRequest):
-    _area(req.area_id)
+    ds = _area(req.area_id)
+    known = {i["id"] for i in ds["inlets"]}
+    unknown = sorted(set(req.overrides) - known)
+    if unknown:
+        raise HTTPException(422, f"unknown inlet id(s) in overrides: {', '.join(unknown[:5])}")
     if req.simulate and req.rainfall_scenario.duration_hours > 12:
         raise HTTPException(422, "simulate=true supports durations up to 12 h")
     keys = ("scenario_id", "status", "data_status", "score_stage", "summary", "mean_index", "baseline_mean_index", "band_counts", "assumptions", "results_geojson_url")

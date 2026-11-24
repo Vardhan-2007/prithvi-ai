@@ -8,7 +8,11 @@ there these this to was we what when where which who why will with you your shou
 const stem = (w: string) => (w.length > 4 && w.endsWith("ies") ? w.slice(0, -3) + "y" : w.length > 4 && w.endsWith("es") ? w.slice(0, -2) : w.length > 3 && w.endsWith("s") ? w.slice(0, -1) : w);
 const tokenize = (t: string) => (t.toLowerCase().match(/[a-z0-9]+/g) ?? []).filter((w) => !STOP.has(w) && w.length > 1).map(stem);
 
-const MIN_SCORE = 1.6, MIN_COVERAGE = 0.34;
+const MIN_SCORE = 1.6, MIN_COVERAGE = 0.5; // keep in step with ai-engine/rag/answer/compose.py
+
+// Personal-safety questions never get a document fragment; they get a pointer to official sources (same pattern as compose.py).
+const SAFETY_RE = /\b(evacuat\w*|trapped|rescue)\b|\bshould (i|we) (leave|go|stay|move|flee|run)\b|\b(am i|are we) (safe|in danger)\b|\bis (my|our) (house|home|family|street|area|building) (safe|in danger)\b|\bwill (my|our|the) (house|home|street|area|building|neighbou?rhood|city|town)\b.{0,25}\bflood/i;
+export const SAFETY = "This prototype cannot tell you whether a place is safe or whether to evacuate. Follow official warnings from the India Meteorological Department (mausam.imd.gov.in), NDMA (ndma.gov.in) and your district administration, and in an emergency contact the official emergency services.";
 export const ABSTAIN = "I can't answer that from the documents loaded in this prototype. Please check official sources (IMD, NDMA, CWC or your district administration) or ask about the index, drainage assumption, simulation, data sources, facilities or priority ranking.";
 
 let chunksP: Promise<Chunk[]> | null = null;
@@ -31,6 +35,10 @@ const sentences = (t: string, n: number) => t.trim().split(/(?<=[.!?])\s+/).slic
 
 export async function localAnswer(query: string, liveContext?: string): Promise<AssistantReply> {
   const ix = await index();
+  if (SAFETY_RE.test(query)) {
+    const o = ix.chunks.find((c) => c.doc_id === "doc-official");
+    return { answer: SAFETY, citations: o ? [{ n: 1, doc_id: o.doc_id, title: o.title, publisher: o.publisher, url: o.url, kind: o.kind }] : [], abstained: true };
+  }
   const q = [...new Set(tokenize(query))];
   const k1 = 1.5, b = 0.75;
   const scored = ix.chunks.map((c, i) => {
