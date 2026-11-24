@@ -89,7 +89,7 @@ export function Twin3D() {
     <div className="twin">
       <div ref={host} className="twin-canvas" />
       <div className="hud hud-tl">
-        <div className="hud-title">{t("hud.custom")}</div>
+        <div className="hud-title">{scenario.name || t("hud.custom")}</div>
         <div className="hud-sub">{lat.toFixed(4)}°N, {lon.toFixed(4)}°E</div>
         <div className="hud-sub">{ds.meta.name}</div>
         <div className="hud-clock">{fmtClock(live?.t ?? 0)}</div>

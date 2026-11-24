@@ -69,8 +69,21 @@ export async function getReplay(lat: number, lon: number, day: string, deps = {
 
 // ---------------------------------------------------------------- observed reports + scoring
 export interface ObservedReport {
-  event_date: string; place_name: string; lat: number; lon: number; description?: string; depth_reported?: string;
+  event_date: string;           // first local day of the reported flooding
+  event_end_date?: string;      // optional last day (a storm spanning several days)
+  place_name: string; lat: number; lon: number; description?: string; depth_reported?: string;
+  osm_way_ids?: string[];       // optional: the report names a whole street; distance is measured to the street, not the point
+  location_method?: string;
   source_url: string; source_type: "news" | "official" | "team_visit"; collected_by?: string; collected_on?: string;
+}
+
+/** Does this report cover the replayed day? */
+export const reportCovers = (r: ObservedReport, day: string) => r.event_date <= day && day <= (r.event_end_date ?? r.event_date);
+
+function distToSegment(px: number, py: number, a: [number, number], b: [number, number]): number {
+  const dx = b[0] - a[0], dy = b[1] - a[1], L2 = dx * dx + dy * dy;
+  const t = L2 === 0 ? 0 : Math.max(0, Math.min(1, ((px - a[0]) * dx + (py - a[1]) * dy) / L2));
+  return Math.hypot(px - (a[0] + t * dx), py - (a[1] + t * dy));
 }
 
 export async function loadObserved(): Promise<ObservedReport[]> {
@@ -82,29 +95,38 @@ export async function loadObserved(): Promise<ObservedReport[]> {
   } catch { return []; }
 }
 
-export interface ReportCheck { report: ObservedReport; hit: boolean; nearestFlaggedM: number | null }
+export interface ReportCheck { report: ObservedReport; hit: boolean; nearestFlaggedM: number | null; street: boolean }
 export interface ValidationResult {
   date: string; checks: ReportCheck[]; hits: number; misses: number; outside: number;
   flaggedWithoutReport: number; radiusM: number;
 }
 
 /** Compare a FINAL scenario result with the reports for one date. A report is a hit if a Higher/Highest zone's centre
- * lies within HIT_RADIUS_M. Flagged zones with no report nearby are counted but NOT called false alarms:
+ * lies within HIT_RADIUS_M of the reported spot - or, for a report that names a whole street (osm_way_ids), of any part
+ * of that street. Flagged zones with no report nearby are counted but NOT called false alarms:
  * no report does not mean no flooding. */
 export function scoreReports(ds: Dataset, res: ScenarioResult, reports: ObservedReport[], day: string, radiusM = HIT_RADIUS_M): ValidationResult {
   const { origin, m_per_deg, size_m } = ds.meta;
   const flagged = ds.zones.zones.filter((_, i) => res.zones[i].band === "higher" || res.zones[i].band === "highest");
   const checks: ReportCheck[] = []; let outside = 0;
-  const reported: { x: number; y: number }[] = [];
-  for (const r of reports.filter((r) => r.event_date === day)) {
+  const ways = new Map(ds.roads.map((r) => [r.id, r]));
+  const near: ((x: number, y: number) => boolean)[] = [];
+  for (const r of reports.filter((r) => reportCovers(r, day))) {
     const x = (r.lon - origin.lon) * m_per_deg.lon, y = (r.lat - origin.lat) * m_per_deg.lat;
-    if (x < 0 || y < 0 || x > size_m[0] || y > size_m[1]) { outside++; continue; }
-    reported.push({ x, y });
+    const segs = (r.osm_way_ids ?? []).flatMap((id) => {
+      const pts = ways.get(id)?.pts ?? [];
+      return pts.slice(1).map((p, i) => [pts[i], p] as [[number, number], [number, number]]);
+    });
+    const street = segs.length > 0;
+    if (!street && (x < 0 || y < 0 || x > size_m[0] || y > size_m[1])) { outside++; continue; }
+    const dist = street ? (px: number, py: number) => Math.min(...segs.map(([a, b]) => distToSegment(px, py, a, b)))
+      : (px: number, py: number) => Math.hypot(px - x, py - y);
+    near.push((px, py) => dist(px, py) <= radiusM);
     let best: number | null = null;
-    for (const z of flagged) { const d = Math.hypot(z.cx - x, z.cy - y); if (best === null || d < best) best = d; }
-    checks.push({ report: r, hit: best !== null && best <= radiusM, nearestFlaggedM: best === null ? null : Math.round(best) });
+    for (const z of flagged) { const d = dist(z.cx, z.cy); if (best === null || d < best) best = d; }
+    checks.push({ report: r, hit: best !== null && best <= radiusM, nearestFlaggedM: best === null ? null : Math.round(best), street });
   }
-  const flaggedWithoutReport = flagged.filter((z) => !reported.some((p) => Math.hypot(z.cx - p.x, z.cy - p.y) <= radiusM)).length;
+  const flaggedWithoutReport = flagged.filter((z) => !near.some((f) => f(z.cx, z.cy))).length;
   const hits = checks.filter((c) => c.hit).length;
   return { date: day, checks, hits, misses: checks.length - hits, outside, flaggedWithoutReport, radiusM };
 }

@@ -82,4 +82,10 @@ def test_observed_template_is_valid_empty_and_in_sync():
         for k in ("event_date", "place_name", "lat", "lon", "source_url", "source_type"):
             assert k in r, (k, r)
         assert r["source_type"] in ("news", "official", "team_visit")
-        date.fromisoformat(r["event_date"])
+        assert r["source_url"].startswith("https://")
+        assert date.fromisoformat(r["event_date"]) <= date.fromisoformat(r.get("event_end_date", r["event_date"]))
+    # every street a report points at must exist in the pilot dataset
+    ds = json.loads((root / "data" / "processed" / "pilot_kakinada_01.json").read_text())
+    ways = {w["id"] for w in ds["roads"]}
+    for r in a["reports"]:
+        assert set(r.get("osm_way_ids", [])) <= ways, r["place_name"]

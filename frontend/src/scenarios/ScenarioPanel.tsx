@@ -57,7 +57,9 @@ export function ScenarioPanel() {
         ))}
       </div>
       <Slider label={t("sc.rain")} value={sc.rainfallMm} min={10} max={350} step={5} unit=" mm" onChange={(v) => change({ rainfallMm: v })}
-        hint={t("sc.intensity", { v: (sc.rainfallMm / sc.durationH).toFixed(0) })} />
+        hint={sc.storm
+          ? t("sc.intensityStorm", { v: (sc.rainfallMm / sc.durationH).toFixed(1), peak: Math.max(...sc.storm.mm).toFixed(1), src: sc.storm.label ?? "" })
+          : t("sc.intensity", { v: (sc.rainfallMm / sc.durationH).toFixed(0) })} />
       <Slider label={t("sc.duration")} value={sc.durationH} min={1} max={24} step={1} unit=" h" onChange={(v) => change({ durationH: v })} />
       <Slider label={t("sc.blockage")} value={Math.round(sc.blockageFrac * 100)} min={0} max={100} step={5} unit=" %" onChange={(v) => change({ blockageFrac: v / 100 })}
         hint={t("sc.blockedCount", { n: nBlocked, total: result.inletOpen.length })} />

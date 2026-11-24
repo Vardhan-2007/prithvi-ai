@@ -69,7 +69,7 @@ export function ReplayTab() {
                 <ul className="why">
                   {check.checks.map((c, i) => (
                     <li key={i}>
-                      <b className={c.hit ? "ok-text" : "warn-text"}>{t(c.hit ? "rp.hit" : "rp.miss")}</b> · {c.report.place_name}
+                      <b className={c.hit ? "ok-text" : "warn-text"}>{t(c.hit ? "rp.hit" : "rp.miss")}</b> · {c.report.place_name}{c.street ? ` (${t("rp.street")})` : ""}
                       {" · "}{c.nearestFlaggedM === null ? t("rp.noFlag") : t("rp.nearest", { d: c.nearestFlaggedM })}
                       {" · "}<a href={c.report.source_url} target="_blank" rel="noreferrer">{c.report.source_type}</a>
                     </li>

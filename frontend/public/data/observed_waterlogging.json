@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "about": "Observed waterlogging reports used to check PRITHVI AI honestly (Replay tab, docs/validation.md). EMPTY ON PURPOSE: fill it from news, official reports or team site visits, BEFORE looking at model output. Never invent entries. Copy to frontend/public/data/observed_waterlogging.json after editing (make validation).",
+  "about": "Observed waterlogging reports used to check PRITHVI AI honestly (Replay tab, docs/validation.md). Every entry must link to a real source. Only add reports you can source; never invent entries. Copy to frontend/public/data/observed_waterlogging.json after editing (make validation).",
   "fields": {
     "event_date": "local date of the flooding, YYYY-MM-DD",
     "place_name": "street / junction / landmark as reported",
@@ -11,7 +11,99 @@
     "source_url": "link to the news story or official document",
     "source_type": "news | official | team_visit",
     "collected_by": "team member name",
-    "collected_on": "date the entry was added, YYYY-MM-DD"
+    "collected_on": "date the entry was added, YYYY-MM-DD",
+    "event_end_date": "optional last local day, for a storm reported over several days",
+    "osm_way_ids": "optional: OpenStreetMap way ids (as in the pilot dataset) when the report names a whole street or locality road; the check then measures distance to the street, not to the point",
+    "location_method": "how lat/lon (and osm_way_ids) were chosen"
   },
-  "reports": []
+  "reports": [
+    {
+      "event_date": "2026-06-28",
+      "place_name": "Main Road, Kakinada",
+      "lat": 16.951032,
+      "lon": 82.234105,
+      "osm_way_ids": [
+        "w362421200"
+      ],
+      "description": "Deccan Chronicle (29 Jun 2026): Sunday thunderstorm downpour; Main Road listed among low-lying areas affected by waterlogging. No depth given.",
+      "location_method": "Named street in the pilot's OpenStreetMap data (data/processed/pilot_kakinada_01.json); lat/lon = point on the street nearest its length-weighted midpoint. The report names the street, not a spot on it.",
+      "source_url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/downpour-floods-low-lying-areas-in-kakinada-rajamahendravaram-1966950",
+      "depth_reported": "unknown",
+      "source_type": "news",
+      "collected_by": "Claude (research assistant) - for the team to review",
+      "collected_on": "2026-11-23"
+    },
+    {
+      "event_date": "2026-06-28",
+      "place_name": "Sambamurthy Nagar, Kakinada",
+      "lat": 16.957259,
+      "lon": 82.243159,
+      "osm_way_ids": [
+        "w362425686",
+        "w1193899720",
+        "w1193899721"
+      ],
+      "description": "Deccan Chronicle (29 Jun 2026): Sambamurthy Nagar listed among low-lying areas affected by waterlogging. No depth given.",
+      "location_method": "Report names the locality Sambamurthy Nagar; placed on 'Sambamurthi Nagar Road No 1', the locality road named in the pilot's OpenStreetMap data. Locality-level location only.",
+      "source_url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/downpour-floods-low-lying-areas-in-kakinada-rajamahendravaram-1966950",
+      "depth_reported": "unknown",
+      "source_type": "news",
+      "collected_by": "Claude (research assistant) - for the team to review",
+      "collected_on": "2026-11-23"
+    },
+    {
+      "event_date": "2026-11-02",
+      "event_end_date": "2026-11-03",
+      "place_name": "Temple Street, Kakinada",
+      "lat": 16.9529,
+      "lon": 82.232377,
+      "osm_way_ids": [
+        "w362421206",
+        "w851605442"
+      ],
+      "description": "Deccan Chronicle (3 Nov 2026): rain from Cyclone Murasu, Monday into Tuesday; Temple Street listed among localities that suffered waterlogging. No depth given for this street.",
+      "location_method": "Named street in the pilot's OpenStreetMap data (data/processed/pilot_kakinada_01.json); lat/lon = point on the street nearest its length-weighted midpoint. The report names the street, not a spot on it.",
+      "source_url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/rains-due-to-cyclone-murasu-inundate-godavari-districts-disrupt-power-supply-2001473",
+      "depth_reported": "unknown",
+      "source_type": "news",
+      "collected_by": "Claude (research assistant) - for the team to review",
+      "collected_on": "2026-11-23"
+    },
+    {
+      "event_date": "2026-11-02",
+      "event_end_date": "2026-11-03",
+      "place_name": "Main Road, Kakinada",
+      "lat": 16.951032,
+      "lon": 82.234105,
+      "osm_way_ids": [
+        "w362421200"
+      ],
+      "description": "Deccan Chronicle (3 Nov 2026): rain from Cyclone Murasu; Main Road listed among localities that suffered waterlogging. No depth given for this street.",
+      "location_method": "Named street in the pilot's OpenStreetMap data (data/processed/pilot_kakinada_01.json); lat/lon = point on the street nearest its length-weighted midpoint. The report names the street, not a spot on it.",
+      "source_url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/rains-due-to-cyclone-murasu-inundate-godavari-districts-disrupt-power-supply-2001473",
+      "depth_reported": "unknown",
+      "source_type": "news",
+      "collected_by": "Claude (research assistant) - for the team to review",
+      "collected_on": "2026-11-23"
+    },
+    {
+      "event_date": "2026-11-02",
+      "event_end_date": "2026-11-03",
+      "place_name": "Sambamurthy Nagar, Kakinada",
+      "lat": 16.957259,
+      "lon": 82.243159,
+      "osm_way_ids": [
+        "w362425686",
+        "w1193899720",
+        "w1193899721"
+      ],
+      "description": "Deccan Chronicle (3 Nov 2026): rain from Cyclone Murasu; Sambamurthy Nagar listed among localities that suffered waterlogging. No depth given.",
+      "location_method": "Report names the locality Sambamurthy Nagar; placed on 'Sambamurthi Nagar Road No 1', the locality road named in the pilot's OpenStreetMap data. Locality-level location only.",
+      "source_url": "https://www.deccanchronicle.com/southern-states/andhra-pradesh/rains-due-to-cyclone-murasu-inundate-godavari-districts-disrupt-power-supply-2001473",
+      "depth_reported": "unknown",
+      "source_type": "news",
+      "collected_by": "Claude (research assistant) - for the team to review",
+      "collected_on": "2026-11-23"
+    }
+  ]
 }

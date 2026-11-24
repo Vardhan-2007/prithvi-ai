@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { checkDate, getReplay, scoreReports, seriesFor, type ObservedReport } from "./replay";
+import { checkDate, getReplay, reportCovers, scoreReports, seriesFor, type ObservedReport } from "./replay";
 import { BASELINE, evaluate } from "./risk";
 import type { Dataset } from "./types";
 
@@ -53,9 +53,24 @@ describe("scoring against observed reports", () => {
     expect(v.hits).toBe(2); expect(v.outside).toBe(1); expect(v.checks).toHaveLength(3);
     expect(v.flaggedWithoutReport).toBe(flaggedN - 1);
   });
-  it("the shipped observed-reports file is a valid (empty) template", () => {
+  it("matches multi-day reports and measures street reports to the street", () => {
+    const r = at(0, 0, { event_date: "2026-11-02", event_end_date: "2026-11-03" });
+    expect(reportCovers(r, "2026-11-02")).toBe(true); expect(reportCovers(r, "2026-11-03")).toBe(true); expect(reportCovers(r, "2026-11-04")).toBe(false);
+    // a street passing within 150 m of the flagged zone is a hit even if its stored point is far away
+    const road = ds.roads.find((w) => w.pts.some(([x, y]) => Math.hypot(x - z.cx, y - z.cy) < 100))!;
+    const far = at(5, 5, { osm_way_ids: [road.id] });
+    const v = scoreReports(ds, res, [far], "2026-09-01");
+    expect(v.checks[0].street).toBe(true); expect(v.checks[0].hit).toBe(true);
+  });
+  it("the shipped observed-reports file is valid and every street exists", () => {
     const j = JSON.parse(readFileSync(new URL("../../../public/data/observed_waterlogging.json", import.meta.url), "utf8"));
-    expect(Array.isArray(j.reports)).toBe(true);
-    expect(scoreReports(ds, res, j.reports, "2026-09-01").checks.length).toBe(j.reports.filter((r: ObservedReport) => r.event_date === "2026-09-01").length);
+    const ids = new Set(ds.roads.map((w) => w.id));
+    for (const r of j.reports as ObservedReport[]) {
+      expect(r.source_url).toMatch(/^https:\/\//);
+      for (const id of r.osm_way_ids ?? []) expect(ids.has(id)).toBe(true);
+    }
+    const v = scoreReports(ds, res, j.reports, "2026-11-03");
+    expect(v.checks.length).toBe((j.reports as ObservedReport[]).filter((r) => reportCovers(r, "2026-11-03")).length);
+    expect(v.outside).toBe(0);
   });
 });
