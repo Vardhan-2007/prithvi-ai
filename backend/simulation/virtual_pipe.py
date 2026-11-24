@@ -135,8 +135,12 @@ class VirtualPipeSolver:
         dhN[:-1, :] = H[:-1, :] - H[1:, :]; vN[:-1, :] = ~wall[1:, :]
         l, r, s, u = pipe(fL, dhL, vL), pipe(fR, dhR, vR), pipe(fS, dhS, vS), pipe(fN, dhN, vN)
         tot = l + r + s + u
+        # Scale outflow so a cell never gives away more water than it holds. Only cells that actually send water (tot > 0)
+        # need it. Without the `tot > 0` guard, a pump or inlet that drains a cell completely can leave a depth of about
+        # -1e-23 from rounding; then `0 > h * A` is true, K becomes -inf, and `0 * -inf` is NaN, which spreads to most of
+        # the grid. (The browser solver only scales cells that are flowing, so it never hit this.)
         with np.errstate(divide="ignore", invalid="ignore"):
-            K = np.where(tot * dt > h * A, h * A / (tot * dt), 1.0)
+            K = np.where((tot > 0) & (tot * dt > h * A), h * A / (tot * dt), 1.0)
         l, r, s, u = l * K, r * K, s * K, u * K
         tot = l + r + s + u
         self.f = [l, r, s, u]

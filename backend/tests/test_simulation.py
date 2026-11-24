@@ -62,3 +62,39 @@ def test_blocked_drains_do_not_reduce_peak_flooding():
     open_ = make(block=0.0); open_.run()
     blocked = make(block=0.75); blocked.run()
     assert (blocked.peak >= 0.15).sum() >= (open_.peak >= 0.15).sum()
+
+
+def make_pumped(mm=60, hrs=1.0, block=0.25, tail=0.5, pumps=True):
+    res = evaluate(DS, {"rainfall_mm": mm, "duration_h": hrs, "blockage_fraction": block, "pumps": pumps})
+    inl = [(i["iy"], i["ix"], o) for i, o in zip(DS["inlets"], res["inlet_open"])]
+    cell = G["cell_m"]
+    pc = [(min(NY - 1, int(p["y"] // cell)), min(NX - 1, int(p["x"] // cell))) for p in res["pump_sites"]]
+    assert bool(pc) == pumps
+    return VirtualPipeSolver(np.array(G["dem"]).reshape(NY, NX), np.array(G["building_mask"]).reshape(NY, NX), np.array(G["road_mask"]).reshape(NY, NX),
+                             cell, inl, pc, mm, hrs, tail)
+
+
+def test_pumps_do_not_produce_nan():
+    """Regression: a pump that drained a cell completely left a depth of about -1e-23, which made the outflow scale factor
+    -inf and then NaN (0 * -inf). The NaNs spread to ~94% of the grid and the API answered 500."""
+    import warnings
+    s = make_pumped()
+    with warnings.catch_warnings():
+        warnings.simplefilter("error", RuntimeWarning)
+        s.run()
+    assert np.isfinite(s.h).all() and np.isfinite(s.peak).all()
+    assert all(np.isfinite(v) for v in s.stats().values())
+
+
+def test_mass_is_conserved_with_pumps():
+    s = make_pumped()
+    s.run()
+    st = s.stats()
+    assert abs(s.expected_rain_m3() - (st["stored_m3"] + st["drain_m3"] + st["outfall_m3"])) / s.expected_rain_m3() < 1e-6
+
+
+def test_pumps_never_increase_peak_flooding():
+    with_p, without = make_pumped(pumps=True), make_pumped(pumps=False)
+    with_p.run(); without.run()
+    assert int((with_p.peak >= 0.15).sum()) <= int((without.peak >= 0.15).sum())
+    assert float(with_p.peak.max()) <= float(without.peak.max()) + 1e-9
