@@ -17,7 +17,7 @@ describe("sure / maybe", () => {
     expect(r.low.blockageFrac).toBeCloseTo(0.15); expect(r.high.blockageFrac).toBeCloseTo(0.5);
   });
   it("uses the forecast members in Live mode, and scales a storm otherwise", () => {
-    const f = rangeCases(sc, { low: { hyetograph_mm: [1, 2], total_mm: 3 }, high: { hyetograph_mm: [10, 20, 5], total_mm: 35 } });
+    const f = rangeCases({ ...sc, rainfallMm: 10 }, { low: { hyetograph_mm: [1, 2], total_mm: 3 }, high: { hyetograph_mm: [10, 20, 5], total_mm: 35 } });
     expect(f.basis).toBe("forecast");
     expect(f.low.rainfallMm).toBe(3); expect(f.high.durationH).toBe(3); expect(f.high.storm!.mm).toEqual([10, 20, 5]);
     const s = rangeCases({ ...sc, storm: stepStorm([10, 250], 1) });
@@ -52,5 +52,21 @@ describe("brief", () => {
   it("finds the nearest named street", () => {
     const r = ds.roads.find((x) => x.name)!;
     expect(nearestStreet(ds, r.pts[0][0], r.pts[0][1])).toEqual({ name: expect.any(String), distM: 0 });
+  });
+});
+
+describe("sure / maybe is consistent with the current score", () => {
+  it.each([["provisional"], ["final"]])("every zone flagged now is sure or maybe (%s)", (stage) => {
+    for (const s of [sc, { ...sc, rainfallMm: 80, blockageFrac: 0.1 }, { ...sc, rainfallMm: 260, blockageFrac: 0.6 }]) {
+      const water = stage === "final" ? ds.zones.zones.map((_, k) => ((k * 37) % 100) / 100) : undefined;
+      const res = evaluate(ds, s, water ? { water } : undefined);
+      const c = certainty(ds, rangeCases(s), res);
+      for (const z of res.zones) if (z.band === "higher" || z.band === "highest") expect(c.get(z.id)).not.toBe("no");
+    }
+  });
+  it("keeps the current case inside forecast brackets", () => {
+    const cur = { ...sc, storm: stepStorm([5, 5], 1), rainfallMm: 10, durationH: 2 };
+    const r = rangeCases(cur, { low: { hyetograph_mm: [20], total_mm: 20 }, high: { hyetograph_mm: [1], total_mm: 1 } });
+    expect(r.low.rainfallMm).toBe(10); expect(r.high.rainfallMm).toBe(10);
   });
 });

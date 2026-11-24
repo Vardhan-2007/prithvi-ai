@@ -5,8 +5,10 @@
 //   high case: the forecast's high member (Live mode) or 130 % of the rain otherwise, and 20 points more blockage
 //   sure  = flagged (Higher or Highest) even in the low case
 //   maybe = flagged only in the high case
-// Both cases are ASSUMED brackets, not probabilities. More rain and more blockage never lower the index, so every
-// "sure" zone is also flagged in the high case.
+// After the flood run (FINAL score, with simulated water W) the brackets use the same run's W scaled by the rain ratio
+// (low/current <= 1, high/current >= 1): an ASSUMED shortcut, since a flood run per bracket would take minutes.
+// Both cases are ASSUMED brackets, not probabilities. The index never falls with more rain, water or blockage, so
+// low <= current <= high for every zone: every zone flagged now is "sure" or "maybe", and every "sure" zone is flagged.
 import { evaluate, isFlagged, rankPriority, type PriorityItem } from "./risk";
 import type { Dataset, Facility, Scenario, ScenarioResult } from "./types";
 import { stepStorm } from "../../maps/twin3d/sim/storm";
@@ -31,9 +33,12 @@ function withStorm(sc: Scenario, c: RangeCase, label: string): Scenario {
 export function rangeCases(sc: Scenario, forecast?: { low: RangeCase; high: RangeCase } | null): Range {
   const lowB = clamp01(sc.blockageFrac * LOW_BLOCK), highB = clamp01(sc.blockageFrac + HIGH_BLOCK_ADD);
   if (forecast) {
+    // the current case may itself be the low or high member: keep low <= current <= high
+    const low = forecast.low.total_mm <= sc.rainfallMm ? withStorm(sc, forecast.low, "forecast low") : sc;
+    const high = forecast.high.total_mm >= sc.rainfallMm ? withStorm(sc, forecast.high, "forecast high") : sc;
     return {
-      low: { ...withStorm(sc, forecast.low, "forecast low"), blockageFrac: lowB },
-      high: { ...withStorm(sc, forecast.high, "forecast high"), blockageFrac: highB },
+      low: { ...low, blockageFrac: lowB },
+      high: { ...high, blockageFrac: highB },
       basis: "forecast",
     };
   }
@@ -45,8 +50,15 @@ export function rangeCases(sc: Scenario, forecast?: { low: RangeCase; high: Rang
   return { low: { ...sc, ...scale(LOW_RAIN), blockageFrac: lowB }, high: { ...sc, ...scale(HIGH_RAIN), blockageFrac: highB }, basis: "assumed" };
 }
 
-export function certainty(ds: Dataset, range: Range): Map<string, Certainty> {
-  const low = evaluate(ds, range.low), high = evaluate(ds, range.high);
+export function certainty(ds: Dataset, range: Range, current?: ScenarioResult): Map<string, Certainty> {
+  let lowOpts: { water: number[] } | undefined, highOpts: { water: number[] } | undefined;
+  if (current?.stage === "final") {
+    const mm = Math.max(1e-6, current.scenario.rainfallMm);
+    const rl = Math.min(1, range.low.rainfallMm / mm), rh = Math.max(1, range.high.rainfallMm / mm);
+    const w = current.zones.map((z) => z.factors.water);
+    lowOpts = { water: w.map((v) => clamp01(v * rl)) }; highOpts = { water: w.map((v) => clamp01(v * rh)) };
+  }
+  const low = evaluate(ds, range.low, lowOpts), high = evaluate(ds, range.high, highOpts);
   const out = new Map<string, Certainty>();
   low.zones.forEach((z, k) => out.set(z.id, isFlagged(z) ? "sure" : isFlagged(high.zones[k]) ? "maybe" : "no"));
   return out;
@@ -92,7 +104,7 @@ export interface Brief {
 }
 
 export function buildBrief(ds: Dataset, res: ScenarioResult & { pumpSites?: { zoneId: string }[] }, range: Range, n = BRIEF_ZONES): Brief {
-  const cert = certainty(ds, range);
+  const cert = certainty(ds, range, res);
   const pumpZones = new Set((res.pumpSites ?? []).map((p) => p.zoneId));
   const { origin, m_per_deg } = ds.meta;
   const items = rankPriority(ds, res, n).map((it, k): BriefItem => {

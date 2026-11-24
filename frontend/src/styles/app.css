@@ -200,3 +200,5 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .form-grid .inline { display: flex; gap: 6px; }
 .form-grid .inline input { flex: 1; }
 button.link { background: none; border: none; padding: 0; color: var(--accent2); text-decoration: underline; font-size: 11px; }
+.form-grid .inline .btn { width: auto; flex: none; white-space: nowrap; }
+.form-grid .inline input { min-width: 120px; }

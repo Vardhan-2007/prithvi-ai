@@ -26,9 +26,12 @@ function apply(sc: Scenario, a: BudgetAction): Scenario {
 
 /** Point 0 is "spend nothing"; each next point adds the action with the largest harm removed per rupee.
  * Stops when no action helps any more or after maxSteps. */
-export function moneyCurve(ds: Dataset, sc: Scenario, costs: Costs = DEFAULT_COSTS, maxSteps = 40): BudgetPoint[] {
+export function moneyCurve(ds: Dataset, sc: Scenario, costs: Costs = DEFAULT_COSTS, maxSteps = 40, water?: number[]): BudgetPoint[] {
+  // With `water` (the finished flood run's W per zone) the index is the FINAL one, with that water held fixed:
+  // clearing drains and pumps then act through the drainage factor only, and the counts match what the app shows.
+  const opts = water ? { water } : undefined;
   let cur = { ...sc, overrides: { ...sc.overrides } };
-  let res = evaluate(ds, cur);
+  let res = evaluate(ds, cur, opts);
   let harm = harmOf(ds, res);
   const pts: BudgetPoint[] = [{ cost: 0, flagged: flaggedOf(res), harm, action: null }];
   let spent = 0;
@@ -37,7 +40,7 @@ export function moneyCurve(ds: Dataset, sc: Scenario, costs: Costs = DEFAULT_COS
     if (!cur.pumps) cands.push({ kind: "pumps" });
     let best: { a: BudgetAction; sc: Scenario; res: ReturnType<typeof evaluate>; harm: number; gain: number } | null = null;
     for (const a of cands) {
-      const s2 = apply(cur, a), r2 = evaluate(ds, s2), h2 = harmOf(ds, r2);
+      const s2 = apply(cur, a), r2 = evaluate(ds, s2, opts), h2 = harmOf(ds, r2);
       const gain = (harm - h2) / actionCost(a, costs);
       if (harm - h2 > 1e-9 && (!best || gain > best.gain)) best = { a, sc: s2, res: r2, harm: h2, gain };
     }
@@ -60,4 +63,4 @@ export function planPatch(sc: Scenario, pts: BudgetPoint[], n: number): Partial<
   return { overrides, pumps };
 }
 
-export const formatInr = (v: number) => (v >= 1e5 ? `₹${(v / 1e5).toFixed(v >= 1e6 ? 0 : 1)} lakh` : `₹${Math.round(v / 1000)}k`);
+export const formatInr = (v: number) => (v <= 0 ? "₹0" : v >= 1e5 ? `₹${(v / 1e5).toFixed(v >= 1e6 ? 0 : 1)} lakh` : `₹${Math.round(v / 1000)}k`);

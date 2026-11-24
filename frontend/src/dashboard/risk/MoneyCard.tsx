@@ -33,10 +33,11 @@ function Chart({ pts, pick, onPick }: { pts: BudgetPoint[]; pick: number; onPick
 
 export function MoneyCard() {
   const t = useT();
-  const ds = useStore((s) => s.ds)!; const sc = useStore((s) => s.scenario);
+  const ds = useStore((s) => s.ds)!; const sc = useStore((s) => s.scenario); const res = useStore((s) => s.result)!;
   const apply = useStore((s) => s.applyScenario);
   const [costs, setCosts] = useState(DEFAULT_COSTS);
-  const pts = useMemo(() => moneyCurve(ds, sc, costs), [ds, sc, costs]);
+  const water = useMemo(() => (res.stage === "final" ? res.zones.map((z) => z.factors.water) : undefined), [res]);
+  const pts = useMemo(() => moneyCurve(ds, sc, costs, 40, water), [ds, sc, costs, water]);
   const [pick, setPick] = useState(0);
   const p = Math.min(pick, pts.length - 1);
   const steps = pts.slice(1, p + 1);
@@ -59,7 +60,7 @@ export function MoneyCard() {
           <button className="btn" disabled={p === 0} onClick={() => { apply(planPatch(sc, pts, p)); setPick(0); }}>{t("mo.apply")}</button>
         </>
       )}
-      <p className="fineprint">{t("mo.disclaimer")}</p>
+      <p className="fineprint">{t("mo.disclaimer")} {res.stage === "final" ? t("mo.waterFixed") : ""}</p>
     </section>
   );
 }

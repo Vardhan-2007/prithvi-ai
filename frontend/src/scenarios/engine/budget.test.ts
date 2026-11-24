@@ -29,5 +29,15 @@ describe("money curve", () => {
   it("does nothing when nothing is blocked and pumps are out", () => {
     expect(moneyCurve(ds, { ...sc, blockageFrac: 0, pumps: true })).toHaveLength(1);
   });
-  it("formats rupees", () => { expect(formatInr(15000)).toBe("₹15k"); expect(formatInr(240000)).toBe("₹2.4 lakh"); });
+  it("formats rupees", () => { expect(formatInr(0)).toBe("₹0"); expect(formatInr(15000)).toBe("₹15k"); expect(formatInr(240000)).toBe("₹2.4 lakh"); });
+});
+
+describe("money curve after the flood run", () => {
+  it("holds the run's water fixed and starts from the final flagged count", () => {
+    const water = ds.zones.zones.map((_, k) => ((k * 53) % 100) / 100);
+    const pts = moneyCurve(ds, sc, undefined, 40, water);
+    const final = evaluate(ds, sc, { water });
+    expect(pts[0].flagged).toBe(final.zones.filter((z) => z.band === "higher" || z.band === "highest").length);
+    for (let i = 1; i < pts.length; i++) expect(pts[i].harm).toBeLessThan(pts[i - 1].harm);
+  });
 });
