@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { zoneLabel } from "../../scenarios/engine/places";
 import { useStore } from "../../store";
 import { TwinScene, VERT_EXAGGERATION, type HoverInfo } from "./scene/TwinScene";
 import { simData, depthAtPlayhead, peakAtPlayhead } from "./sim/simController";
@@ -51,7 +52,7 @@ export function Twin3D() {
       if (kind === "zone") {
         const i = d.zones.zones.findIndex((z) => z.id === id); if (i < 0) return null;
         const z = r.zones[i];
-        return { kind, id, title: id, lines: [`Risk index ${z.index.toFixed(1)} · ${z.band}`, `Δ vs baseline ${(z.index - b.zones[i].index >= 0 ? "+" : "")}${(z.index - b.zones[i].index).toFixed(1)}`, "Click: explain this zone"] };
+        return { kind, id, title: zoneLabel(d, id) === id ? id : `${zoneLabel(d, id)} · ${id}`, lines: [`Risk index ${z.index.toFixed(1)} · ${z.band}`, `Δ vs baseline ${(z.index - b.zones[i].index >= 0 ? "+" : "")}${(z.index - b.zones[i].index).toFixed(1)}`, "Click: explain this zone"] };
       }
       if (kind === "facility") { const f = d.facilities.find((q) => q.id === id)!; return { kind, id, title: f.name, lines: [f.amenity.replace(/_/g, " "), "OSM-mapped · status unknown"] }; }
       const i = d.inlets.findIndex((q) => q.id === id); const open = r.inletOpen[i];

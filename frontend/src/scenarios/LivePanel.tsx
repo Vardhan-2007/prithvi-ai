@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { useStore } from "../store";
 import { useT } from "../components/i18n/i18n";
+import { LiveAlert } from "./LiveAlert";
 import { ALLOWED_HOURS, CACHE_TTL_MS, ageMs, type CaseKey } from "./engine/forecast";
 
 const CASES: CaseKey[] = ["low", "likely", "high"];
@@ -49,6 +50,7 @@ export function LivePanel() {
                 {" · "}{t(`live.origin.${lm.forecast!.origin}`)}{lm.forecast!.stale ? ` · ${t("live.stale", { m: Math.round(ageMs(f) / 60000) })}` : ""}
               </p>
               <p className="fineprint">{t("live.oneCell")}</p>
+              <LiveAlert hours={lm.hours} />
             </>
           ) : null}
           <button className="btn ghost" onClick={() => { void refresh(); }} disabled={lm.status === "loading"}>{t("live.refresh")}</button>

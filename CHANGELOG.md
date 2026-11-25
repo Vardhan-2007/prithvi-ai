@@ -4,6 +4,20 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added (November 2026)
+- **Live mode:** real ECMWF ensemble rain (low / likely / high) and a forecast alert line; ground wetness and tide from Open-Meteo.
+- **Score follows the water:** after the flood run the index switches to the simulated water (final stage).
+- **Replay and validation:** past days with the forecast or the rain that fell, scored against 19 news reports (`docs/validation.md`; result so far 0 of 4).
+- **Ground and sea:** wet ground and tide / storm surge in both solvers and the risk index.
+- **Officer brief** (English / Telugu, print or copy), **sure / maybe** picks, **what money buys** chart, **field reports**.
+- **Zone names** from streets, **shareable scenario links**, **1-minute guided demo**, phone layout.
+- **Terrain upgrade:** 30 m GLO-30 + OSM drains with a before/after replay check (`make upgrade-check`).
+- **Hackathon docs:** `SUBMISSION.md`, `AI_DISCLOSURE.md`, `docs/48-hour-plan.md`, `docs/viva-prep.md`.
+
+### Fixed (November 2026)
+- Tide level is measured above its 31-day mean (the source series is offset by about 0.67 m).
+- The printed brief no longer starts with a blank page.
+
 ### Changed
 - **Timeline:** the row of eight number boxes is replaced by one plain sentence about what is happening (English / Telugu).
 - **Storm shape:** the rain is now a symmetric triangle that peaks at the midpoint of the duration (previously at 40 %) and falls to zero at the end.

@@ -30,6 +30,8 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 
 ---
 
+**Hackathon:** [submission sheet](SUBMISSION.md) · [48-hour plan](docs/48-hour-plan.md) · [demo script](docs/demo-script.md) · [validation](docs/validation.md) · [AI disclosure](AI_DISCLOSURE.md)
+
 ## Contents
 [Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [What is real and what is assumed](#what-is-real-and-what-is-assumed) · [Controls](#controls) · [API](#api) · [Repository structure](#repository-structure) · [Development](#development) · [Deployment](#deployment) · [Roadmap](#roadmap) · [Contributing](#contributing) · [Data and attribution](#data-and-attribution) · [License](#license)
 
@@ -43,6 +45,10 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 | **Live mode** | Drive the scenario from the real hourly rain forecast for the next 24–72 h (ECMWF ensemble via Open-Meteo), shown as a range with low / likely / high cases. A forecast-driven planning scenario, labelled as not an official warning. Falls back to a direct browser call or a cached copy if the API is asleep. |
 | **Storm replay** | Pick a past day: run the flood model on the forecast issued the day before and on the rain that fell, then check the result against reported waterlogging (hit rate, misses, sources). Protocol in [`docs/validation.md`](docs/validation.md). |
 | **Ground and sea** | Wet ground (more runoff) and a high tide or storm surge (drains back up) change both the flood run and the index. Live mode and Replay fill them from Open-Meteo (soil moisture, tide level); surge is added by hand. Assumed effects, documented in [`docs/methodology.md`](docs/methodology.md). |
+| **Guided demo** | "▶ 1-minute demo" in the header walks a judge or officer through the twin, a heavier storm, inspection priority, tide and wet ground, what money buys and the self-check, setting the app up at each step. |
+| **Shareable links** | "Copy link to this scenario" puts the whole what-if (rain or hourly storm, blockage, individual drains, pumps, ground and sea) in the link itself; opening it shows the same scenario. Nothing is uploaded; links are validated and clamped. |
+| **Zone names** | Zones are named after the nearest OSM street (or a nearby facility) instead of "zone_142", in the lists, the zone panel, the 3D tooltip and the brief. |
+| **Live alert** | In Live mode, one line answers "do we need to act?" for the forecast window (how many zones sure / maybe), with the officer brief one click away. |
 | **Officer brief** | Each flagged zone is marked **sure** (flagged even with less rain and fewer blocked drains) or **maybe** (only in the worse case). One click gives a printable English / Telugu brief: nearest street, coordinates, which drains to clear, where a pump helps, which facilities to check; or copy it as text for WhatsApp. |
 | **What money buys** | A cheapest-first plan (clear a blocked drain, put out pumps) with editable placeholder costs, drawn as money spent against zones still flagged; apply any step to the scenario in one click. |
 | **Field reports** | Log waterlogging seen on the ground (date, place, depth); it stays on the device, counts in the Replay check and downloads in the validation-file format for review. |
@@ -253,7 +259,7 @@ Details in [NOTICE.md](NOTICE.md).
 
 ## AI-tool disclosure
 
-This project was built with an AI coding assistant (Claude). The team reviews, understands and is responsible for every part of the code it submits.
+This project was built with an AI coding assistant (Claude), as allowed by the hackathon rules when disclosed. Details, including what the team did and what the in-app assistant is (keyword retrieval, not an LLM), are in [AI_DISCLOSURE.md](AI_DISCLOSURE.md). The team reviews, understands and is responsible for every part of the code it submits ([viva preparation](docs/viva-prep.md)).
 
 ## License
 

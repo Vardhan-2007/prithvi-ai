@@ -1,5 +1,7 @@
 import { useStore, type MainView } from "../store";
+import { useState } from "react";
 import { useT } from "./i18n/i18n";
+import { DemoTour } from "./DemoTour";
 
 export function Header() {
   const t = useT();
@@ -7,6 +9,7 @@ export function Header() {
   const lang = useStore((s) => s.lang); const setLang = useStore((s) => s.setLang);
   const api = useStore((s) => s.apiOnline);
   const liveF = useStore((s) => (s.liveMode.on ? s.liveMode.forecast?.data ?? null : null));
+  const [demo, setDemo] = useState(false);
   const views: { id: MainView; k: string }[] = [{ id: "3d", k: "view.3d" }, { id: "map", k: "view.map" }, { id: "compare", k: "view.compare" }];
   return (
     <header className="header">
@@ -16,6 +19,7 @@ export function Header() {
       </div>
       <nav className="views">{views.map((v) => <button key={v.id} className={view === v.id ? "on" : ""} onClick={() => setView(v.id)}>{t(v.k)}</button>)}</nav>
       <div className="header-right">
+        <button className="btn demo-btn" onClick={() => setDemo(true)}>{t("demo.start")}</button>
         {liveF ? <span className="pill live" title={t("live.pillHint")}>{t("live.pill", { time: new Date(liveF.fetched_at_utc).toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" }) })}</span>
           : <span className="pill warn" title={t("disclaimer")}>{t("pill.notForecast")}</span>}
         <span className={"pill " + (api ? "ok" : "")} title={t("api.hint")}>{api ? t("api.online") : t("api.local")}</span>
@@ -24,6 +28,7 @@ export function Header() {
           <button className={lang === "te" ? "on" : ""} onClick={() => setLang("te")}>తె</button>
         </div>
       </div>
+      {demo ? <DemoTour onClose={() => setDemo(false)} /> : null}
     </header>
   );
 }
