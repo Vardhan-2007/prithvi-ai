@@ -1,5 +1,6 @@
 import { Component, Suspense, lazy, useEffect, useRef, type ReactNode } from "react";
 import { loadBaselineWater, loadDataset } from "./scenarios/engine/dataset";
+import { scenarioFromHash } from "./scenarios/engine/share";
 import { useStore } from "./store";
 import { Header } from "./components/Header";
 import { ScenarioPanel } from "./scenarios/ScenarioPanel";
@@ -35,7 +36,11 @@ export function App() {
   const view = useStore((s) => s.view);
 
   useEffect(() => {
-    Promise.all([loadDataset(), loadBaselineWater()]).then(([d, bw]) => useStore.getState().init(d, bw)).catch((e) => useStore.setState({ error: String(e.message ?? e) }));
+    Promise.all([loadDataset(), loadBaselineWater()]).then(([d, bw]) => {
+      useStore.getState().init(d, bw);
+      const shared = scenarioFromHash(window.location.hash, d);   // a shared link opens its scenario
+      if (shared) useStore.getState().applyScenario(shared);
+    }).catch((e) => useStore.setState({ error: String(e.message ?? e) }));
     api.health().then(() => useStore.getState().setApiOnline(true)).catch(() => useStore.getState().setApiOnline(false));
   }, []);
 

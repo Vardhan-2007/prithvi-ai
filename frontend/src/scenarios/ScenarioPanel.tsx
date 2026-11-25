@@ -3,6 +3,7 @@ import { useStore, PRESETS, DEFAULT_SCENARIO, type RiskLayer } from "../store";
 import { useT } from "../components/i18n/i18n";
 import { LivePanel } from "./LivePanel";
 import { ConditionsBox } from "./ConditionsBox";
+import { ShareButton } from "./ShareButton";
 
 function Slider({ label, value, min, max, step, unit, onChange, hint }: {
   label: string; value: number; min: number; max: number; step: number; unit: string; hint?: string; onChange: (v: number) => void;
@@ -72,6 +73,9 @@ export function ScenarioPanel() {
       <div className="row">
         <button className="btn primary" onClick={() => restart()}>{t("sc.run")}</button>
         <button className="btn" onClick={() => applyScenario({ ...DEFAULT_SCENARIO })}>{t("sc.reset")}</button>
+      </div>
+      <div className="share-row">
+        <ShareButton />
       </div>
       {nOverrides > 0 || sc.blockageFrac > 0 ? <button className="btn ghost" onClick={clear}>{t("sc.clear")}</button> : null}
       <p className="hint">{t("sc.clickInlet")}</p>

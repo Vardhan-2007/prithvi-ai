@@ -12,6 +12,8 @@
 import { evaluate, isFlagged, rankPriority, type PriorityItem } from "./risk";
 import type { Dataset, Facility, Scenario, ScenarioResult } from "./types";
 import { stepStorm } from "../../maps/twin3d/sim/storm";
+import { nearestStreet } from "./places";
+export { nearestStreet } from "./places";
 
 export type Certainty = "sure" | "maybe" | "no";
 export const LOW_RAIN = 0.7, HIGH_RAIN = 1.3, LOW_BLOCK = 0.5, HIGH_BLOCK_ADD = 0.2;
@@ -62,25 +64,6 @@ export function certainty(ds: Dataset, range: Range, current?: ScenarioResult): 
   const out = new Map<string, Certainty>();
   low.zones.forEach((z, k) => out.set(z.id, isFlagged(z) ? "sure" : isFlagged(high.zones[k]) ? "maybe" : "no"));
   return out;
-}
-
-function segDist(px: number, py: number, ax: number, ay: number, bx: number, by: number) {
-  const dx = bx - ax, dy = by - ay, L = dx * dx + dy * dy;
-  const t = L > 0 ? clamp01(((px - ax) * dx + (py - ay) * dy) / L) : 0;
-  return Math.hypot(px - (ax + t * dx), py - (ay + t * dy));
-}
-
-/** Nearest named street to a point (local metres), or null if no named street is mapped. */
-export function nearestStreet(ds: Dataset, x: number, y: number): { name: string; distM: number } | null {
-  let best: { name: string; distM: number } | null = null;
-  for (const r of ds.roads) {
-    if (!r.name) continue;
-    for (let i = 0; i < r.pts.length - 1; i++) {
-      const d = segDist(x, y, r.pts[i][0], r.pts[i][1], r.pts[i + 1][0], r.pts[i + 1][1]);
-      if (!best || d < best.distM) best = { name: r.name, distM: Math.round(d) };
-    }
-  }
-  return best;
 }
 
 export type Action =

@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import { zoneLabel } from "../../scenarios/engine/places";
 import { useStore } from "../../store";
 import { useT, tr } from "../../components/i18n/i18n";
 import { BAND_COLORS, FACTOR_KEYS, weightsFor } from "../../scenarios/engine/risk";
@@ -37,7 +38,7 @@ export function ZoneTab() {
     <div className="stack">
       <section className="card">
         <div className="zone-head">
-          <div><div className="card-kicker">{t("zone.title")}</div><h3>{z.id}</h3></div>
+          <div><div className="card-kicker">{t("zone.title")}</div><h3>{zoneLabel(ds, z.id, t("place.near"))}</h3>{zoneLabel(ds, z.id) !== z.id ? <small className="muted">{z.id}</small> : null}</div>
           <span className="band-pill" style={{ background: BAND_COLORS[r.band] }}>{t(`band.${r.band}`)}</span>
         </div>
         <div className="big-row">

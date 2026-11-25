@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { zoneLabel } from "../../scenarios/engine/places";
 import { BriefSheet, CertaintyChip, useBrief } from "./BriefSheet";
 import { useStore } from "../../store";
 import { useT } from "../../components/i18n/i18n";
@@ -23,8 +24,8 @@ export function PriorityTab() {
             <li key={it.zone.id}>
               <button className={sel === it.zone.id ? "on" : ""} onClick={() => select(it.zone.id, false)}>
                 <span className="rank">{i + 1}</span>
-                <span className="prio-main"><b>{it.zone.id}</b>
-                  <small>{t("pr.driver", { f: t(`factor.${it.topFactor}`) })}{it.facilities ? ` · ${t("pr.fac", { n: it.facilities })}` : ""} · {Math.round(it.zone.road_m)} m {t("pr.road")}</small></span>
+                <span className="prio-main"><b>{zoneLabel(ds, it.zone.id, t("place.near"))}</b>
+                  <small>{zoneLabel(ds, it.zone.id) !== it.zone.id ? `${it.zone.id} · ` : ""}{t("pr.driver", { f: t(`factor.${it.topFactor}`) })}{it.facilities ? ` · ${t("pr.fac", { n: it.facilities })}` : ""} · {Math.round(it.zone.road_m)} m {t("pr.road")}</small></span>
                 {brief?.byZone[it.zone.id] ? <CertaintyChip c={brief.byZone[it.zone.id]} /> : null}
                 <span className="prio-idx" style={{ color: BAND_COLORS[it.result.band] }}>{it.result.index.toFixed(0)}</span>
               </button>
