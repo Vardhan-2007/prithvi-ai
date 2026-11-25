@@ -10,7 +10,7 @@ Written 2026-11-23 for whoever continues development (human or Claude Code). Rea
 | Last pushed commit | `312b90c` on GitHub. Local `main` is **ahead of GitHub and not pushed yet** (see below) |
 | Live site | https://prithvi-ai-psi.vercel.app (Vercel, static) |
 | Live API | https://prithvi-ai-api.onrender.com (Render, Docker, free tier; docs at `/docs`) |
-| Tests | 73 Python + 63 web, all passing; typecheck and build clean (verified 2026-11-24) |
+| Tests | 73 Python + 69 web, all passing; typecheck and build clean (verified 2026-11-24) |
 | Licence | none chosen yet (the owner said "no licence yet") |
 
 ### Merged locally, not yet pushed (as of 2026-11-24)

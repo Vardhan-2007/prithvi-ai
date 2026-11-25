@@ -9,7 +9,7 @@ It is an **experimental planning and visualisation prototype**: rainfall is a us
 ```bash
 make web            # frontend dev server  http://127.0.0.1:5173   (cd frontend && npm install && npm run dev)
 make api            # FastAPI backend      http://127.0.0.1:8000   (docs at /docs)
-make test           # 73 Python tests + 63 web tests + typecheck  (CI runs the same)
+make test           # 73 Python tests + 69 web tests + typecheck  (CI runs the same)
 make data           # rebuild the dataset from OSM + Copernicus (needs network)
 PYTHONPATH=ai-engine python3 -m rag.ingest.build   # rebuild corpus.json after editing ai-engine/rag/corpus/*.md
 ```

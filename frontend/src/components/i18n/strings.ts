@@ -194,6 +194,8 @@ export const STRINGS: Record<string, { en: string; te?: string }> = {
   "stat.buildings": { en: "Buildings reached", te: "ప్రభావిత భవనాలు" },
   "st.dry": { en: "Dry. The rain has not started yet.", te: "పొడిగా ఉంది. వర్షం ఇంకా మొదలుకాలేదు." },
   "st.rising": { en: "The rain is building ({r} mm/h).", te: "వర్షం పెరుగుతోంది ({r} మి.మీ/గం)." },
+  "st.lull": { en: "There is a lull in the rain.", te: "వర్షంలో విరామం ఉంది." },
+  "st.peak": { en: "The rain is at its peak ({r} mm/h).", te: "వర్షం గరిష్ఠ స్థాయిలో ఉంది ({r} మి.మీ/గం)." },
   "st.easing": { en: "The rain is easing ({r} mm/h).", te: "వర్షం తగ్గుతోంది ({r} మి.మీ/గం)." },
   "st.after": { en: "The rain has stopped; the water is draining away.", te: "వర్షం ఆగింది; నీరు తగ్గుతోంది." },
   "st.done": { en: "The rain has stopped and the town is almost dry again.", te: "వర్షం ఆగింది, పట్టణం దాదాపు మళ్లీ పొడిగా ఉంది." },

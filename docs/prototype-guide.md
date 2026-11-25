@@ -18,7 +18,7 @@ Values below were read from the code (`frontend/src/…`, `ai-engine/…`, `gis-
 | Facilities | 14 health (hospitals, clinics), 2 emergency (fire, police), 7 shelter candidates (school, town hall, places of worship) |
 | Terrain | Copernicus GLO-90 (~90 m), 21 × 21 samples → smoothed → 12.5 m grid; range 1.63–8.75 m |
 | Drain inlets | 56 **proxy** points (no real drainage data) |
-| Tests | 73 Python + 63 web = 136 |
+| Tests | 73 Python + 69 web = 142 |
 
 ---
 
@@ -110,7 +110,7 @@ Limits: distance 50–3600 m; the focus point is clamped to the model so you can
 * **Speed:** 2.5, 5, **10 (default)**, 20, 40 simulated minutes per real second.
 * **"n % computed":** the solver streams snapshots from a Web Worker while you watch; you cannot scrub past what is computed (a full run takes a few seconds).
 
-**Status sentence** (above the timeline): one plain sentence about what is happening at the playhead, in English or Telugu, e.g. *"The rain is easing (77 mm/h). About 27.3 ha is under water, up to 0.9 m deep. Mapped facilities reached: 3."* It moves through five phases: *dry → rain building → rain easing → rain stopped, water draining away → almost dry again*. The earlier row of eight number boxes was removed as clutter; the flooded area, deepest water and buildings reached remain in the Overview tab (3D simulation now), and the numbers are still defined by `liveStats.ts`:
+**Status sentence** (above the timeline): one plain sentence about what is happening at the playhead, in English or Telugu, e.g. *"The rain is easing (77 mm/h). About 27.3 ha is under water, up to 0.9 m deep. Mapped facilities reached: 3."* It moves through six phases: *dry → rain building → rain at its peak (within ±5 % of the duration around the midpoint) → rain easing → rain stopped, water draining away → almost dry again* (`dashboard/timeline/status.ts`, tested). The earlier row of eight number boxes was removed as clutter; the flooded area, deepest water and buildings reached remain in the Overview tab (3D simulation now), and the numbers are still defined by `liveStats.ts`:
 
 * **Flooded area** = cells with depth ≥ 0.15 m × 156.25 m² · **Deepest water** = deepest cell · **Buildings reached** = buildings with ≥ 0.15 m within the 3 × 3 cells around their centroid · **Facilities reached** = facilities with ≥ 0.15 m in the 3 × 3 cells around them.
 

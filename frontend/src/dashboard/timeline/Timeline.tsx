@@ -3,7 +3,7 @@ import { useStore } from "../../store";
 import { simData, seek, totalSeconds, frontierSeconds, onSimUpdate, scenarioStorm } from "../../maps/twin3d/sim/simController";
 import { stormPeakMmH, stormRateMmH } from "../../maps/twin3d/sim/storm";
 import { useT } from "../../components/i18n/i18n";
-import type { LiveStats } from "../../maps/twin3d/sim/liveStats";
+import { statusSentence } from "./status";
 
 const SPEEDS = [150, 300, 600, 1200, 2400];
 const fmt = (s: number) => `${String(Math.floor(s / 3600)).padStart(2, "0")}:${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}`;
@@ -49,7 +49,7 @@ export function Timeline() {
 
   return (
     <footer className="timeline">
-      <div className="tl-status" aria-live="polite">{status(t, live, scenario)}</div>
+      <div className="tl-status" aria-live="polite">{statusSentence(t, live, scenarioStorm(scenario))}</div>
       <div className="tl-main">
         <button className="play" aria-label={playing ? "Pause" : "Play"} onClick={() => {
           if (!playing && simData.playhead >= totalSeconds() - 1) seek(0);
@@ -68,17 +68,4 @@ export function Timeline() {
       </div>
     </footer>
   );
-}
-
-/** One plain sentence about what is happening right now (replaces the row of number boxes). */
-function status(t: (k: string, p?: Record<string, string | number>) => string, live: LiveStats | null, sc: { durationH: number }): string {
-  if (!live) return "";
-  const D = sc.durationH * 3600, parts: string[] = [];
-  if (live.cumRainMm < 0.3) return t("st.dry");
-  if (live.t < D) parts.push(t(live.t < D / 2 ? "st.rising" : "st.easing", { r: Math.round(live.rainMmH) }));
-  else if (live.floodedHa < 0.05) return t("st.done");   // nothing is ankle-deep any more
-  else parts.push(t("st.after"));
-  parts.push(live.floodedHa >= 0.05 ? t("st.water", { ha: live.floodedHa.toFixed(1), d: live.maxDepth.toFixed(1) }) : live.t < D ? t("st.none") : "");
-  if (live.facilitiesAffected > 0) parts.push(t("st.fac", { n: live.facilitiesAffected }));
-  return parts.filter(Boolean).join(" ");
 }
