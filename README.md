@@ -30,6 +30,8 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 
 ---
 
+**Hackathon:** [submission sheet](SUBMISSION.md) · [48-hour plan](docs/48-hour-plan.md) · [demo script](docs/demo-script.md) · [validation](docs/validation.md) · [AI disclosure](AI_DISCLOSURE.md)
+
 ## Contents
 [Features](#features) · [Quick start](#quick-start) · [How it works](#how-it-works) · [What is real and what is assumed](#what-is-real-and-what-is-assumed) · [Controls](#controls) · [API](#api) · [Repository structure](#repository-structure) · [Development](#development) · [Deployment](#deployment) · [Roadmap](#roadmap) · [Contributing](#contributing) · [Data and attribution](#data-and-attribution) · [License](#license)
 
@@ -257,7 +259,7 @@ Details in [NOTICE.md](NOTICE.md).
 
 ## AI-tool disclosure
 
-This project was built with an AI coding assistant (Claude). The team reviews, understands and is responsible for every part of the code it submits.
+This project was built with an AI coding assistant (Claude), as allowed by the hackathon rules when disclosed. Details, including what the team did and what the in-app assistant is (keyword retrieval, not an LLM), are in [AI_DISCLOSURE.md](AI_DISCLOSURE.md). The team reviews, understands and is responsible for every part of the code it submits ([viva preparation](docs/viva-prep.md)).
 
 ## License
 
