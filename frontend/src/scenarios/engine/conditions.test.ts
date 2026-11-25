@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
-import { getConditions, maxSeaLevel, soilMoistureAt, wetnessFromMoisture } from "./conditions";
+import { getConditions, maxSeaLevel, seaUrl, soilMoistureAt, wetnessFromMoisture } from "./conditions";
 import { buildSolverInit, drainFactor, FloodSolver, perviousRunoff, DT, RUNOFF_PERVIOUS } from "../../maps/twin3d/sim/floodSolver";
 import { BASELINE, evaluate } from "./risk";
 import type { Dataset } from "./types";
@@ -51,16 +51,25 @@ describe("flood solver with conditions", () => {
 
 describe("parsing", () => {
   const soil = { hourly: { time: ["2026-11-03T00:00", "2026-11-03T01:00"], soil_moisture_0_to_1cm: [0.3, 0.4], soil_moisture_1_to_3cm: [0.32, null] } };
-  const sea = { hourly: { time: ["2026-11-03T00:00", "2026-11-03T01:00", "2026-11-03T02:00"], sea_level_height_msl: [0.2, 0.71, null] } };
+  // 72 hours of a tide around a 0.6 m datum offset (like the real Kakinada series), then the test day
+  const times = Array.from({ length: 72 }, (_, i) => new Date(Date.UTC(2026, 10, 1, i)).toISOString().slice(0, 13) + ":00");
+  const level = times.map((_, i) => (i === 50 ? 2.1 : i % 2 ? 1.0 : 0.2));   // mean 0.6 + a little from the spike
+  const sea = { hourly: { time: times, sea_level_height_msl: level } };
   it("reads soil moisture at the hour", () => {
     expect(soilMoistureAt(soil, "2026-11-03T00:00")).toBe(0.31);
     expect(soilMoistureAt(soil, "2026-11-03T00:30")).toBe(0.4);
     expect(soilMoistureAt({}, "2026-11-03T00:00")).toBeNull();
   });
   it("reads the highest sea level in the window", () => {
-    expect(maxSeaLevel(sea, "2026-11-03T00:00", 24)).toBe(0.71);
-    expect(maxSeaLevel(sea, "2026-11-03T00:00", 1)).toBe(0.2);
+    const mean = level.reduce((x, y) => x + y, 0) / level.length;
+    expect(maxSeaLevel(sea, "2026-11-03T00:00", 24)).toBeCloseTo(2.1 - mean, 2);   // the spike, above the series mean
+    expect(maxSeaLevel(sea, "2026-11-01T00:00", 2)).toBeCloseTo(1.0 - mean, 2);    // an ordinary high tide: ~0.4 m
     expect(maxSeaLevel({ hourly: { time: [] } }, "2026-11-03T00:00", 24)).toBeNull();
+    expect(maxSeaLevel({ hourly: { time: times.slice(0, 10), sea_level_height_msl: level.slice(0, 10) } }, times[0], 24)).toBeNull();
+  });
+  it("asks the marine API for the 31 days before, so it can take the mean", () => {
+    expect(seaUrl(24, "2026-11-03")).toContain("start_date=2026-10-04&end_date=2026-11-03");
+    expect(seaUrl(24)).toContain("past_days=31");
   });
   it("never throws, and says what is missing", async () => {
     const r = await getConditions(16.95, 82.24, { date: "2026-11-03", fetcher: async (u) => { if (u.includes("marine")) throw new Error("x"); return soil; } });

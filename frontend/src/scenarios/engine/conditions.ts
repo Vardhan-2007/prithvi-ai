@@ -1,8 +1,9 @@
 // Ground and sea conditions for a scenario: how wet the ground already is, and how high the sea stands at the coast.
 // Fetched from Open-Meteo straight from the browser (both APIs allow it). Every value can still be changed by hand.
 //   * soil moisture: Open-Meteo forecast API (now) or the ERA5 archive (a replayed day, at its first hour)
-//   * sea level: Open-Meteo Marine API `sea_level_height_msl` (tide model) at a point in Kakinada Bay; storm surge is NOT
-//     in that model, so the user adds it by hand when a cyclone is coming.
+//   * sea level: Open-Meteo Marine API `sea_level_height_msl` (tide model) at a point in Kakinada Bay. That series is NOT
+//     centred on 0 (its monthly mean at Kakinada is ~0.6-0.7 m), so we use the highest level in the window MINUS the mean
+//     of the last 31 days: the rise above the normal sea. Storm surge is not in the tide model; the user adds it by hand.
 // The effects on the flood model are ASSUMED (see floodSolver.ts: perviousRunoff, drainFactor).
 
 export const FORECAST_URL = "https://api.open-meteo.com/v1/forecast";
@@ -16,7 +17,7 @@ export const THETA_DRY = 0.15, THETA_WET = 0.45;
 export interface ConditionsResult {
   soilWetness: number | null;      // 0..1, null = not available
   soilMoisture: number | null;     // m³/m³ as read
-  seaLevelM: number | null;        // highest tide level in the window, m above mean sea level
+  seaLevelM: number | null;        // highest tide in the window, m above the 31-day mean sea level
   notes: string[];                 // what could not be loaded, in plain words
 }
 
@@ -48,20 +49,26 @@ export function soilMoistureAt(payload: unknown, stamp: string): number | null {
   return vals.length ? r2(vals.reduce((a, b) => a + b, 0) / vals.length) : null;
 }
 
-/** Highest sea level in [from, from + hours) (GMT stamps); null if the series is missing. */
+/** Highest sea level in [from, from + hours) (GMT stamps) above the mean of the whole series (which should span the
+ * previous ~31 days); null if the series is missing or too short for a mean. */
 export function maxSeaLevel(payload: unknown, from: string, hours: number): number | null {
   const h = hourlyOf(payload);
   const times = Array.isArray(h.time) ? (h.time as string[]) : [];
   const v = nums(h.sea_level_height_msl);
   const start = times.findIndex((t) => t >= from);
   if (start < 0 || v.length !== times.length) return null;
+  const all = v.filter((x): x is number => x !== null);
+  if (all.length < 48) return null;                     // under two days: no meaningful mean
+  const mean = all.reduce((a, b) => a + b, 0) / all.length;
   let best: number | null = null;
   for (let i = start; i < Math.min(times.length, start + hours); i++) {
     const x = v[i];
     if (x !== null && (best === null || x > best)) best = x;
   }
-  return best === null ? null : r2(best);
+  return best === null ? null : r2(best - mean);
 }
+
+const minusDays = (iso: string, n: number) => new Date(Date.parse(iso + "T00:00:00Z") - n * 86400_000).toISOString().slice(0, 10);
 
 const q = (o: Record<string, string>) => new URLSearchParams(o).toString();
 
@@ -71,8 +78,8 @@ export function soilUrl(lat: number, lon: number, date?: string): string {
 }
 export function seaUrl(hours: number, date?: string): string {
   const base = { latitude: SEA_POINT.lat.toFixed(2), longitude: SEA_POINT.lon.toFixed(2), hourly: "sea_level_height_msl", timezone: "GMT" };
-  if (date) return `${MARINE_URL}?${q({ ...base, start_date: date, end_date: date })}`;
-  return `${MARINE_URL}?${q({ ...base, forecast_days: String(Math.min(7, Math.ceil(hours / 24) + 1)) })}`;
+  if (date) return `${MARINE_URL}?${q({ ...base, start_date: minusDays(date, 30), end_date: date })}`;
+  return `${MARINE_URL}?${q({ ...base, past_days: "31", forecast_days: String(Math.min(7, Math.ceil(hours / 24) + 1)) })}`;
 }
 
 type Fetcher = (url: string) => Promise<unknown>;

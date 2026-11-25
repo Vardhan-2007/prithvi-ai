@@ -173,8 +173,8 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 .brief-table ul { margin: 0; padding-left: 16px; }
 .brief-table small { color: #555; }
 @media print {
-  body.printing-brief .app { display: none !important; }
-  body.printing-brief { overflow: visible; background: #fff; }
+  body.printing-brief #root { display: none !important; }
+  html:has(body.printing-brief), body.printing-brief { height: auto; overflow: visible; background: #fff !important; }
   body.printing-brief .brief-overlay { position: static; background: none; padding: 0; display: block; }
   body.printing-brief .brief-sheet { width: 100%; border-radius: 0; padding: 0; }
   body.printing-brief .brief-tools { display: none; }
@@ -202,3 +202,4 @@ details.layer { border-bottom: 1px solid #1b2a47; padding: 6px 0; } details.laye
 button.link { background: none; border: none; padding: 0; color: var(--accent2); text-decoration: underline; font-size: 11px; }
 .form-grid .inline .btn { width: auto; flex: none; white-space: nowrap; }
 .form-grid .inline input { min-width: 120px; }
+.brief-tools .btn { width: auto; flex: none; white-space: nowrap; }
