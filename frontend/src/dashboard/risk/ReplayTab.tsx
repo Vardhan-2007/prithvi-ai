@@ -2,6 +2,8 @@ import { useEffect, useMemo, useState } from "react";
 import { useStore } from "../../store";
 import { useT } from "../../components/i18n/i18n";
 import { stepStorm } from "../../maps/twin3d/sim/storm";
+import { FieldReportsCard } from "./FieldReportsCard";
+import { loadFieldReports } from "../../scenarios/engine/fieldReports";
 import { getReplay, loadObserved, scoreReports, type ObservedReport, type ReplayRain, type ReplaySeriesKey } from "../../scenarios/engine/replay";
 
 const KEYS: ReplaySeriesKey[] = ["forecast_day_ahead", "actual"];
@@ -12,12 +14,14 @@ export function ReplayTab() {
   const t = useT();
   const ds = useStore((s) => s.ds)!; const res = useStore((s) => s.result)!; const sc = useStore((s) => s.scenario);
   const runStorm = useStore((s) => s.runStorm);
+  const loadConditions = useStore((s) => s.loadConditions);
   const [day, setDay] = useState(() => new Date(Date.now() - 10 * 86400_000).toISOString().slice(0, 10));
   const [rain, setRain] = useState<ReplayRain | null>(null);
   const [status, setStatus] = useState<"idle" | "loading" | "error">("idle");
   const [err, setErr] = useState<string>("");
   const [reports, setReports] = useState<ObservedReport[]>([]);
   useEffect(() => { void loadObserved().then(setReports); }, []);
+  const [field, setField] = useState<ObservedReport[]>(() => loadFieldReports());
 
   const load = async () => {
     setStatus("loading"); setErr("");
@@ -27,7 +31,7 @@ export function ReplayTab() {
   };
   const nameFor = (k: ReplaySeriesKey) => `Replay ${rain!.date} · ${t(`rp.series.${k}`)}`;
   const replaying = rain && KEYS.some((k) => sc.name === nameFor(k));
-  const check = useMemo(() => (replaying && res.stage === "final" ? scoreReports(ds, res, reports, rain!.date) : null), [replaying, res, reports, rain, ds]);
+  const check = useMemo(() => (replaying && res.stage === "final" ? scoreReports(ds, res, [...reports, ...field], rain!.date) : null), [replaying, res, reports, field, rain, ds]);
 
   return (
     <div className="stack">
@@ -44,7 +48,7 @@ export function ReplayTab() {
             {KEYS.map((k) => rain.series[k] ? (
               <div className="kv" key={k}>
                 <span>{t(`rp.series.${k}`)}: <b>{rain.totals_mm[k]} mm</b></span>
-                <button className="btn" onClick={() => runStorm(stepStorm(rain.series[k]!, 1, { startIso: `${rain.date}T00:00+05:30`, label: t(`rp.series.${k}`) }), nameFor(k))}>{t("rp.run")}</button>
+                <button className="btn" onClick={() => { runStorm(stepStorm(rain.series[k]!, 1, { startIso: `${rain.date}T00:00+05:30`, label: t(`rp.series.${k}`) }), nameFor(k)); void loadConditions(rain.date); }}>{t("rp.run")}</button>
               </div>
             ) : null)}
             {rain.notes.map((n, i) => <p key={i} className="hint">{n}</p>)}
@@ -71,7 +75,7 @@ export function ReplayTab() {
                     <li key={i}>
                       <b className={c.hit ? "ok-text" : "warn-text"}>{t(c.hit ? "rp.hit" : "rp.miss")}</b> · {c.report.place_name}{c.street ? ` (${t("rp.street")})` : ""}
                       {" · "}{c.nearestFlaggedM === null ? t("rp.noFlag") : t("rp.nearest", { d: c.nearestFlaggedM })}
-                      {" · "}<a href={c.report.source_url} target="_blank" rel="noreferrer">{c.report.source_type}</a>
+                      {" · "}{c.report.source_url.startsWith("field-report:") ? t("fr.tag") : <a href={c.report.source_url} target="_blank" rel="noreferrer">{c.report.source_type}</a>}
                     </li>
                   ))}
                 </ul>
@@ -81,6 +85,7 @@ export function ReplayTab() {
             )}
         </section>
       ) : null}
+      <FieldReportsCard list={field} setList={setField} />
     </div>
   );
 }

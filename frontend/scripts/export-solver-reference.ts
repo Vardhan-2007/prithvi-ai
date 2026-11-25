@@ -16,11 +16,23 @@ for (let i = 0; i < n; i++) s.step(DT);
 const st = s.stats();
 let peakCells = 0, peakMax = 0;
 for (const v of s.peak) { if (v >= FLOOD_DEPTH_M) peakCells++; if (v > peakMax) peakMax = v; }
+// Same storm with wet ground and a high sea (checks the conditions code paths too)
+const CONDITIONS = { soilWetness: 0.7, seaLevelM: 1.4 };
+const c = new FloodSolver(buildSolverInit(ds, res.inletOpen, [], stepStorm(HYETOGRAPH, STEP_H), 0, TAIL_H, CONDITIONS));
+for (let i = 0; i < n; i++) c.step(DT);
+const cs = c.stats();
+let cPeakCells = 0, cPeakMax = 0;
+for (const v of c.peak) { if (v >= FLOOD_DEPTH_M) cPeakCells++; if (v > cPeakMax) cPeakMax = v; }
 const out = {
   note: "Written by frontend/scripts/export-solver-reference.ts - do not edit by hand",
   hyetograph_mm: HYETOGRAPH, step_h: STEP_H, tail_h: TAIL_H, blockage_fraction: BLOCKAGE,
   stored_m3: st.storedM3, drain_m3: st.drainM3, outfall_m3: st.outfallM3, expected_rain_m3: s.expectedRainM3(),
   peak_flooded_cells: peakCells, peak_max_depth: peakMax,
+  conditioned: {
+    soil_wetness: CONDITIONS.soilWetness, sea_level_m: CONDITIONS.seaLevelM,
+    stored_m3: cs.storedM3, drain_m3: cs.drainM3, outfall_m3: cs.outfallM3, expected_rain_m3: c.expectedRainM3(),
+    peak_flooded_cells: cPeakCells, peak_max_depth: cPeakMax,
+  },
 };
 writeFileSync(new URL("../../backend/tests/ts_solver_reference.json", import.meta.url), JSON.stringify(out, null, 1) + "\n");
 console.log(out);

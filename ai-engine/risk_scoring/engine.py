@@ -22,10 +22,18 @@ INLET_KERNEL_M = 90.0
 PUMP_COUNT = 6
 BASELINE = {"name": "Baseline reference", "rainfall_mm": 30.0, "duration_h": 6.0, "blockage_fraction": 0.0, "overrides": {}, "pumps": False}
 M32 = 0xFFFFFFFF
+# High sea level (tide + surge) backs up the drains: same assumed curve as backend/simulation/virtual_pipe.py drain_factor
+TIDE_FREE_M = 0.5
+TIDE_FULL_M = 2.0
+TIDE_MAX_LOSS = 0.7
 
 
 def clamp01(v: float) -> float:
     return min(1.0, max(0.0, v))
+
+
+def drain_factor(sea_level_m: float) -> float:
+    return 1.0 - TIDE_MAX_LOSS * clamp01((float(sea_level_m or 0.0) - TIDE_FREE_M) / (TIDE_FULL_M - TIDE_FREE_M))
 
 
 def band_of(index: float) -> str:
@@ -129,6 +137,7 @@ def _compute(ds: dict, sc: dict, pumps: list[dict], water: list[float] | None = 
     wt = weights_for(stage)
     open_ = resolve_inlet_open(ds["inlets"], sc["blockage_fraction"], sc.get("overrides", {}))
     wref = ds["zones"]["wref"]
+    sea_f = drain_factor(sc.get("sea_level_m", 0.0))
     zones = []
     for zi, z in enumerate(ds["zones"]["zones"]):
         s, n_open = 0.0, 0
@@ -140,7 +149,7 @@ def _compute(ds: dict, sc: dict, pumps: list[dict], water: list[float] | None = 
             d = math.hypot(p["x"] - z["cx"], p["y"] - z["cy"])
             if d <= 250:
                 s += math.exp(-d / INLET_KERNEL_M)
-        cap = clamp01(s / wref)
+        cap = clamp01(s / wref) * sea_f
         d_f = clamp01(0.6 * (1 - cap) + 0.4 * z["imperv"])
         w_f = clamp01(water[zi]) if water is not None else 0.0
         contrib = {

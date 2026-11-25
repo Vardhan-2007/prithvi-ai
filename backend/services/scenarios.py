@@ -55,7 +55,8 @@ def _summary(ds: dict, res: dict) -> dict[str, Any]:
 def to_core(req) -> dict:
     rs = req.rainfall_scenario
     core = {"name": req.name or "Custom scenario", "rainfall_mm": rs.value, "duration_h": rs.duration_hours,
-            "blockage_fraction": req.drainage_blockage_fraction, "overrides": dict(req.overrides), "pumps": req.pumps}
+            "blockage_fraction": req.drainage_blockage_fraction, "overrides": dict(req.overrides), "pumps": req.pumps,
+            "soil_wetness": req.soil_wetness, "sea_level_m": req.sea_level_m}
     if rs.kind == "hyetograph":
         core["hyetograph_mm"] = list(rs.hyetograph_mm)
         core["step_h"] = rs.step_hours
@@ -100,7 +101,8 @@ def simulate(core: dict, res: dict) -> dict[str, Any]:
     pumps = [(min(ny - 1, int(p["y"] // g["cell_m"])), min(nx - 1, int(p["x"] // g["cell_m"]))) for p in res["pump_sites"]]
     s = VirtualPipeSolver(dem, np.array(g["building_mask"]).reshape(ny, nx), np.array(g["road_mask"]).reshape(ny, nx), g["cell_m"], inl, pumps,
                           core["rainfall_mm"], core["duration_h"],
-                          storm=step_storm(core["hyetograph_mm"], core["step_h"]) if core.get("hyetograph_mm") else None)
+                          storm=step_storm(core["hyetograph_mm"], core["step_h"]) if core.get("hyetograph_mm") else None,
+                          soil_wetness=core.get("soil_wetness", 0.0), sea_level_m=core.get("sea_level_m", 0.0))
     out = s.run()
     water = zone_water(ds, s.peak)
     return {"status": "uncalibrated_scenario_output", "_zone_water": water, "peak_flooded_ha": round(out["peak_flooded_ha"], 2), "peak_max_depth_m": round(out["peak_max_depth"], 3),

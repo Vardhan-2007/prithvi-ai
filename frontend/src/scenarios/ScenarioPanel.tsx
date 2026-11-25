@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 import { useStore, PRESETS, DEFAULT_SCENARIO, type RiskLayer } from "../store";
 import { useT } from "../components/i18n/i18n";
 import { LivePanel } from "./LivePanel";
+import { ConditionsBox } from "./ConditionsBox";
 
 function Slider({ label, value, min, max, step, unit, onChange, hint }: {
   label: string; value: number; min: number; max: number; step: number; unit: string; hint?: string; onChange: (v: number) => void;
@@ -63,6 +64,7 @@ export function ScenarioPanel() {
       <Slider label={t("sc.duration")} value={sc.durationH} min={1} max={24} step={1} unit=" h" onChange={(v) => change({ durationH: v })} />
       <Slider label={t("sc.blockage")} value={Math.round(sc.blockageFrac * 100)} min={0} max={100} step={5} unit=" %" onChange={(v) => change({ blockageFrac: v / 100 })}
         hint={t("sc.blockedCount", { n: nBlocked, total: result.inletOpen.length })} />
+      <ConditionsBox change={change} />
       <label className="check">
         <input type="checkbox" checked={sc.pumps} onChange={(e) => change({ pumps: e.target.checked })} />
         <span>{t("sc.pumps")}<small>{t("sc.pumpsHint")}</small></span>

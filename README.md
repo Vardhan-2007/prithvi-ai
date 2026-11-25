@@ -42,6 +42,11 @@ Built for **HackWithAditya 2026** — theme *Smart Infrastructure & Water*.
 | **Real-time 3D simulation** | Rain falls, water flows downhill around real building footprints, pools in low ground and drains through (proxy) storm-drain inlets. Play, pause and scrub the timeline; buildings and roads turn amber/red as water reaches them. |
 | **Live mode** | Drive the scenario from the real hourly rain forecast for the next 24–72 h (ECMWF ensemble via Open-Meteo), shown as a range with low / likely / high cases. A forecast-driven planning scenario, labelled as not an official warning. Falls back to a direct browser call or a cached copy if the API is asleep. |
 | **Storm replay** | Pick a past day: run the flood model on the forecast issued the day before and on the rain that fell, then check the result against reported waterlogging (hit rate, misses, sources). Protocol in [`docs/validation.md`](docs/validation.md). |
+| **Ground and sea** | Wet ground (more runoff) and a high tide or storm surge (drains back up) change both the flood run and the index. Live mode and Replay fill them from Open-Meteo (soil moisture, tide level); surge is added by hand. Assumed effects, documented in [`docs/methodology.md`](docs/methodology.md). |
+| **Officer brief** | Each flagged zone is marked **sure** (flagged even with less rain and fewer blocked drains) or **maybe** (only in the worse case). One click gives a printable English / Telugu brief: nearest street, coordinates, which drains to clear, where a pump helps, which facilities to check; or copy it as text for WhatsApp. |
+| **What money buys** | A cheapest-first plan (clear a blocked drain, put out pumps) with editable placeholder costs, drawn as money spent against zones still flagged; apply any step to the scenario in one click. |
+| **Field reports** | Log waterlogging seen on the ground (date, place, depth); it stays on the device, counts in the Replay check and downloads in the validation-file format for review. |
+| **Finer terrain + mapped drains** | `make upgrade-check` builds a 30 m terrain (Copernicus GLO-30) with OSM drains cut in, replays every reported day on old and new data, and changes nothing unless you run `make upgrade-apply`. See [`docs/terrain-and-drains-upgrade.md`](docs/terrain-and-drains-upgrade.md). |
 | **Scenario what-ifs** | Set rainfall depth, duration and drainage blockage, add temporary pumps, or **click a single drain inlet** to block or clear it and watch nearby zones change. 4 presets plus a 16-scenario grid. |
 | **Explainable risk index** | Per 100 m zone: an instant provisional score `100 × (0.30·T + 0.25·R + 0.25·D + 0.20·E)`, replaced by the final score `100 × (0.20·T + 0.15·D + 0.20·E + 0.45·W)` once the flood run finishes (W = simulated water in the zone), so the colours match the water. Click any zone to see each factor's weighted contribution, the baseline marker and plain-language reasons (English / Telugu). |
 | **Baseline vs scenario** | 3-panel **Compare** view (baseline · scenario · change), band counts, zones that moved up, and a live exposure overlay of roads and critical facilities. |
@@ -226,7 +231,7 @@ The 3D twin is a static site, so it deploys in minutes to Vercel, Netlify, Cloud
 - [ ] Real rainfall input (e.g. NASA GPM IMERG) with spatial variation
 - [ ] More pilot areas and a PostGIS-backed data layer (schema in `backend/models/schema.sql`)
 - [ ] Official preparedness documents in the assistant corpus, reviewed Telugu translation
-- [ ] Higher-resolution terrain (LiDAR / survey DEM)
+- [ ] Higher-resolution terrain (LiDAR / survey DEM); a 30 m GLO-30 upgrade with a before/after replay check is ready (`make upgrade-check`)
 
 ---
 

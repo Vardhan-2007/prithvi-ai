@@ -26,6 +26,8 @@ export interface Facility {
 }
 export interface Inlet { id: string; x: number; y: number; ix: number; iy: number; elev: number; status: string }
 export interface Water { id: string; ring: [number, number][] }
+/** Drains / channels mapped in OpenStreetMap (present after gis-engine/processing/upgrade_pilot.py --drains). */
+export interface MappedDrain { id: string; kind: string; name: string | null; covered: boolean; pts: [number, number][] }
 
 export interface Zone {
   id: string; ix: number; iy: number; cx: number; cy: number;
@@ -48,6 +50,7 @@ export interface Dataset {
   facilities: Facility[];
   water: Water[];
   inlets: Inlet[];
+  drains?: MappedDrain[];
   zones: { nx: number; ny: number; size_m: number; wref: number; zones: Zone[] };
   layers: LayerMeta[];
 }
@@ -66,6 +69,10 @@ export interface Scenario {
   // Optional step hyetograph (forecast / replay). When set, rainfallMm and durationH are its total and length,
   // and the flood solver uses the hour-by-hour shape instead of the triangle.
   storm?: StepStorm;
+  // Ground and sea conditions (optional; 0 = the original model). soilWetness 0 (dry) .. 1 (saturated);
+  // seaLevelM = tide + storm surge at the coast, metres above mean sea level. Both ASSUMED effects, see floodSolver.ts.
+  soilWetness?: number;
+  seaLevelM?: number;
 }
 
 export type Band = "lower" | "moderate" | "higher" | "highest";

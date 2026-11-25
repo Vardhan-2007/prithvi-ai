@@ -46,11 +46,12 @@ def fetch_dem_samples(refresh: bool) -> dict:
     return d
 
 
-def build_dem(samples: dict) -> np.ndarray:
+def build_dem(samples: dict, passes: int = 2) -> np.ndarray:
+    """Lattice samples -> 12.5 m grid. `passes` of light 3x3 smoothing first (2 for GLO-90's integer noise, 1 for GLO-30)."""
     n = samples["n"]
     z = np.array(samples["elevation_m"], dtype=float).reshape(n, n)  # [lat_i, lon_j]
     # GLO-90 is a surface model with +-1 m integer noise in built-up areas: light 3x3 smoothing x2
-    for _ in range(2):
+    for _ in range(passes):
         p = np.pad(z, 1, mode="edge")
         z = (p[:-2, 1:-1] + p[2:, 1:-1] + p[1:-1, :-2] + p[1:-1, 2:] + 4 * p[1:-1, 1:-1]
              + p[:-2, :-2] + p[:-2, 2:] + p[2:, :-2] + p[2:, 2:]) / 12.0

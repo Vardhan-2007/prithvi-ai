@@ -8,6 +8,7 @@ import { stepStorm, type StepStorm } from "./maps/twin3d/sim/storm";
 import { graphFor, type LiveStats } from "./maps/twin3d/sim/liveStats";
 import { facilityNode, shortestPath } from "./scenarios/engine/routing";
 import { likeliestBlocked } from "./scenarios/engine/drains";
+import { getConditions, type ConditionsResult } from "./scenarios/engine/conditions";
 
 export type RightTab = "overview" | "zone" | "priority" | "drains" | "routes" | "replay" | "assistant" | "data";
 export type MainView = "3d" | "map" | "compare";
@@ -27,6 +28,7 @@ export const PRESETS: { id: string; rainfallMm: number; durationH: number; block
 
 export const DEFAULT_SCENARIO: Scenario = {
   name: "High rainfall + partial drainage blockage", rainfallMm: 100, durationH: 6, blockageFrac: 0.25, overrides: {}, pumps: false,
+  soilWetness: 0, seaLevelM: 0,
 };
 
 type Result = ScenarioResult & { pumpSites: PumpSite[] };
@@ -39,6 +41,13 @@ export interface LiveMode {
   forecast: ForecastResult | null;
   caseKey: CaseKey;
   error: string | null;
+}
+
+/** Ground wetness and sea level loaded from Open-Meteo (for now, or for a replayed day). */
+export interface ConditionsState {
+  status: "idle" | "loading" | "ok" | "error";
+  date: string | null;          // null = now / the forecast window
+  data: ConditionsResult | null;
 }
 
 interface State {
@@ -68,6 +77,8 @@ interface State {
   setLiveCase(c: CaseKey): void;
   refreshForecast(): Promise<void>;
   runStorm(storm: StepStorm, name: string): void;
+  conditions: ConditionsState;
+  loadConditions(date?: string): Promise<void>;
   init(ds: Dataset, baselineWater?: number[] | null): void;
   finalizeFromSim(): void;
   setLang(l: Lang): void;
@@ -99,6 +110,22 @@ export const useStore = create<State>((set, get) => ({
   playing: true, speed: 600, routeFrom: null, routeTo: null, routeThreshold: 0.25, apiOnline: null, simRunKey: 0, live: null,
   setLive: (live) => set({ live }),
   liveMode: { on: false, hours: 24, status: "idle", forecast: null, caseKey: "likely", error: null },
+  conditions: { status: "idle", date: null, data: null },
+
+  /** Fill ground wetness and sea level from Open-Meteo, then rerun. Values that could not be loaded are left as they are. */
+  async loadConditions(date) {
+    const ds = get().ds; if (!ds) return;
+    set({ conditions: { status: "loading", date: date ?? null, data: get().conditions.data } });
+    const [w, s, e, n] = ds.meta.bbox;
+    const data = await getConditions((s + n) / 2, (w + e) / 2, { date, hours: get().liveMode.hours });
+    if ((get().conditions.date ?? null) !== (date ?? null)) return;   // a newer request replaced this one
+    const p: Partial<Scenario> = {};
+    // For a replayed day, a value that could not be loaded falls back to neutral (0) rather than keeping today's value.
+    if (data.soilWetness !== null) p.soilWetness = data.soilWetness; else if (date) p.soilWetness = 0;
+    if (data.seaLevelM !== null) p.seaLevelM = Math.max(0, data.seaLevelM); else if (date) p.seaLevelM = 0;
+    set({ conditions: { status: data.soilWetness === null && data.seaLevelM === null ? "error" : "ok", date: date ?? null, data } });
+    if (Object.keys(p).length) get().applyScenario(p);
+  },
 
   setLiveOn(on) {
     set({ liveMode: { ...get().liveMode, on } });
@@ -133,6 +160,7 @@ export const useStore = create<State>((set, get) => ({
       if (!get().liveMode.on) return;   // switched off while loading
       set({ liveMode: { ...get().liveMode, status: "ok", forecast, error: null } });
       get().setLiveCase(get().liveMode.caseKey);
+      void get().loadConditions();
     } catch (err) {
       set({ liveMode: { ...get().liveMode, status: "error", error: err instanceof Error ? err.message : String(err) } });
     }
@@ -228,7 +256,7 @@ export const useStore = create<State>((set, get) => ({
     set({ result, baseline: get().baselineProvisional });
     const nx = ds.grid.nx;
     const pumpCells = result.pumpSites.map((p) => Math.min(ds.grid.ny - 1, Math.floor(p.y / ds.grid.cell_m)) * nx + Math.min(nx - 1, Math.floor(p.x / ds.grid.cell_m)));
-    startSim(ds, result.inletOpen, pumpCells, scenarioStorm(scenario));
+    startSim(ds, result.inletOpen, pumpCells, scenarioStorm(scenario), { conditions: { soilWetness: scenario.soilWetness ?? 0, seaLevelM: scenario.seaLevelM ?? 0 } });
     pendingRun = simData.runId;
     seek(0);
     set({ playing: true, simRunKey: get().simRunKey + 1 });
